@@ -1,0 +1,139 @@
+#wishlist {
+  width: 100%;
+}
+
+.wishlist-button1 {
+  width: 100%;
+  height: 46px;
+  color: Black;
+  background-color: rgb(192, 190, 190);
+  border: 1px solid black;
+  cursor: pointer;
+  text-align: center;
+  line-height: 46px;
+}
+
+.wishlist-button2 {
+  width: 100%;
+  height: 46px;
+  color: white;
+  background-color: maroon;
+  border: 1px solid black;
+  cursor: pointer;
+  text-align: center;
+  line-height: 46px;
+}
+
+.wishlist-text {
+  width: 100%;
+  color: black;
+  background-color: transparent;
+  cursor: pointer;
+  text-align: center;
+}
+
+#heartIcon1 {
+  width: 35px;
+  height: 35px;
+  background-image: url("heartBlank.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+#heartIcon2 {
+  width: 35px;
+  height: 35px;
+  background-image: url("heartBlackNew.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-text {
+  display: flex;
+  text-align: center;
+}
+
+.outer-icon-text-button-div {
+  text-align: center;
+  background-color: rgb(185, 183, 183);
+  color: black;
+  height: 46px;
+  line-height: 46px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+.outer-icon-text-div {
+  text-align: center;
+  background-color: transparent;
+  color: black;
+  cursor: pointer;
+}
+
+/* .wishlist-modal-all {
+  grid-row-gap: 15px;
+  display: grid;
+  grid-column-gap: 15px;
+} */
+
+.inside-button-div-icon {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-right: 0px;
+}
+
+.deleteICON {
+  background-image: url(delete.svg);
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
+
+.heartICON {
+  background-image: url(heart_empty_.svg);
+  /* background-size: 20px; */
+  background-repeat: no-repeat;
+}
+
+.starICON {
+  background-image: url(starBlank.svg);
+  /* background-size: 20px; */
+  background-repeat: no-repeat;
+}
+
+.saveICON {
+  background-image: url(saveBlank.svg);
+  /* background-size: 20px; */
+  background-repeat: no-repeat;
+}
+
+
+.heartICON2 {
+  background-image: url(heart_fill_.svg);
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
+
+.starICON2 {
+  background-image: url(starBlack.svg);
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
+
+.saveICON2 {
+  background-image: url(saveBlack.svg);
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
