@@ -256,7 +256,9 @@ async function setThemeSelectors() {
             }
         });
         const filteredArr = allHandler;
+        console.log("filteredArr = ", filteredArr)
         const finalStoredData = storedProductDiv.getAttribute("data-aj");
+        console.log("finalStoredData = ", finalStoredData)
         if (parseInt(finalStoredData) !== filteredArr.length) {
             storedProductDiv.setAttribute("data-aj", filteredArr.length);
             storedProductDiv.setAttribute("data-product-handle", JSON.stringify(filteredArr));
@@ -306,6 +308,7 @@ async function checkModalBtn() {
             if (matchedModalValues !== "" && storedModalProductDiv) {
                 const response = await fetch(`/products/${matchedModalValues}.json`);
                 const productHandler = await response.json();
+                console.log("productHandler = ", productHandler)
                 productHandlerData.push({ id: productHandler.product.id });
                 const finalStoredData = storedModalProductDiv.getAttribute("data-aj");
                 let filteredArr = productHandlerData

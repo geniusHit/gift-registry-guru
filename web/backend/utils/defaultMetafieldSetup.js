@@ -500,7 +500,8 @@ const generalSettingDATA = {
     showProductOption: "no",
     downloadCsv: "no",
     modalLayerBgColor: "#FAFAFA",
-    modalBottomButtonBgColor: "#EEEEEE"
+    modalBottomButtonBgColor: "#EEEEEE",
+    eventOption: '[{"label":"Wedding","value":"wedding"},{"label":"Birthday","value":"birthday"}]'
 }
 
 

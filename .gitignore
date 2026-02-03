@@ -30,3 +30,7 @@ web/database.sqlite
 # Ignore shopify files created during app dev
 .shopify/*
 .shopify.lock
+
+web/backend/constants/constant.js
+
+web/backend/utils/sendEmail.js

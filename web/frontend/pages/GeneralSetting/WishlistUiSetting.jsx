@@ -37,10 +37,7 @@ const WishlistUiSetting = () => {
     const [shareModalBtn, setShareModalBtn] = useState(0);
     const [cartBtn, setCartBtn] = useState(0);
 
-    const [options, setOptions] = useState([
-        { label: 'Wedding', value: 'wedding' },
-        { label: 'Birthday', value: 'birthday' },
-    ]);
+    const [options, setOptions] = useState([]);
 
     console.log("options = ", options)
 
@@ -103,9 +100,6 @@ const WishlistUiSetting = () => {
             }
 
         }
-
-        console.log(JSON.parse(generalData?.eventOption || []))
-
 
 
 
@@ -196,7 +190,7 @@ const WishlistUiSetting = () => {
                 }),
             })
 
-            setOptions(prevData => [...prevData, JSON.parse(generalData?.eventOption)]);
+            setOptions(JSON.parse(generalData?.eventOption));
         }
     }
 
@@ -225,6 +219,7 @@ const WishlistUiSetting = () => {
     }, [watchAllFields]);
 
     const saveToMetafield = async (data) => {
+        console.log("options from saveToMetafield = ", options)
         Swal.fire({
             text: myLanguage.swalWaiting,
             imageUrl: loaderGif,
@@ -416,31 +411,29 @@ const WishlistUiSetting = () => {
 
 
 
-
-
-
-
-    // const [options, setOptions] = useState([
-    //     { label: 'Option 1', value: 'option1' },
-    //     { label: 'Option 2', value: 'option2' },
-    // ]);
     const [selected, setSelected] = useState('');
     const [newOption, setNewOption] = useState('');
     const handleAddOption = () => {
         if (!newOption.trim()) return;
+        console.log("newOption.trim() = ", newOption.trim())
+        console.log("!newOption.trim() = ", !newOption.trim())
         const value = newOption
             .toLowerCase()
             .trim()
             .replace(/\s+/g, '-');
+        console.log("options = ", options)
         if (options.some((opt) => opt.value === value)) return;
         const option = { label: newOption, value };
-        // setOptions([...options, option]);
-        setOptions(prevValues => [...prevValues, option]);
+        setOptions([...options, option]);
         console.log("HHHHH -- ", value)
         setSelected(value);
         setNewOption('');
         setSaveBar(true);
     };
+
+    useEffect(() => {
+        console.log("myLanguage = ", myLanguage)
+    }, [myLanguage])
 
     const handleDeleteOption = (valueToDelete) => {
         const updatedOptions = options.filter(
@@ -453,6 +446,9 @@ const WishlistUiSetting = () => {
         setSaveBar(true);
     };
 
+    useEffect(()=>{
+        console.log("selected = ", selected)
+    }, [selected])
 
     return (
         <div className='wf-dashboard wf-dashboard-buttonSetting wf-ui-settings'>
@@ -656,52 +652,67 @@ const WishlistUiSetting = () => {
                                         </Grid.Cell>
 
 
-
-
                                         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
 
                                             {/* Select dropdown */}
-                                            <Select
-                                                label="Event option"
-                                                options={options}
-                                                value={selected}
-                                                onChange={setSelected}
-                                            />
+                                            <SingleFieldController
+                                                name="eventOption"
+                                                control={control}
+                                            >
+                                                {({ field }) => (<Select
+                                                    label={myLanguage.eventOption}
+                                                    options={options}
+                                                    value={selected}
+                                                    onChange={setSelected}
+                                                />)
+                                                }
+                                            </SingleFieldController>
 
                                             {/* Add new option */}
 
                                             <div style={{ display: "flex" }}>
-                                                <TextField
-                                                    label="Add new event"
-                                                    value={newOption}
-                                                    onChange={setNewOption}
-                                                    autoComplete="off"
-                                                />
+                                                <SingleFieldController
+                                                    name="eventTextfield"
+                                                    control={control}
+                                                >
+                                                    {({ field }) => (
+                                                        <TextField
+                                                            label={myLanguage.addNewEvent}
+                                                            value={newOption}
+                                                            onChange={setNewOption}
+                                                            autoComplete="off"
+                                                        />
+                                                    )}
+                                                </SingleFieldController>
 
-                                                <Button
-                                                    primary
-                                                    onClick={handleAddOption}
-                                                    disabled={!newOption.trim()}
-                                                >Add</Button>
+                                                <div className="addButton">
+                                                    <Button
+                                                        primary
+                                                        onClick={handleAddOption}
+                                                        disabled={!newOption.trim()}
+                                                    >{myLanguage.add}</Button>
+                                                </div>
                                             </div>
 
-                                            <br />
-
                                             {/* Manage options */}
-                                            <strong>Manage options</strong>
+                                            <Text variant='headingMd' as='h4'>{myLanguage.manageOptions}</Text>
                                             {options.length === 0 && (
-                                                <p>No options available</p>
+                                                <p>{noOptionsAvailable}</p>
                                             )}
 
-                                            {options.map((opt, index) => (
-                                                <div key={index} style={{ display: "flex" }}>
-                                                    <span>{opt.label}</span>
-                                                    <Button
-                                                        tone="critical"
-                                                        onClick={() => handleDeleteOption(opt.value)}
-                                                    >Delete</Button>
-                                                </div>
-                                            ))}
+                                            <div className='events'>
+                                                {options.map((opt, index) => (
+                                                    <Grid key={index} style={{ display: "flex" }}>
+                                                        <Grid.Cell><span>{opt.label}</span></Grid.Cell>
+                                                        <Grid.Cell>
+                                                            <Button
+                                                                tone="critical"
+                                                                onClick={() => handleDeleteOption(opt.value)}
+                                                            >{myLanguage.delete}</Button>
+                                                        </Grid.Cell>
+                                                    </Grid>
+                                                ))}
+                                            </div>
 
                                         </Grid.Cell>
 
@@ -962,6 +973,8 @@ const WishlistUiSetting = () => {
                             <div style={{ marginTop: "40px" }}>
                                 <Footer myLanguage={myLanguage} />
                             </div>
+
+                            <div className='rohittext'>fkldfkldfkl</div>
                         </Page>
                     </form>
                 </Frame>

@@ -1493,6 +1493,7 @@ async function wfCheckPassword() {
         document.querySelector(".modal-heading").innerHTML = customLanguage?.modalHeadingText || storeFrontDefLang?.modalHeadingText;
         addWishlistDescription();
         const arrayList = getFirstKeyArrayById(result.data, selectedID);
+        console.log("arrayList from wfCheckPassword = ", arrayList)
         if (arrayList.length === 0) {
             document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong or mismatched id in the url.";
             return;
@@ -5069,6 +5070,7 @@ async function sharedPageFunction() {
     // --------- add wishlist description-------
     addWishlistDescription();
     const arrayList = getFirstKeyArrayById(allData, selectedID);
+    console.log("arrayList from sharedPageFunction = ", arrayList)
 
     if (arrayList.length === 0) {
         document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong or mismatched id in the url.";
@@ -5096,6 +5098,8 @@ function getFirstKeyArrayById(array, id) {
 
 
 async function renderMultiSharedModalContent(arrayList, sharedId) {
+    console.log("arrayList = ", arrayList)
+
     if (currentPlan > 1) {
         let poweredByText = document.querySelectorAll(".powered-by-text");
         for (let wf = 0; wf < poweredByText.length; wf++) {

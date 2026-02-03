@@ -1044,3 +1044,22 @@ div#basic-collapsible\ collapse-hover {
     color: black;
     width: 200px;
 }
+
+
+.addButton{
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+.addButton button{
+    padding: 12px 20px;
+}
+
+.events .Polaris-Grid{
+    align-items: center;
+}
+
+.events .Polaris-Grid-Cell {
+    padding: 6px 0px;
+}

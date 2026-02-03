@@ -1268,5 +1268,12 @@ const english = {
     cowishDesc: "Wishlist - Allow users to wishlist their favorite collection",
 
     hideOnZero: "Hide when 0",
+
+    eventOption: "Event option",
+    addNewEvent: "Add new event",
+    add: "Add",
+    manageOptions: "Manage options",
+    noOptionsAvailable: "No options available",
+    delete: "Delete",
 }
 export default english

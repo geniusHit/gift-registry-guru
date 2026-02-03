@@ -199,7 +199,6 @@ export const storeFrontLanguages = {
         allFieldsRequired: "All fields are required!",
         shareToAdminButton: "Share wishlist to admin",
         downloadCsv: "Download CSV",
-
     },
 
     frenchMessage: {
