@@ -184,7 +184,6 @@ const GetWishlistData = () => {
                 search: `?wishlistitempageno=${getCustomItemPageNo}&cartitempageno=${getCustomCartPageNo}&rpr=${getCustomItemRecordPerPage}&wishlistdata=${itemCustomRecord}&wishlistname=${selectedWishlistItem}`
             });
         }
-
     }
 
     function checkSearchData() {

@@ -2116,7 +2116,7 @@ function showCustomHeaderIcon1() {
 async function handleSearchData(event) {
     const searchValue = event.target.value.trim().toLowerCase();
     if (!searchValue) {
-        renderMultiModalContentFxn(allWishlistData);
+        // renderMultiModalContentFxn(allWishlistData);
         return;
     }
     const filteredWishlist = allWishlistData.filter(item => {
@@ -3052,7 +3052,7 @@ async function wfFilterChange() {
         myArray.push({ [keyData]: valueData });
     })
     // }
-    renderMultiModalContentFxn(myArray);
+    // renderMultiModalContentFxn(myArray);
 }
 // ---------------filter option function---------------
 
@@ -3098,6 +3098,7 @@ async function wgrListingPageTypeFunction() {
     // showing loader 
 
     console.log("allWishlistData ---- ", allWishlistData)
+    console.log("fkfkfkf")
 
     wgrAddNavigationSection();
 
@@ -3123,7 +3124,7 @@ async function wgrListingPageTypeFunction() {
             const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
             return `
                                 <div class="wgr-listing-row">
-                                                <div class="wishlist-modal-all"> 
+                                                <div class="wishlist-modal-all">
                                                 <div class="wf-multi-Wish-heading">
                                                         <div class="wf-multi-Wish-content" onclick="redirectToSingleWishlist('${data.id}')">
                                                                 <b>Registry:</b><span data-key="${listName}">${listName}</span> 
@@ -3257,6 +3258,7 @@ function removeTag(el) {
 }
 
 async function redirectToSingleWishlist(singleWishlist, singleUser = "") {
+    console.log("singleWishlist = ", singleWishlist)
     const sendID = await getCurrentLoginFxn() || getAccessTokenFromCookie();
     try {
         const response = await fetch(`${serverURL}/get-id-from-email`, {
@@ -3274,8 +3276,16 @@ async function redirectToSingleWishlist(singleWishlist, singleUser = "") {
         if (!getID) throw new Error("User ID not found");
         const encryptedEmail = btoa(getID);
         const encryptedName = btoa('url');
-        window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
-
+        // window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
+        console.log("allWishlistData from redirectToSingleWishlist = ", allWishlistData)
+        const currentRegistry = allWishlistData.filter((registry)=>registry.id === parseInt(singleWishlist))
+        console.log("currentRegistry = ", currentRegistry)
+        const wishlistPageMain = document.querySelector(".wishlist-page-main")
+        // wishlistPageMain.innerHTML = `
+        //     <h2 class="shared-page-heading" style="text-align:center; color:rgb(0, 0, 0)">Wishlist Items</h2>
+        // `
+        
+        renderMultiModalContentFxn(currentRegistry)
     } catch (error) {
         console.error("Error: ", error);
         const fallbackMessage = "Firstly add items to your wishlist to share";
@@ -3470,7 +3480,7 @@ function renderPublicRegistries(publicData, page = 1) {
         <h3>All Public Registries of this store</h3>
         ${paginatedData.map(data => `
             <div class="wgr-listing-row">
-                <div class="wishlist-modal-all"> 
+                <div class="wishlist-modal-all">
                     <div class="wf-multi-Wish-heading">
                         <div class="wf-multi-Wish-content"
                             onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
@@ -3640,7 +3650,7 @@ async function pageTypeFunction() {
         if (window.location.href.includes("/apps/wf-gift-registry")) {
             const arrayList = await getDataFromSql();
             // : getWishlistByKey(await getDataFromSql(), "favourites");
-            await renderMultiModalContentFxn(arrayList)
+            // await renderMultiModalContentFxn(arrayList)
         } else {
             checkPlanForMulti("multi")
         }
@@ -3738,7 +3748,7 @@ function checkImage(rawUrl) {
 // ----------recreated with promises.all----------
 async function renderMultiModalContentFxn(arrayList) {
 
-    // console.log("arrayList --- ", arrayList)
+    console.log("arrayList from renderMultiModalContentFxn --- ", arrayList)
     shareWishlistFXN();
     // updateCustomerData();
     if (arrayList.length === 0) {
@@ -4041,6 +4051,9 @@ async function renderMultiModalContentFxn(arrayList) {
     wishlistBody += "</div><div class='wg-no-match-found'></div>";
     document.querySelectorAll(".show-title").forEach((el) => (el.innerHTML = wishlistBody));
     document.querySelectorAll(".modal-button-div").forEach(div => div.innerHTML = ``);
+    console.log("wishlistBody = ", wishlistBody)
+    const wishlistPageMain = document.querySelector(".wishlist-page-main")
+    wishlistPageMain.innerHTML = wishlistBody;
     modalButtonFxn();
     if (currentPlan >= 2) {
         fxnAfterItemsLoadedOfWishlist();
@@ -4398,6 +4411,7 @@ function toggleWishlistBox(key) {
 async function renderDrawerContentFxn() {
     shareWishlistFXN();
     const arrayList = allWishlistData;
+    console.log("arrayList from renderDrawerContentFxn = ", arrayList)
     const { isPrice, isQuantity, isMoveToCart } = await showButtons();
     document.querySelector(".drawer-text").innerHTML = `${customLanguage.modalHeadingText}`;
     renderViewAs();
@@ -5037,8 +5051,11 @@ async function getFormData() {
 async function sharedPageFunction() {
     wgrAddNavigationSection();
     let params = (new URL(document.location)).searchParams;
+    console.log("params = ", params)
     let sharedId = params.get("id");
+    console.log("sharedId = ", sharedId)
     const sharedName = params.get("name");
+    console.log("sharedName = ", sharedName)
     // let selectedWishlist = params.get("list");
     let selectedID = params.get("wid");
     if (selectedID === "") {
@@ -5063,6 +5080,7 @@ async function sharedPageFunction() {
 
     await Conversion(dcryptedSharedName, sharedIdProp, "reload");
     let allData = await getSharedWishlistData(sharedId, selectedID);
+    console.log("allData from sharedPageFunction = ", allData)
 
     // --------add the heading of page---------
     document.querySelector(".modal-heading").innerHTML = customLanguage?.modalHeadingText || storeFrontDefLang?.modalHeadingText;
@@ -5098,8 +5116,8 @@ function getFirstKeyArrayById(array, id) {
 
 
 async function renderMultiSharedModalContent(arrayList, sharedId) {
-    console.log("arrayList = ", arrayList)
-
+    console.log("arrayList from renderMultiSharedModalContent = ", arrayList)
+    console.log(`document.querySelector(".show-shared-wishlist") from renderMultiSharedModalContent = `, document.querySelector(".show-shared-wishlist"))
     if (currentPlan > 1) {
         let poweredByText = document.querySelectorAll(".powered-by-text");
         for (let wf = 0; wf < poweredByText.length; wf++) {
@@ -5109,7 +5127,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
     renderViewAs();
     const { isPrice, isQuantity, isMoveToCart } = await showButtons();
 
-    document.querySelector(".show-shared-wishlist").innerHTML = `<div class="loader-css" ><span></span></div>`;
+    // document.querySelector(".show-shared-wishlist").innerHTML = `<div class="loader-css" ><span></span></div>`;
 
     document.querySelector(".wishlist-page-main.page-width").style.color = modalDrawerTextColor;
     // document.querySelector(".wishlist-page-main.page-width").style.textAlign = generalSetting.wlTextAlign;

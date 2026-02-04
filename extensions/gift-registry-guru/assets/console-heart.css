@@ -2074,7 +2074,8 @@ a.wg-download-csv {
 
 #wg-myModal .wg-modal-content .show-title .wishlist-grid1,
 .show-shared-wishlist .wishlist-grid1,
-.wishlist-page-main .show-title .wishlist-grid1 {
+.wishlist-page-main .show-title .wishlist-grid1,
+.wishlist-page-main .wishlist-modal-box .wishlist-grid1 {
     /* padding: 0 0 15px; */
     padding: 10px;
     border: 1px solid #291f1f1f;
