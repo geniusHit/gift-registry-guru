@@ -868,17 +868,17 @@ detechThemeName()
     .then((result) => {
         themeCurrentSelectors = result;
 
-if (getThemeName.themeName === "Fabric") {
-    document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.display = "flex";
-    document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.alignItems = "center";
-    document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.gap = "20px";
-    document.querySelector(".wg-fabric-menuItem-desktop").style.fontSize = "16px";
-    document.querySelector(".wg-fabric-menuItem-desktop a").style.color = "#363636";
-}
-})
-.catch((error) => {
-    console.error("Promise rejected:", error);
-});
+        if (getThemeName.themeName === "Fabric") {
+            document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.display = "flex";
+            document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.alignItems = "center";
+            document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.gap = "20px";
+            document.querySelector(".wg-fabric-menuItem-desktop").style.fontSize = "16px";
+            document.querySelector(".wg-fabric-menuItem-desktop a").style.color = "#363636";
+        }
+    })
+    .catch((error) => {
+        console.error("Promise rejected:", error);
+    });
 
 /** INJECT BUTTON **/
 async function injectWishlistButtonForcely() {
@@ -3100,6 +3100,26 @@ async function wgrListingPageTypeFunction() {
     console.log("allWishlistData ---- ", allWishlistData)
     console.log("fkfkfkf")
 
+    const mainContent = document.getElementById("MainContent")
+
+    htmlContent = `<div>
+        <div class="wgr-navigationbar"></div>
+                <div class="wishlist-page-main page-width section" style="max-width: 1400px; margin: auto;">
+
+                <div class="wgr-profile"></div>  
+
+                <div class="wgr-heading-parent"><h2 class="wgr-heading"></h2></div>
+
+                <div class="wgr-listing"></div>
+
+                </div>
+                    <p class="powered-by-text"></p>
+                </div>
+            </div>
+        `;
+
+    mainContent.innerHTML = htmlContent
+
     wgrAddNavigationSection();
 
     // loader---css
@@ -3278,14 +3298,17 @@ async function redirectToSingleWishlist(singleWishlist, singleUser = "") {
         const encryptedName = btoa('url');
         // window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
         console.log("allWishlistData from redirectToSingleWishlist = ", allWishlistData)
-        const currentRegistry = allWishlistData.filter((registry)=>registry.id === parseInt(singleWishlist))
+        const currentRegistry = allWishlistData.filter((registry) => registry.id === parseInt(singleWishlist))
         console.log("currentRegistry = ", currentRegistry)
         const wishlistPageMain = document.querySelector(".wishlist-page-main")
         // wishlistPageMain.innerHTML = `
         //     <h2 class="shared-page-heading" style="text-align:center; color:rgb(0, 0, 0)">Wishlist Items</h2>
         // `
-        
-        renderMultiModalContentFxn(currentRegistry)
+
+        wishlistPageMain.innerHTML = `<div class="loader-css" ><span> </span></div>`
+        await renderMultiModalContentFxn(currentRegistry)
+        const wishlistModal = document.querySelector(".wishlist-modal-all")
+        wishlistModal.insertAdjacentHTML("afterbegin", '<div class="backListWrapper"><span onclick="wgrListingPageTypeFunction()" id="backList">Back</span></div>')
     } catch (error) {
         console.error("Error: ", error);
         const fallbackMessage = "Firstly add items to your wishlist to share";
