@@ -5650,7 +5650,17 @@ async function removeItem(
             //     ? () => renderDrawerContentFxn()
             //     : () => renderMultiModalContentFxn(arrayList);
 
-            await renderFn();
+            console.log("arrayList = ", arrayList)
+            console.log("user_id = ", user_id)
+            if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/list`) {
+                const currentRegistry = arrayList.filter((registry) => registry.id === parseInt(user_id))
+                const wishlistPageMain = document.querySelector(".wishlist-page-main")
+                wishlistPageMain.innerHTML = `<div class="loader-css" ><span> </span></div>`
+                await renderMultiModalContentFxn(currentRegistry)
+            }
+            else {
+                await renderFn();
+            }
             shareWishlistFXN();
             modalButtonFxn();
             drawerButtonDiv();
@@ -5681,6 +5691,7 @@ async function removeItem(
             currentPlan >= 2 && fxnAfterRemoveFromWishlist();
             (currentPlan >= 3 && generalSetting?.trendingLayout) && await renderTrendingGridData();
 
+            console.log("window.location.href = ", window.location.href)
         }
     } catch (error) {
         console.log("errr ", error);
