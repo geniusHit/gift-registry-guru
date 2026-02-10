@@ -184,6 +184,7 @@ const GetWishlistData = () => {
                 search: `?wishlistitempageno=${getCustomItemPageNo}&cartitempageno=${getCustomCartPageNo}&rpr=${getCustomItemRecordPerPage}&wishlistdata=${itemCustomRecord}&wishlistname=${selectedWishlistItem}`
             });
         }
+
     }
 
     function checkSearchData() {
@@ -1143,7 +1144,7 @@ const GetWishlistData = () => {
         // if (currentShopData.domain === 'rubychikankari.com' || currentShopData.domain === 'preahkomaitland.com.au') {
         //     pageUrl = `https://${currentShopData.domain}pages/shared-wishlist?id=${encryptId}`;
         // } else {
-        pageUrl = `https://${currentShopData.domain}apps/wf-gift-registry?id=${encryptId}`;
+        pageUrl = `https://${currentShopData.domain}apps/wg-wishlist?id=${encryptId}`;
         // }
 
 

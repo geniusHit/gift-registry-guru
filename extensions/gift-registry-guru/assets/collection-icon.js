@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", getCurentPlanSql2);
 // console.log(" ---------------- collection page code render ---------------- ")
 
 const serverURL1 = 'http://localhost:5000'; // -------------- local
-// const serverURL1 = "https://warning-anthony-machine-cells.trycloudflare.com";
+// const serverURL1 = "https://enb-solid-blowing-ranking.trycloudflare.com";
 // const serverURL1 = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL1 = 'https://wishlist-guru-api.webframez.com';  // -------------- stagging
 
@@ -101,7 +101,7 @@ async function getCurentPlanSql2() {
         }
         await runsAfterDomContentLoaded2();
     } catch (error) {
-        console.log("error", error)
+        console.log("error")
     }
 };
 
@@ -256,9 +256,7 @@ async function setThemeSelectors() {
             }
         });
         const filteredArr = allHandler;
-        console.log("filteredArr = ", filteredArr)
         const finalStoredData = storedProductDiv.getAttribute("data-aj");
-        console.log("finalStoredData = ", finalStoredData)
         if (parseInt(finalStoredData) !== filteredArr.length) {
             storedProductDiv.setAttribute("data-aj", filteredArr.length);
             storedProductDiv.setAttribute("data-product-handle", JSON.stringify(filteredArr));
@@ -308,7 +306,6 @@ async function checkModalBtn() {
             if (matchedModalValues !== "" && storedModalProductDiv) {
                 const response = await fetch(`/products/${matchedModalValues}.json`);
                 const productHandler = await response.json();
-                console.log("productHandler = ", productHandler)
                 productHandlerData.push({ id: productHandler.product.id });
                 const finalStoredData = storedModalProductDiv.getAttribute("data-aj");
                 let filteredArr = productHandlerData

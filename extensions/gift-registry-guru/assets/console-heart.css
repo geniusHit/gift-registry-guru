@@ -582,6 +582,38 @@ button#shareListBtn,
     grid-column-gap: 5px;
 }
 
+.wgr-heading {
+    position: relative;
+}
+
+
+.wf-back-btn {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    color: #555;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+}
+
+.wf-back-btn:hover {
+    color: #000;
+    background-color: #f2f2f2;
+    box-shadow: 0px 0px 5px black;
+}
+
+.wg-leftalign {
+    text-align: left;
+}
+
+.wgr-reg-listing .wg-arrow-up,
+.wgr-reg-listing .single-wishist {
+    display: none !important;
+}
+
 @media screen and (min-width:750px) {
     #main-Modal-form .wishlist-modal-all {
         max-height: 780px;
@@ -793,8 +825,7 @@ button#shareListBtn,
     margin-top: 8px;
 }
 
-.wishlist-modal-3 h3.title11,
-.wishlist-page-main h3.title11 {
+.wishlist-modal-3 h3.title11 {
     min-height: 47px;
 }
 
@@ -1250,11 +1281,6 @@ h4.price11 span {
     margin: auto;
 }
 
-.wishlist-page-main:has(.loader-css){
-    display: flex;
-    height: 142px;
-}
-
 .alert-cross-icon {
     padding: 5px 10px;
     position: absolute;
@@ -1528,9 +1554,7 @@ h4.price11 span {
 .show-shared-wishlist .product-content-sec h3,
 .show-shared-wishlist .product-content-sec h3.title11 a,
 .wishlist-page-main .show-title h3,
-.wishlist-page-main .show-title h3.title11 a,
-.wishlist-page-main h3.title11,
-.wishlist-page-main h3.title11 a {
+.wishlist-page-main .show-title h3.title11 a {
     font-size: 15px;
     line-height: 20px;
     letter-spacing: 0;
@@ -1542,8 +1566,7 @@ h4.price11 span {
 #mySidenav.sidenav .drawer-table td .product-selected-variants,
 #wg-myModal .wg-modal-content .show-title .product-selected-variants,
 .show-shared-wishlist .product-content-sec .product-selected-variants,
-.wishlist-page-main .show-title .product-selected-variants,
-.wishlist-page-main .product-selected-variants {
+.wishlist-page-main .show-title .product-selected-variants {
     font-size: 14px;
     line-height: 20px;
     color: inherit;
@@ -1569,8 +1592,7 @@ h4.price11 span {
 #mySidenav.sidenav .drawer-table td .quantity-div,
 #wg-myModal .wg-modal-content .show-title .quantity-div,
 .show-shared-wishlist .product-content-sec .quantity-div,
-.wishlist-page-main .show-title .quantity-div,
-.wishlist-page-main .quantity-div {
+.wishlist-page-main .show-title .quantity-div {
     justify-content: flex-start;
     font-size: 14px;
     line-height: 16px;
@@ -1582,8 +1604,7 @@ h4.price11 span {
 #mySidenav.sidenav .drawer-table td .quantity-minus-plus,
 #wg-myModal .wg-modal-content .show-title .quantity-minus-plus,
 .show-shared-wishlist .product-content-sec .quantity-minus-plus,
-.wishlist-page-main .show-title .quantity-minus-plus,
-.wishlist-page-main .quantity-minus-plus {
+.wishlist-page-main .show-title .quantity-minus-plus {
     width: 50%;
     display: flex;
     flex-wrap: wrap;
@@ -2024,8 +2045,7 @@ a.wg-download-csv {
 .drawer-main .product-option-price,
 .show-shared-wishlist .product-content-sec .product-option-price,
 .wg-trending-widget-content .wg-product-price,
-.wishlist-page-main .show-title .product-option-price,
-.wishlist-page-main .product-option-price {
+.wishlist-page-main .show-title .product-option-price {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2086,8 +2106,7 @@ a.wg-download-csv {
 
 #wg-myModal .wg-modal-content .show-title .wishlist-grid1,
 .show-shared-wishlist .wishlist-grid1,
-.wishlist-page-main .show-title .wishlist-grid1,
-.wishlist-page-main .wishlist-modal-box .wishlist-grid1 {
+.wishlist-page-main .show-title .wishlist-grid1 {
     /* padding: 0 0 15px; */
     padding: 10px;
     border: 1px solid #291f1f1f;
@@ -2100,8 +2119,7 @@ a.wg-download-csv {
 
 #wg-myModal .wg-modal-content .show-title .quantity-div,
 .show-shared-wishlist .product-content-sec .quantity-div,
-.wishlist-page-main .show-title .quantity-div,
-.wishlist-page-main .quantity-div {
+.wishlist-page-main .show-title .quantity-div {
     justify-content: center;
 }
 
@@ -2175,9 +2193,7 @@ html[dir="rtl"] #wg-myModal1 .wg-modal-content1 .close1 {
 #wg-myModal .wg-modal-content .show-title .copy-multiwishlist-icon,
 #wg-myModal .wg-modal-content .show-title .deleteIcon,
 .wishlist-page-main .show-title .copy-multiwishlist-icon,
-.wishlist-page-main .copy-icon-main .copy-multiwishlist-icon,
-.wishlist-page-main .show-title .deleteIcon,
-.wishlist-page-main .delete-icon-main .deleteIcon {
+.wishlist-page-main .show-title .deleteIcon {
     /* background: url(delete.svg) center/18px no-repeat; */
     background: url(wgDelete.svg)center/16px no-repeat;
     filter: brightness(0) saturate(100%);
@@ -2192,8 +2208,7 @@ html[dir="rtl"] #wg-myModal1 .wg-modal-content1 .close1 {
 
 #wg-myModal .wg-modal-content .show-title .copy-multiwishlist-icon,
 .copy-drawer-multi-icon,
-.wishlist-page-main .show-title .copy-multiwishlist-icon,
-.wishlist-page-main .copy-icon-main .copy-multiwishlist-icon {
+.wishlist-page-main .show-title .copy-multiwishlist-icon {
     background: url(copy-icon-main.svg) center/18px no-repeat;
 }
 
@@ -3559,19 +3574,8 @@ span.drawerDisableClass {
     border-radius: 8px;
 }
 
-.backListWrapper{
-    display: flex;
-    justify-content: end;
-    padding: 15px 0px;
-}
-#backList{
-    right: 10px;
-    cursor: pointer;
-    background: black;
-    color: white;
-    padding: 0px 10px;
-    border-radius: 8px;
-}
+
+
 
 
 @media screen and (max-width: 1199px) {
@@ -3681,8 +3685,7 @@ span.drawerDisableClass {
     #mySidenav.sidenav .drawer-table td .quantity-div,
     #wg-myModal .wg-modal-content .show-title .quantity-div,
     .show-shared-wishlist .product-content-sec .quantity-div,
-    .wishlist-page-main .show-title .quantity-div,
-    .wishlist-page-main .quantity-div {
+    .wishlist-page-main .show-title .quantity-div {
         margin: 0 0 12px;
         gap: 5px;
     }
@@ -3884,8 +3887,7 @@ span.drawerDisableClass {
     }
 
     #wg-myModal .wg-modal-content .show-title .wishlist-grid1 .copy-multiwishlist-icon,
-    #wg-myModal .wg-modal-content .show-title .wishlist-grid1 .deleteIcon,
-    .wishlist-page-main .delete-icon-main .deleteIcon {
+    #wg-myModal .wg-modal-content .show-title .wishlist-grid1 .deleteIcon {
         background-size: 16px;
     }
 

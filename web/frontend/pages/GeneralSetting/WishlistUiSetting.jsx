@@ -3,9 +3,7 @@ import useAppMetafield from '../../hooks/useAppMetafield';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
 import { Controller, useForm } from 'react-hook-form';
 import SkeletonPage1 from '../SkeletonPage1';
-import {
-    Frame, Page, RadioButton, Text, LegacyCard, Tabs, Select, Checkbox, TextField, Grid, AlphaCard, Button, Stack, Card
-} from '@shopify/polaris';
+import { Frame, Page, RadioButton, Text, LegacyCard, Tabs, Select, Checkbox, TextField, Grid, Button } from '@shopify/polaris';
 import SaveBar from '../SaveBar';
 import Swal from 'sweetalert2';
 import loaderGif from "../loaderGreen.gif";
@@ -18,11 +16,14 @@ import Footer from '../Footer';
 import ColorPickerController from '../../hooks/useColorPickerController';
 import RangeController from '../../hooks/useRangeController';
 import BorderController from '../../hooks/useBorderController';
+import Toggle from 'react-toggle';
+import { Constants } from '../../../backend/constants/constant';
+import useApi from '../../hooks/useApi';
 
 const WishlistUiSetting = () => {
 
+    const { serverURL } = Constants;
     let cartButtoniconColorHover;
-
     const { handleSubmit, watch, control, reset, formState: { errors } } = useForm();
     const appMetafield = useAppMetafield();
     const [saveBar, setSaveBar] = useState(false);
@@ -36,10 +37,17 @@ const WishlistUiSetting = () => {
     const [myLanguage, setMyLanguage] = useState({});
     const [shareModalBtn, setShareModalBtn] = useState(0);
     const [cartBtn, setCartBtn] = useState(0);
-
-    const [options, setOptions] = useState([]);
-
-    console.log("options = ", options)
+    const [clearBtn, setClearBtn] = useState(0);
+    const [genData, setGenData] = useState({});
+    const [isHeaderIconTrue, setIsHeaderIconTrue] = useState(false);
+    const [isMetafieldTrue, setIsMetafieldTrue] = useState(false);
+    const shopApi = useApi();
+    const [metaArr, setMetaArr] = useState([]);
+    const metaRef = useRef([]);
+    const [options, setOptions] = useState([
+        { label: 'Wedding', value: 'wedding' },
+        { label: 'Birthday', value: 'birthday' },
+    ]);
 
     useEffect(() => {
         useEffectLite();
@@ -52,13 +60,43 @@ const WishlistUiSetting = () => {
         await utilityFunction.getCurrentLanguage().then((res) => {
             setMyLanguage(res);
         });
-        getAllAppDataMetafields();
+
+        let shop = await shopApi.shop();
+        await getMetaObjectSql(shop);
+        await getAllAppDataMetafields();
     }
 
 
+    async function getMetaObjectSql(shop) {
+        // console.log("shop.shopName ==== ", shop)
+        try {
+            let response = await fetch(`${serverURL}/wf-get-unique-metafields`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    shopName: shop.shopName,
+                }),
+            });
+            let results = await response.json();
+            setMetaArr(results?.uniqueKeys || []);
+            metaRef.current = results?.uniqueKeys || [];
+            // setMetaArr(prev => [...new Set([...prev, ...(results?.uniqueKeys || [])])]);
 
+            // setMetaArr(prev => {
+            //     const updated = results?.uniqueKeys || [];
+            //     console.log("prev:", prev);
+            //     console.log("updated:", updated);
+            //     return updated;
+            // });
 
+            // await getAllAppDataMetafields();
 
+        } catch (error) {
+            console.log("error", error);
+        }
+    }
 
     const alignType = [
         { value: "left", label: myLanguage.left },
@@ -71,10 +109,8 @@ const WishlistUiSetting = () => {
         { value: "image-fit-to-content", label: myLanguage.wmsImageFitToGrid },
     ]
 
-
     async function getAllAppDataMetafields() {
         const dataArray = await appMetafield.getAllAppMetafields();
-
 
         let generalData = null;
         let buttonData = null;
@@ -87,10 +123,13 @@ const WishlistUiSetting = () => {
                     utilityFunction.upgradeButtonFxn();
                 }
                 let dData = JSON.parse(dataArray[i].node.value);
+                setGenData(dData);
                 generalData = dData;
-                console.log("generalData = ", generalData)
                 existingData.current = dData;
                 setIsLoading(true);
+                setIsHeaderIconTrue(dData?.clearBtnStyleActive === "yes" ? true : false);
+                setIsMetafieldTrue(dData?.metafieldActive === "yes" ? true : false);
+
             }
 
             if (dataArray[i].node.key === "wishlist-button-setting") {
@@ -98,11 +137,7 @@ const WishlistUiSetting = () => {
                 buttonData = dData;
                 existingButtonSettingData.current = dData;
             }
-
         }
-
-
-
 
         if (generalData) {
             // merge both and reset
@@ -149,6 +184,10 @@ const WishlistUiSetting = () => {
                 mwCheckIconBg: generalData?.mwCheckIconBg || "",
                 mwCheckIconColor: generalData?.mwCheckIconColor || "",
 
+                ...metaRef.current.reduce((acc, key) => {
+                    acc[key] = generalData[key];
+                    return acc;
+                }, {}),
 
                 ...(buttonData && {
                     cartButtonbgColor: buttonData.cartButtonStyle.bgColor,
@@ -184,13 +223,45 @@ const WishlistUiSetting = () => {
                     cartButtontextAlign: buttonData.cartButtonStyle.textAlign,
                     cartButtoniconSize: buttonData.cartButtonStyle.iconSize,
                     cartButtoniconPosition: buttonData.cartButtonStyle.iconPosition,
+                    iconColor: convertColor(watchAllFields.iconColor),
 
-                    iconColor: convertColor(watchAllFields.iconColor)
+                    clearButtonbgColor: buttonData?.clearButtonStyle?.bgColor || "#FFFFFF",
+                    clearButtonborderInput: buttonData?.clearButtonStyle?.border.value || "1",
+                    clearButtonborderInputUnit: buttonData?.clearButtonStyle?.border.unit || "px",
+                    clearButtonborderRadius: buttonData?.clearButtonStyle?.borderRadius.value || "5",
+                    clearButtonborderRadiusUnit: buttonData?.clearButtonStyle?.borderRadius.unit || "px",
+                    clearButtonborderType: buttonData?.clearButtonStyle?.border.type || "solid",
+                    clearButtonborderColor: buttonData?.clearButtonStyle?.border.color || "#000000",
+                    clearButtonfontFamily: buttonData?.clearButtonStyle?.fontFamily || "",
+                    clearButtonfontWeight: buttonData?.clearButtonStyle?.fontWeight || "normal",
+                    clearButtonfontSize: buttonData?.clearButtonStyle?.fontSize.value || "15",
+                    clearButtontextColor: buttonData?.clearButtonStyle?.textColor || "#000000",
+                    clearButtonfontSizeUnit: buttonData?.clearButtonStyle?.fontSize.unit || "px",
+                    clearButtonnborderColor: buttonData?.clearButtonStyle?.border.color || "#000000",
+                    clearButtonhover: buttonData?.clearButtonStyle?.hover.hoverValue || "",
+                    clearButtonhoverBgColor: buttonData?.clearButtonStyle?.hover.bgColor || "#000000",
+                    clearButtonhoverBorderColor: buttonData?.clearButtonStyle?.hover.border.color || "#797979",
+                    clearButtonhoverBorderInput: buttonData?.clearButtonStyle?.hover.border.value || "1",
+                    clearButtonhoverBorderInputUnit: buttonData?.clearButtonStyle?.hover.border.unit || "px",
+                    clearButtonhoverBorderType: buttonData?.clearButtonStyle?.hover.border.type || "solid",
+                    clearButtonhoverTextColor: buttonData?.clearButtonStyle?.hover.textColor || "#FFFFFF",
+                    clearButtonhoverFontSize: buttonData?.clearButtonStyle?.hover.fontSize.value || "15",
+                    clearButtonhoverFontSizeUnit: buttonData?.clearButtonStyle?.hover.fontSize.unit || "px",
+                    clearButtonmarginLeftRight: buttonData?.clearButtonStyle?.marginLeftRight.value || "0",
+                    clearButtonmarginLeftRightUnit: buttonData?.clearButtonStyle?.marginLeftRight.unit || "px",
+                    clearButtonmarginTopBottom: buttonData?.clearButtonStyle?.marginTopBottom.value || "07",
+                    clearButtonmarginTopBottomUnit: buttonData?.clearButtonStyle?.marginTopBottom.unit || "px",
+                    clearButtonpaddingLeftRight: buttonData?.clearButtonStyle?.paddingLeftRight.value || "10",
+                    clearButtonpaddingLeftRightUnit: buttonData?.clearButtonStyle?.paddingLeftRight.unit || "px",
+                    clearButtonpaddingTopBottom: buttonData?.clearButtonStyle?.paddingTopBottom.value || "8",
+                    clearButtonpaddingTopBottomUnit: buttonData?.clearButtonStyle?.paddingTopBottom.unit || "px",
+                    clearButtontextAlign: buttonData?.clearButtonStyle?.textAlign || "center",
+                    // clearButtoniconSize: buttonData?.clearButtonStyle?.iconSize,
+                    // clearButtoniconPosition: buttonData?.clearButtonStyle?.iconPosition,
 
                 }),
             })
-
-            setOptions(JSON.parse(generalData?.eventOption));
+            setOptions(JSON.parse(generalData?.eventOption || []));
         }
     }
 
@@ -219,7 +290,8 @@ const WishlistUiSetting = () => {
     }, [watchAllFields]);
 
     const saveToMetafield = async (data) => {
-        console.log("options from saveToMetafield = ", options)
+        // console.log("DAATTAA --- ", data)
+
         Swal.fire({
             text: myLanguage.swalWaiting,
             imageUrl: loaderGif,
@@ -273,7 +345,14 @@ const WishlistUiSetting = () => {
         mergedData.mwCheckIconBg = data?.mwCheckIconBg;
         mergedData.mwCheckIconColor = data?.mwCheckIconColor;
         mergedData.eventOption = JSON.stringify(options);
+        mergedData.clearBtnStyleActive = isHeaderIconTrue === true ? "yes" : "no";
+        mergedData.metafieldActive = isMetafieldTrue === true ? "yes" : "no";
 
+        if (metaArr.length !== 0) {
+            metaArr.forEach(key => {
+                mergedData[key] = data[key];
+            });
+        }
 
         // this is for the cart button style
         let mergedButttonSettingData = { ...existingButtonSettingData.current };
@@ -331,7 +410,62 @@ const WishlistUiSetting = () => {
                     unit: data.cartButtonhoverFontSizeUnit
                 }
             }
+        }
 
+        mergedButttonSettingData.clearButtonStyle = {
+            bgColor: data.clearButtonbgColor,
+            textColor: data.clearButtontextColor,
+            fontSize: { value: data.clearButtonfontSize, unit: data.clearButtonfontSizeUnit },
+            fontFamily: data.clearButtonfontFamily,
+            fontWeight: data.clearButtonfontWeight,
+            customCartButton: data.customCartButton,
+            borderRadius: {
+                value: data.clearButtonborderRadius,
+                unit: data.clearButtonborderRadiusUnit
+            },
+            paddingTopBottom: {
+                value: data.clearButtonpaddingTopBottom,
+                unit: data.clearButtonpaddingTopBottomUnit
+            },
+            paddingLeftRight: {
+                value: data.clearButtonpaddingLeftRight,
+                unit: data.clearButtonpaddingLeftRightUnit
+            },
+            marginTopBottom: {
+                value: data.clearButtonmarginTopBottom,
+                unit: data.clearButtonmarginTopBottomUnit,
+
+            },
+            marginLeftRight: {
+                value: data.clearButtonmarginLeftRight,
+                unit: data.clearButtonmarginLeftRightUnit,
+
+            },
+            // width: { value: data.clearButtonwidthValue, unit: data.clearButtonwidthUnit },
+            border: {
+                value: data.clearButtonborderInput,
+                unit: data.clearButtonborderInputUnit,
+                type: data.clearButtonborderType,
+                color: data.clearButtonborderColor
+            },
+            textAlign: data.clearButtontextAlign,
+            iconColor: convertColor(data.clearButtontextColor),
+            hover: {
+                hoverValue: data.clearButtonhover,
+                bgColor: data.clearButtonhoverBgColor,
+                textColor: data.clearButtonhoverTextColor,
+                iconColor: convertColor(data.clearButtonhoverTextColor),
+                border: {
+                    value: data.clearButtonhoverBorderInput,
+                    unit: data.clearButtonhoverBorderInputUnit,
+                    type: data.clearButtonhoverBorderType,
+                    color: data.clearButtonhoverBorderColor
+                },
+                fontSize: {
+                    value: data.clearButtonhoverFontSize,
+                    unit: data.clearButtonhoverFontSizeUnit
+                }
+            }
         }
 
         const getAppMetafieldId = await appMetafield.getAppMetafieldId();
@@ -409,19 +543,49 @@ const WishlistUiSetting = () => {
     );
 
 
+    const clearBtnArr = [
+        {
+            content: myLanguage.regular,
+            data: <CustomStyle reset={reset} isloading={isloading} Controller={Controller} control={control} hoverOption={true} myLanguage={myLanguage} formName={"clearButton"} setSaveBar={setSaveBar} watchAllFields={watchAllFields} />,
+            id: 'regular-1',
+        },
+        {
+            content: myLanguage.hover,
+            data: <CustomHoverSetting Controller={Controller} control={control} setSaveBar={setSaveBar} watchAllFields={watchAllFields} formName={"clearButton"} myLanguage={myLanguage} />,
+            id: 'hover-2',
+        },
+    ];
+
+    const clearBtnHandler = useCallback(
+        (selectedTabIndex) => {
+            setClearBtn(selectedTabIndex)
+        },
+        []
+    );
+
+    async function handleChangeHeaderIcon(e) {
+        setIsHeaderIconTrue(e.target.checked);
+        setSaveBar(true);
+    };
+
+    async function handleChangeSelectMetafield(e) {
+        setIsMetafieldTrue(e.target.checked);
+        setSaveBar(true);
+    };
+
+
+
+
 
 
     const [selected, setSelected] = useState('');
     const [newOption, setNewOption] = useState('');
     const handleAddOption = () => {
         if (!newOption.trim()) return;
-        console.log("newOption.trim() = ", newOption.trim())
-        console.log("!newOption.trim() = ", !newOption.trim())
         const value = newOption
             .toLowerCase()
             .trim()
             .replace(/\s+/g, '-');
-        console.log("options = ", options)
         if (options.some((opt) => opt.value === value)) return;
         const option = { label: newOption, value };
         setOptions([...options, option]);
@@ -429,11 +593,11 @@ const WishlistUiSetting = () => {
         setSelected(value);
         setNewOption('');
         setSaveBar(true);
+
     };
 
-    useEffect(() => {
-        console.log("myLanguage = ", myLanguage)
-    }, [myLanguage])
+
+
 
     const handleDeleteOption = (valueToDelete) => {
         const updatedOptions = options.filter(
@@ -446,9 +610,12 @@ const WishlistUiSetting = () => {
         setSaveBar(true);
     };
 
-    useEffect(()=>{
-        console.log("selected = ", selected)
-    }, [selected])
+
+
+
+
+
+
 
     return (
         <div className='wf-dashboard wf-dashboard-buttonSetting wf-ui-settings'>
@@ -630,7 +797,7 @@ const WishlistUiSetting = () => {
                                                 control={control}
                                                 controllerName={`modalLayerBgColor`}
                                                 id={`modalLayerBgColor`}
-                                                label="Modal inner backgroundColor"
+                                                label={myLanguage.modalInnerDivBg}
                                                 setSaveBar={setSaveBar}
                                             />
 
@@ -645,76 +812,62 @@ const WishlistUiSetting = () => {
                                                 control={control}
                                                 controllerName={`modalBottomButtonBgColor`}
                                                 id={`modalBottomButtonBgColor`}
-                                                label="Modal bottom button's div background color"
+                                                label={myLanguage.modalBottomDivBg}
                                                 setSaveBar={setSaveBar}
                                             />
-
                                         </Grid.Cell>
+
 
 
                                         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
 
                                             {/* Select dropdown */}
-                                            <SingleFieldController
-                                                name="eventOption"
-                                                control={control}
-                                            >
-                                                {({ field }) => (<Select
-                                                    label={myLanguage.eventOption}
-                                                    options={options}
-                                                    value={selected}
-                                                    onChange={setSelected}
-                                                />)
-                                                }
-                                            </SingleFieldController>
+                                            <Select
+                                                label="Event option"
+                                                options={options}
+                                                value={selected}
+                                                onChange={setSelected}
+                                            />
 
                                             {/* Add new option */}
 
                                             <div style={{ display: "flex" }}>
-                                                <SingleFieldController
-                                                    name="eventTextfield"
-                                                    control={control}
-                                                >
-                                                    {({ field }) => (
-                                                        <TextField
-                                                            label={myLanguage.addNewEvent}
-                                                            value={newOption}
-                                                            onChange={setNewOption}
-                                                            autoComplete="off"
-                                                        />
-                                                    )}
-                                                </SingleFieldController>
+                                                <TextField
+                                                    label="Add new event"
+                                                    value={newOption}
+                                                    onChange={setNewOption}
+                                                    autoComplete="off"
+                                                />
 
-                                                <div className="addButton">
-                                                    <Button
-                                                        primary
-                                                        onClick={handleAddOption}
-                                                        disabled={!newOption.trim()}
-                                                    >{myLanguage.add}</Button>
-                                                </div>
+                                                <Button
+                                                    primary
+                                                    onClick={handleAddOption}
+                                                    disabled={!newOption.trim()}
+                                                >Add</Button>
                                             </div>
+
+                                            <br />
 
                                             {/* Manage options */}
-                                            <Text variant='headingMd' as='h4'>{myLanguage.manageOptions}</Text>
+                                            <strong>Manage options</strong>
                                             {options.length === 0 && (
-                                                <p>{noOptionsAvailable}</p>
+                                                <p>No options available</p>
                                             )}
 
-                                            <div className='events'>
-                                                {options.map((opt, index) => (
-                                                    <Grid key={index} style={{ display: "flex" }}>
-                                                        <Grid.Cell><span>{opt.label}</span></Grid.Cell>
-                                                        <Grid.Cell>
-                                                            <Button
-                                                                tone="critical"
-                                                                onClick={() => handleDeleteOption(opt.value)}
-                                                            >{myLanguage.delete}</Button>
-                                                        </Grid.Cell>
-                                                    </Grid>
-                                                ))}
-                                            </div>
+                                            {options.map((opt, index) => (
+                                                <div key={index} style={{ display: "flex" }}>
+                                                    <span>{opt.label}</span>
+                                                    <Button
+                                                        tone="critical"
+                                                        onClick={() => handleDeleteOption(opt.value)}
+                                                    >Delete</Button>
+                                                </div>
+                                            ))}
 
                                         </Grid.Cell>
+
+
+
 
 
                                     </Grid>
@@ -803,8 +956,8 @@ const WishlistUiSetting = () => {
 
                                     <br />
                                     <div className='custom-margin'>
-                                        <Text variant="headingMd" as="h2">Styles for multiwishlist</Text>
-                                        <p>Here you can customize the styles of the multi wishlist</p>
+                                        <Text variant="headingMd" as="h2">{myLanguage.styleMW}</Text>
+                                        <p>{myLanguage.styleMWSub}</p>
                                     </div>
 
                                     <Grid>
@@ -813,7 +966,7 @@ const WishlistUiSetting = () => {
                                                 control={control}
                                                 controllerName={`mwCheckIconBg`}
                                                 id={`mwCheckIconBg`}
-                                                label="Multiwishlist checkbox background color"
+                                                label={myLanguage.smwOne}
                                                 setSaveBar={setSaveBar}
                                             />
                                         </Grid.Cell>
@@ -823,28 +976,133 @@ const WishlistUiSetting = () => {
                                                 control={control}
                                                 controllerName={`mwCheckIconColor`}
                                                 id={`mwCheckIconColor`}
-                                                label="Multiwishlist checkbox icon color"
+                                                label={myLanguage.smwTwo}
                                                 setSaveBar={setSaveBar}
                                             />
                                         </Grid.Cell>
                                     </Grid>
 
 
-
                                     <br />
-                                    <div >
-                                        <div className='custom-margin'>
-                                            <Text variant="headingMd" as="h2">{myLanguage.atcStyleHeading}</Text>
-                                            <p>{myLanguage.atcStyleText}</p>
+                                    {/* <div>
+                                        <div className={`${currentPlan >= 4 ? "" : "disableEverything under-premium"}`} >
+                                            <div className='custom-margin'>
+                                                <Text variant="headingMd" as="h2">Select metafield to show in the modal's grid</Text>
+                                                <p>Select metafield to show in the modal's grid</p>
+                                            </div>
+                                            {metaArr.length !== 0 ?
+                                                metaArr.map((data, index) => {
+                                                    return (
+                                                        <SingleFieldController
+                                                            key={index}
+                                                            name={data}
+                                                            control={control}
+                                                        >
+                                                            {({ field }) =>
+                                                                <Checkbox
+                                                                    label={data}
+                                                                    value={data}
+                                                                    id={data}
+                                                                    checked={field.value}
+                                                                    onChange={(checked) => {
+                                                                        field.onChange(checked),
+                                                                            setSaveBar(true);
+                                                                    }}
+                                                                />
+                                                            }
+                                                        </SingleFieldController>)
+                                                })
+                                                :
+                                                <i>No metafields available</i>
+                                            }
+                                        </div>
+                                    </div> */}
+
+                                </div>
+
+
+
+                                <div className='wf-style-wishbtn wishlist-ui-grid2'>
+                                    <div className={`${currentPlan >= 4 ? "" : "disableEverything under-premium"}`} >
+                                        <div className='custom-margin' style={{ display: "flex", gap: "40px" }}>
+                                            <div style={{ width: "95%" }}>
+                                                <Text variant="headingMd" as="h2">Select metafield to show in the modal's grid</Text>
+                                                <p>Choose metafields you want to show in the modal's product grid</p>
+                                            </div>
+                                            <div style={{ width: "5%", paddingTop: "20px" }}> <Toggle
+                                                checked={isMetafieldTrue}
+                                                onChange={handleChangeSelectMetafield}
+                                                icons={false}
+                                                disabled={false} />
+                                            </div>
                                         </div>
 
-                                        <Tabs tabs={cartBtnArr} selected={cartBtn} onSelect={cartBtnHandler} fitted>
+                                        {metaArr.length !== 0 ?
+                                            metaArr.map((data, index) => {
+                                                return (
+                                                    <SingleFieldController
+                                                        key={index}
+                                                        name={data}
+                                                        control={control}
+                                                    >
+                                                        {({ field }) =>
+                                                            <Checkbox
+                                                                label={data}
+                                                                value={data}
+                                                                id={data}
+                                                                checked={field.value}
+                                                                onChange={(checked) => {
+                                                                    field.onChange(checked),
+                                                                        setSaveBar(true);
+                                                                }}
+                                                            />
+                                                        }
+                                                    </SingleFieldController>)
+                                            })
+                                            :
+                                            <i>No metafields available</i>
+                                        }
+                                    </div>
+                                </div>
+
+
+
+
+
+                                <div className='wf-style-wishbtn wishlist-ui-grid2'>
+                                    <div className='custom-margin'>
+                                        <Text variant="headingMd" as="h2">{myLanguage.atcStyleHeading}</Text>
+                                        <p>{myLanguage.atcStyleText}</p>
+                                    </div>
+
+                                    <Tabs tabs={cartBtnArr} selected={cartBtn} onSelect={cartBtnHandler} fitted>
+                                        <LegacyCard.Section >
+                                            {cartBtnArr[cartBtn].data}
+                                        </LegacyCard.Section>
+                                    </Tabs>
+                                </div>
+
+                                <div className='wf-style-wishbtn wishlist-ui-grid2'>
+                                    <div >
+                                        <div className='custom-margin' style={{ display: "flex", gap: "40px" }}>
+                                            <div style={{ width: "95%" }}>
+                                                <Text variant="headingMd" as="h2">Styles for Clear Wishlist Button and Other Buttons in the Modal</Text>
+                                                <p>You can customize and style the Clear Wishlist button and other buttons in the modal here. (To activate these settings, enable the toggle; otherwise, the modal buttons will use the reverse style of the cart buttons.)</p>
+                                            </div>
+                                            <div style={{ width: "5%", paddingTop: "20px" }}> <Toggle
+                                                checked={isHeaderIconTrue}
+                                                onChange={handleChangeHeaderIcon}
+                                                icons={false}
+                                                disabled={false} />
+                                            </div>
+                                        </div>
+
+                                        <Tabs tabs={clearBtnArr} selected={clearBtn} onSelect={clearBtnHandler} fitted>
                                             <LegacyCard.Section >
-                                                {cartBtnArr[cartBtn].data}
+                                                {clearBtnArr[clearBtn].data}
                                             </LegacyCard.Section>
                                         </Tabs>
                                     </div>
-
                                 </div>
 
                                 <div className='wf-style-wishbtn  wishlist-ui-grid1'>
@@ -942,11 +1200,6 @@ const WishlistUiSetting = () => {
                                             </SingleFieldController>
 
 
-
-
-
-
-
                                             {/* <SingleFieldController
                                                 name="hideFilter"
                                                 control={control}
@@ -973,8 +1226,6 @@ const WishlistUiSetting = () => {
                             <div style={{ marginTop: "40px" }}>
                                 <Footer myLanguage={myLanguage} />
                             </div>
-
-                            <div className='rohittext'>fkldfkldfkl</div>
                         </Page>
                     </form>
                 </Frame>

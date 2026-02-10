@@ -3,8 +3,6 @@ import { useAuthenticatedFetch } from './useAuthenticatedFetch';
 import Swal from 'sweetalert2';
 import useSubscriptionUrl from './useSubscriptionUrl';
 import { Constants } from '../../backend/constants/constant.js';
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { authenticatedFetch } from "@shopify/app-bridge/utilities";
 
 import useApi from './useApi';
 const useAppMetafield = () => {
@@ -12,9 +10,6 @@ const useAppMetafield = () => {
     const subscription = useSubscriptionUrl();
     const { serverURL } = Constants;
     const ShopApi = useApi();
-
-    const app = useAppBridge();
-    const fetcher = authenticatedFetch(app);
 
 
     // const getCurrentPlan = async () => {
@@ -65,16 +60,13 @@ const useAppMetafield = () => {
 
             // console.log("KOKOKOKO --- ", plan)
             //changed
+
             if (myCurrentPlan === -999) {
                 await savePlanInSql("-999", shopApi, "No plan", null, "live")
             } else {
                 await savePlanInSql(finalId, shopApi, plan.planName, promoCode, paymentType)
             }
             //end changed
-
-            // console.log("plan.planId  -- ", plan.planId)
-            // console.log("finalId  -- ", finalId)
-
             return { id: plan.planId, currentPlan: finalId }
         } catch (error) {
             console.error("Error:", error);
@@ -150,8 +142,8 @@ const useAppMetafield = () => {
                 }),
             });
             const result = await response.json();
+            console.log("result = ", result)
             return result.currentPlanData[0].plan_id
-
         } catch (err) {
             console.log("err")
         }

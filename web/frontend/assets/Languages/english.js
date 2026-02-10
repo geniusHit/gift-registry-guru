@@ -40,7 +40,7 @@ const english = {
     // --------------------defaultPage--------------------
 
     defaultPageMainHeading: "Dashboard Page",
-    defaultPageMainText: "This is the dashboard of Gift Registry Guru App",
+    defaultPageMainText: "This is the dashboard of Wishlist Guru App",
 
     planBoxHeading: `For more information and features in different plans you can visit to Plan page.`,
     planFree: "Currently you are using free plan, which is free forever.",
@@ -456,11 +456,11 @@ const english = {
 
     chooseThemeButtonText: "Choose theme",
     chooseThemeModalHeading: "Choose theme",
-    chooseThemeModalSubHeading: "Here you can choose where you want to active and test the Gift Registry Guru App. Please make sure to Enable Gift Registry Guru App Embed is enabled via Theme Editor.",
+    chooseThemeModalSubHeading: "Here you can choose where you want to active and test the Wishlist Guru App. Please make sure to Enable Wishlist Guru App Embed is enabled via Theme Editor.",
     chooseThemeModalSubmitButton: "Save theme name",
 
-    disableThemeEditor: "To disable the Gift Registry Guru app from your online store",
-    enableThemeEditor: "To display the Gift Registry Guru app on your online store, you have to enable app embed on your theme",
+    disableThemeEditor: "To disable the Wishlist Guru app from your online store",
+    enableThemeEditor: "To display the Wishlist Guru app on your online store, you have to enable app embed on your theme",
 
     // --------------update  -------
 
@@ -689,7 +689,7 @@ const english = {
 
 
     youtubeVideoHeading2: "Step 2: Introduction and Basic setup",
-    youtubeVideoText2: "After activating app, Please watch this video to get familiar with some of the important features provided by Gift Registry Guru app along with basic configuration steps to run this app on your store easily.",
+    youtubeVideoText2: "After activating app, Please watch this video to get familiar with some of the important features provided by Wishlist Guru app along with basic configuration steps to run this app on your store easily.",
 
     themeSavedText: "Theme saved",
     buyThemeFirstText: "You have to buy this theme first !!",
@@ -887,15 +887,15 @@ const english = {
     showCounterHeading: "Show/Hide count of product with Add To Wishlist button",
     showCounterSubHeading: "You can see here that how many users has added that particuler product in the wishlist",
 
-    dpHeading: "WELCOME TO GIFT REGISTRY GURU APP",
-    dpSubHeading: "Get familiar with Gift Registry Guru app",
-    dpGetStarted: "Get started with Gift Registry Guru Setup",
-    dpGsParagraph: "Now you can easily customise the app by accessing Dashboard quick links or diving deeper into the left sidebar Menu. Gift Registry Guru provides a lot of customised features so feel free to play around with them to match things with your brand. If you can't find anything or need help with SET UP or looking for any custom feature, Please get in touch with us by clicking the REQUEST SETUP button.",
+    dpHeading: "WELCOME TO WISHLIST GURU APP",
+    dpSubHeading: "Get familiar with wishlist guru app",
+    dpGetStarted: "Get started with Wishlist Guru Setup",
+    dpGsParagraph: "Now you can easily customise the app by accessing Dashboard quick links or diving deeper into the left sidebar Menu. Wishlist Guru provides a lot of customised features so feel free to play around with them to match things with your brand. If you can't find anything or need help with SET UP or looking for any custom feature, Please get in touch with us by clicking the REQUEST SETUP button.",
     dpGoToDashboard: "Go to dashboard",
     dpRequestForm: "Request setup",
 
     announcementHeading: "Announcements",
-    announcementText: "Daily announcements of Gift Registry Guru app",
+    announcementText: "Daily announcements of wishlist guru app",
     new: 'new',
     view: "view",
     launchDate: "Launch date",
@@ -1105,7 +1105,7 @@ const english = {
     multiVariantHeading: "Multi Variant Wishlist",
     multiVariantSubHeading: "Enable multi-variant option to let customers wishlist specific product variant or multi variant, giving them more control over their wishlist selections.",
     customSupportWording: "If you're still experiencing issues, our Support team is ready to assist you!",
-    themeSupportWording: "If you encounter any issues with theme compatibility or need any customization for our Gift Registry Guru app, feel free to reach out to us at ",
+    themeSupportWording: "If you encounter any issues with theme compatibility or need any customization for our Wishlist Guru app, feel free to reach out to us at ",
 
     // pdpImageIconHeading: "Display Wishlist icon on Product detail page image",
     pdpImageIconHeading: "Display Wishlist icon on Product page image",
@@ -1266,14 +1266,19 @@ const english = {
     preorderGuruDesc: "Preorder easily, skip queues, and enjoy smooth, simple service",
     cowishTitle: "CoWish - Collection Wishlist",
     cowishDesc: "Wishlist - Allow users to wishlist their favorite collection",
-
     hideOnZero: "Hide when 0",
 
-    eventOption: "Event option",
-    addNewEvent: "Add new event",
-    add: "Add",
-    manageOptions: "Manage options",
-    noOptionsAvailable: "No options available",
-    delete: "Delete",
+    planBasicBFCM: "Get Basic plan in $4.99 only -- Save $1 for lifetime",
+    planProBFCM: "Get Pro plan in $9.99 only -- Save $3 for lifetime",
+    planPremiumBFCM: "Get Premium plan in $14.99 only -- Save $4.99 for lifetime",
+    planAllBFCM: "Get 20% discount on all yearly plans for lifetime",
+    modalInnerDivBg: "Modal inner backgroundColor",
+    modalBottomDivBg: "Modal bottom button's div background color",
+    styleMW: "Styles for multiwishlist",
+    styleMWSub: "Here you can customize the styles of the multi wishlist",
+    smwOne: "Multiwishlist checkbox background color",
+    smwTwo: "Multiwishlist checkbox icon color",
+
+
 }
 export default english

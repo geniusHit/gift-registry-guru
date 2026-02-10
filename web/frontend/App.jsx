@@ -1,7 +1,3 @@
-import { Buffer } from "buffer";
-window.global = window;
-window.Buffer = Buffer;
-
 import { BrowserRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Routes from "./Routes";
@@ -18,7 +14,7 @@ export default function App() {
     { eager: true }
   );
 
-  console.log("pages = ", pages)
+  // console.log("pages = ", pages)
 
   const { t } = useTranslation();
 

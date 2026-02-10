@@ -14,51 +14,56 @@ import { KlaviyoCreateEventEmailRemainder } from "../controllers/controllersSql.
 
 const { app_installation_table, app_installation_log_table, user_table, Wishlist_table, product_table, store_email_temp_table, email_reminder_table, store_languages_table, store_languages_url_table, klaviyo_table } = sqlTables;
 
-const { supportEmail, backInStockKlaviyo, priceDropKlaviyo, lowInStockKlaviyo } = Constants;
+const { supportEmail, backInStockKlaviyo, priceDropKlaviyo, lowInStockKlaviyo, appName, extAppName } = Constants;
 
 export async function appDeletion(payload, shop) {
-    database.query(
-        `SELECT * FROM  ${app_installation_table} WHERE shop_name = '${payload.myshopify_domain}'`,
-        (err, result) => {
-            if (err) {
-                console.log(err);
-                logger.error(err);
-            } else {
-                if (result.length > 0) {
-                    let storeName = payload.name.replace(/'/g, "~");
-                    database.query(
-                        `UPDATE ${app_installation_table} SET status='inActive',active_plan_id='0',active_plan_name='null', access_token = ${null}, store_name='${storeName}' WHERE shop_name = '${payload.myshopify_domain}'`,
-                        (err, results) => {
-                            if (err) {
-                                console.log(err);
-                                logger.error(err);
-                            } else {
-                                database.query(
-                                    `SELECT plan_type FROM ${app_installation_log_table} WHERE app_install_id = '${result[0].app_install_id}' ORDER BY log_date DESC LIMIT 1`,
-                                    (err, plan) => {
-                                        if (err) {
-                                            console.log(err);
-                                            logger.error(err);
-                                        } else {
-                                            database.query(
-                                                `INSERT INTO ${app_installation_log_table} (app_install_id,plan_id,plan_name, plan_type) VALUES (${result[0].app_install_id},'0','null', '${plan[0].plan_type}')`,
-                                                (err, resultss) => {
-                                                    if (err) {
-                                                        console.log(err);
-                                                        logger.error(err);
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    );
-                }
+    try {
+
+        const [installRows] = await database.query(
+            `SELECT * FROM ${app_installation_table} WHERE shop_name = ?`,
+            [payload.myshopify_domain]
+        );
+
+        if (installRows.length > 0) {
+            const install = installRows[0];
+            let storeName = payload.name.replace(/'/g, "~");
+
+            await database.query(
+                `UPDATE ${app_installation_table}
+                 SET status='inActive',
+                     active_plan_id='0',
+                     active_plan_name='null',
+                     access_token = NULL,
+                     store_name=?
+                 WHERE shop_name = ?`,
+                [storeName, payload.myshopify_domain]
+            );
+
+            const [planRows] = await database.query(
+                `SELECT plan_type 
+                 FROM ${app_installation_log_table}
+                 WHERE app_install_id = ?
+                 ORDER BY log_date DESC
+                 LIMIT 1`,
+                [install.app_install_id]
+            );
+
+            if (planRows.length > 0) {
+
+                await database.query(
+                    `INSERT INTO ${app_installation_log_table}
+                     (app_install_id, plan_id, plan_name, plan_type)
+                     VALUES (?, '0', 'null', ?)`,
+                    [install.app_install_id, planRows[0].plan_type]
+                );
             }
         }
-    );
+    } catch (err) {
+        console.log(err);
+        logger.error(err);
+    }
+
+
     const shop_email = payload.customer_email;
     const shop_owner = payload.shop_owner;
 
@@ -71,6 +76,9 @@ export async function appDeletion(payload, shop) {
     };
     sendEmail(emailContent);
 
+    // -----------------------------
+    // 6️⃣ UPDATE BREVO STATUS
+    // -----------------------------
     if (payload.email === payload.customer_email) {
         await inactiveStatusToBrevo(payload.email);
     } else {
@@ -82,313 +90,360 @@ export async function appDeletion(payload, shop) {
 }
 
 export async function variantsInStock(payload, shop) {
-    // console.log("payload  --------- ", payload)
-    if (shop) {
-        // console.log("Webhook BACK IN STOCK -- ", shop);
-        try {
-            const shopName = shop;
-            const result = await new Promise((resolve, reject) => {
-                database.query(
-                    `SELECT ai.active_plan_id as activePlanId, ai.shop_email, ai.store_name, er.logo, er.app_install_id, er.back_in_stock as backInStockCheck FROM app_installation as ai, email_reminder as er WHERE ai.app_install_id = er.app_install_id AND ai.shop_name='${shopName}'`,
-                    (err, result) => {
-                        if (err) {
-                            webhookErr(err);
-                            reject(err);
-                        } else {
-                            resolve(result);
-                        }
-                    }
-                );
-            });
+    // console.log("BACK IN STOCK")
+    if (!shop) return;
+    try {
+        const shopName = shop;
+        const [result] = await database.query(
+            `SELECT 
+                ai.active_plan_id AS activePlanId, 
+                ai.shop_email, 
+                ai.store_name, 
+                er.logo, 
+                er.app_install_id, 
+                er.back_in_stock AS backInStockCheck 
+             FROM app_installation AS ai
+             JOIN email_reminder AS er 
+             ON ai.app_install_id = er.app_install_id
+             WHERE ai.shop_name = ?`,
+            [shopName]
+        );
+        if (!result || result.length === 0) {
+            console.log("No shop installation data found.");
+            return;
+        }
+        const lowInStockCheckValue = result[0]?.backInStockCheck || "no";
+        const logo = result[0]?.logo;
+        const app_install_id = result[0]?.app_install_id;
+        const activePlanId = Number(result[0]?.activePlanId) || 1;
+        const replyTO = result[0]?.shop_email || "";
+        const storeName = result[0]?.store_name || "";
+        // Email quota
+        const emailQuota = await returnEmailQuota(shopName);
+        if (activePlanId >= 3 && lowInStockCheckValue === "yes") {
+            const [results] = await database.query(`
+                SELECT DISTINCT 
+                    u.email, 
+                    w.price, 
+                    u.store_name AS storeName, 
+                    w.variant_id, 
+                    w.image, 
+                    w.handle AS productHandle, 
+                    w.title,
+                    w.product_id,
+                    u.send_emails,
+                    u.email_language 
+                FROM ${user_table} AS u
+                JOIN ${Wishlist_table} AS wt ON u.id = wt.wishlist_user_id
+                JOIN ${product_table} AS w ON wt.wishlist_id = w.wishlist_id
+                WHERE u.shop_name = ?
+                AND w.variant_id = ?
+                AND user_type = "User"
+                AND send_emails= "yes"
+                AND u.email_valid = 1
+            `, [shopName, payload.id]);
 
-            const lowInStockCheckValue = result[0]?.backInStockCheck || "no";
-            const logo = result[0]?.logo;
-            const app_install_id = result[0]?.app_install_id;
-            const activePlanId = Number(result[0]?.activePlanId) || 1;
-            const replyTO = result[0]?.shop_email || "";
-            const emailQuota = await returnEmailQuota(shopName);
-            const storeName = result[0]?.store_name || "";
-
-            if (activePlanId >= 3 && lowInStockCheckValue === "yes") {
-                const results = await databaseQuery(`
-          SELECT DISTINCT u.email , w.price , u.store_name as storeName,  w.variant_id, w.image, w.handle as productHandle, w.title 
-          FROM ${user_table} as u, ${Wishlist_table} as wt, ${product_table} as w 
-          WHERE u.shop_name="${shopName}" 
-          AND u.id = wt.wishlist_user_id 
-          AND wt.wishlist_id=w.wishlist_id 
-          AND user_type="User" 
-          AND w.variant_id = '${payload.id}' 
-          AND u.email_valid = 1 ;`);
-
-                if (results.length === 0) {
-                    console.log("No product available of this variant");
-                    return; // Exit the function early
-                }
-
-                const resolvedCustomerData = await Promise.all(
-                    results.map(async (row) => {
-                        return {
-                            email: row.email,
-                            name: "Customer",
-                        };
-                    })
-                );
-
-                const checkKlaviyoRecordExist = await checkKlaviyoRecord(shopName);
-                if (activePlanId >= 4 && checkKlaviyoRecordExist && checkKlaviyoRecordExist.length > 0) {
-                    const checkKlaviyoApiKeyResult = await checkKlaviyoApiKey(checkKlaviyoRecordExist[0].private_key);
-                    if (checkKlaviyoApiKeyResult.type === "success") {
-                        const userItems = { variant_id: payload.id, title: results[0].title, shopName: shopName, storeName: results[0].storeName, productImage: results[0].image, handle: results[0].productHandle, product_id: results[0].product_id }
-                        resolvedCustomerData.forEach(async (customer) => {
-                            await KlaviyoIntegrationEmailRemainderFxn(userItems, checkKlaviyoRecordExist, customer.email, backInStockKlaviyo, shopName);
-                        })
-                    }
-                    else {
-                        if (activePlanId >= 3
-                            // && emailQuota[0]?.emails_sent < emailQuota[0]?.email_quota
-                        ) {
-                            const emailData = await new Promise((resolve, reject) => {
-                                database.query(
-                                    `SELECT back_in_stock_temp FROM  ${store_email_temp_table} AS se JOIN ${email_reminder_table} AS er ON er.id = se.id AND er.shop_name = '${shopName}'`,
-                                    (err, result) => {
-                                        if (err) {
-                                            webhookErr(err);
-                                            reject(err);
-                                        } else {
-                                            resolve(result);
-                                        }
-                                    }
-                                );
-                            });
-                            backInStock(
-                                resolvedCustomerData,
-                                // `${results[0]?.title} (${payload.title})`,
-                                `${results[0]?.title}${payload.title !== "Default Title" ? ` (${payload.title})` : ""}`,
-                                // payload.title,
-                                payload.id,
-                                results[0].productHandle,
-                                shopName,
-                                shop,
-                                supportEmail,
-                                results[0].image,
-                                logo,
-                                app_install_id,
-                                JSON.parse(emailData[0].back_in_stock_temp),
-                                databaseQuery,
-                                emailQuota
-                            );
-                        }
-                    }
-                }
-                else {
-                    if (activePlanId >= 3
-                        // && emailQuota[0]?.emails_sent < emailQuota[0]?.email_quota
-                    ) {
-                        const emailData = await new Promise((resolve, reject) => {
-                            database.query(
-                                `SELECT se.back_in_stock_temp, se.sender_name, se.reply_to FROM  ${store_email_temp_table} AS se JOIN ${email_reminder_table} AS er ON er.id = se.id AND er.shop_name = '${shopName}'`,
-                                (err, result) => {
-                                    if (err) {
-                                        webhookErr(err);
-                                        reject(err);
-                                    } else {
-                                        resolve(result);
-                                    }
-                                }
-                            );
-                        });
-
-
-                        if (!results[0]?.productHandle) {
-                            console.error("Error in -- productHandle is ", results[0]?.productHandle);
-                            return; // Exit the function early
-                        }
-
-                        // console.log("emailData ----- ", emailData)
-                        backInStock(
-                            resolvedCustomerData,
-                            // `${results[0]?.title} (${payload.title})`,
-                            `${results[0]?.title}${payload.title !== "Default Title" ? ` (${payload.title})` : ""}`,
-                            // payload.title,
-                            payload.id,
-                            results[0].productHandle,
-                            shopName,
-                            shop,
-                            supportEmail,
-                            results[0].image,
-                            logo,
-                            app_install_id,
-                            JSON.parse(emailData[0].back_in_stock_temp),
-                            databaseQuery,
-                            emailQuota,
-                            emailData[0].sender_name,
-                            storeName,
-                            emailData[0].reply_to ? emailData[0].reply_to : replyTO
+            if (results.length === 0) {
+                console.log("No product available of this variant");
+                return;
+            }
+            const resolvedCustomerData = results.map((row) => ({
+                email: row.email,
+                name: "Customer",
+                sendEmail: row.send_emails,
+                emailLanguage: row.email_language
+            }));
+            const checkKlaviyoRecordExist = await checkKlaviyoRecord(shopName);
+            if (activePlanId >= 4 && checkKlaviyoRecordExist?.length > 0) {
+                const checkKlaviyoApiKeyResult = await checkKlaviyoApiKey(checkKlaviyoRecordExist[0].private_key);
+                if (checkKlaviyoApiKeyResult.type === "success") {
+                    const userItems = {
+                        variant_id: payload.id,
+                        title: results[0].title,
+                        shopName: shopName,
+                        storeName: results[0].storeName,
+                        productImage: results[0].image,
+                        handle: results[0].productHandle,
+                        product_id: results[0].product_id,
+                        wgLanguage: results[0].email_language,
+                        wgReceiveEmail: results[0].send_emails,
+                    };
+                    resolvedCustomerData.forEach(async (customer) => {
+                        await KlaviyoIntegrationEmailRemainderFxn(
+                            userItems,
+                            checkKlaviyoRecordExist,
+                            customer.email,
+                            backInStockKlaviyo,
+                            shopName
                         );
-                    }
+                    });
+                    return;
                 }
             }
-        } catch (error) {
-            webhookErr(error);
-            console.error("Error occurred:", error);
+            const [emailData] = await database.query(
+                `SELECT seml.back_in_stock_temp, seml.temp_language, se.sender_name, se.reply_to
+                 FROM ${store_email_temp_table} AS se
+                 INNER JOIN ${email_reminder_table} AS er ON er.id = se.id
+                 INNER JOIN store_email_multi_language AS seml ON seml.temp_id = se.temp_id
+                 WHERE er.shop_name = ?`,
+                [shopName]
+            );
+
+            if (!emailData || emailData.length === 0) {
+                console.error("Email template missing.");
+                return;
+            }
+            if (!results[0]?.productHandle) {
+                console.error("Error -- productHandle is missing", results[0]?.productHandle);
+                return;
+            }
+            backInStock(
+                resolvedCustomerData,
+                `${results[0]?.title}${payload.title !== "Default Title" ? ` (${payload.title})` : ""}`,
+                payload.id,
+                results[0].productHandle,
+                shopName,
+                shop,
+                supportEmail,
+                results[0].image,
+                logo,
+                app_install_id,
+                // JSON.parse(emailData[0].back_in_stock_temp),
+                emailData,
+                emailQuota,
+                emailData[0].sender_name,
+                storeName,
+                emailData[0].reply_to ? emailData[0].reply_to : replyTO
+            );
         }
+    } catch (error) {
+        webhookErr(error);
+        console.error("Error occurred:", error);
     }
 }
 
 export async function inventoryUpdate(payload, shop, inventoryUpdate) {
-    // console.log("payload ------  ", payload)
-    if (shop) {
-        // console.log("Webhook LOW IN STOCK -- ", shop);
-        try {
-            const shopName = shop;
-            const result = await databaseQuery(
-                `SELECT ai.active_plan_id as activePlanId, ai.shop_email, ai.store_name, er.logo, er.app_install_id, er.low_in_stock as lowInStockCheck FROM app_installation as ai, email_reminder as er WHERE  ai.app_install_id = er.app_install_id AND ai.shop_name='${shopName}'`
+    // console.log("Webhook LOW IN STOCK -- ", shop);
+    if (!shop) return;
+    try {
+        const shopName = shop;
+        const [result] = await database.query(
+            `SELECT 
+                ai.active_plan_id AS activePlanId, 
+                ai.shop_email, 
+                ai.store_name, 
+                er.logo, 
+                er.app_install_id, 
+                er.low_in_stock AS lowInStockCheck
+             FROM app_installation AS ai
+             JOIN email_reminder AS er 
+                ON ai.app_install_id = er.app_install_id
+             WHERE ai.shop_name = ?`,
+            [shopName]
+        );
+        if (result.length === 0) return;
+        const activePlanId = Number(result[0]?.activePlanId) || 1;
+        const lowInStockCheck = result[0]?.lowInStockCheck || "no";
+        const logo = result[0]?.logo;
+        const app_install_id = result[0]?.app_install_id;
+        const replyTO = result[0]?.shop_email;
+        const storeName = result[0]?.store_name;
+        const emailQuota = await returnEmailQuota(shopName);
+        if (activePlanId >= 3 && lowInStockCheck === "yes") {
+            const productData = payload.variants;
+            const foundItem = productData.find(
+                (v) =>
+                    Number(inventoryUpdate.inventory_item_id) ===
+                    Number(v.inventory_item_id)
             );
-
-            if (result.length > 0) {
-                const activePlanId = Number(result[0]?.activePlanId) || 1;
-                const lowInStockCheck = result[0]?.lowInStockCheck || "no";
-                const logo = result[0]?.logo;
-                const app_install_id = result[0]?.app_install_id;
-                const replyTO = result[0]?.shop_email;
-                const emailQuota = await returnEmailQuota(shopName);
-                const storeName = result[0]?.store_name;
-
-                if (activePlanId >= 3 && lowInStockCheck === "yes") {
-                    const productData = payload.variants;
-                    const foundItem = productData.find((del) => Number(inventoryUpdate.inventory_item_id) === Number(del.inventory_item_id));
-
-                    if (Number(inventoryUpdate.available) < 5 && Number(inventoryUpdate.available) > 0) {
-                        const results = await databaseQuery(`SELECT  DISTINCT u.email , w.price ,w.title, w.product_id, u.store_name as storeName, w.variant_id FROM ${user_table} as u, ${Wishlist_table} as wt, ${product_table} as w WHERE u.shop_name="${shopName}" AND u.id = wt.wishlist_user_id AND wt.wishlist_id=w.wishlist_id AND user_type="User" AND w.variant_id = '${foundItem?.id}' AND u.email_valid = 1 ;`);
-
-                        if (results.length === 0) {
-                            console.log("No product available of this variant");
-                            return; // Exit the function early
-                        }
-
-                        const resolvedCustomerData = await Promise.all(
-                            results.map(async (row) => {
-                                return {
-                                    email: row.email,
-                                    name: "Customer",
-                                };
-                            })
-                        );
-                        const checkKlaviyoRecordExist = await checkKlaviyoRecord(shopName);
-                        const checkKlaviyoApiKeyResult = await checkKlaviyoApiKey(checkKlaviyoRecordExist[0]?.private_key);
-                        if (activePlanId >= 4 && checkKlaviyoRecordExist && checkKlaviyoRecordExist.length > 0 && checkKlaviyoApiKeyResult.type === "success") {
-
-                            const userItems = { variant_id: payload.id, title: results[0].title, shopName: shopName, storeName: results[0].storeName, productImage: payload.image.src, handle: payload.handle, product_id: results[0].product_id }
-                            resolvedCustomerData.forEach(async (customer) => {
-                                await KlaviyoIntegrationEmailRemainderFxn(userItems, checkKlaviyoRecordExist, customer.email, lowInStockKlaviyo, shopName);
-                            })
-                        } else {
-                            if (activePlanId >= 3 && lowInStockCheck === "yes"
-                                // && emailQuota[0]?.emails_sent < emailQuota[0]?.email_quota
-                            ) {
-
-                                const emailData = await new Promise((resolve, reject) => {
-                                    database.query(`SELECT se.low_in_stock_temp, se.sender_name, se.reply_to FROM  ${store_email_temp_table} AS se JOIN ${email_reminder_table} AS er ON er.id = se.id AND er.shop_name = '${shopName}'`, (err, result) => {
-                                        if (err) {
-                                            webhookErr(err);
-                                            reject(err);
-                                        } else {
-                                            resolve(result);
-                                        }
-                                    }
-                                    );
-                                });
-
-                                if (!foundItem.id) {
-                                    console.error("Error in -- foundItem.id is ", foundItem.id);
-                                    return; // Exit the function early
-                                }
-
-                                lowInStock(
-                                    resolvedCustomerData,
-                                    payload.title,
-                                    foundItem.id,
-                                    payload.handle,
-                                    shopName,
-                                    shop,
-                                    supportEmail,
-                                    payload.image.src,
-                                    logo,
-                                    app_install_id,
-                                    JSON.parse(emailData[0].low_in_stock_temp),
-                                    databaseQuery,
-                                    emailQuota,
-                                    emailData[0].sender_name,
-                                    storeName,
-                                    emailData[0].reply_to ? emailData[0].reply_to : replyTO
-                                );
-                            }
-                            // else{
-                            //     await handleEmailQuotaExceeded(emailQuota, shopName);
-                            // }
-                        }
-                    }
+            if (
+                Number(inventoryUpdate.available) < 5 &&
+                Number(inventoryUpdate.available) > 0
+            ) {
+                const [results] = await database.query(`
+                    SELECT DISTINCT 
+                        u.email,
+                        w.price,
+                        w.title,
+                        w.product_id,
+                        u.store_name AS storeName,
+                        w.variant_id,
+                        u.send_emails,
+                        u.email_language
+                    FROM ${user_table} AS u
+                    JOIN ${Wishlist_table} AS wt ON u.id = wt.wishlist_user_id
+                    JOIN ${product_table} AS w ON wt.wishlist_id = w.wishlist_id
+                    WHERE u.shop_name = "${shopName}"
+                    AND u.email_valid = 1
+                    AND user_type="User"
+                    AND send_emails= "yes"
+                    AND w.variant_id = "${foundItem?.id}"
+                `);
+                if (results.length === 0) {
+                    console.log("No product available of this variant");
+                    return;
                 }
+                const resolvedCustomerData = results.map((row) => ({
+                    email: row.email,
+                    name: "Customer",
+                    sendEmail: row.send_emails,
+                    emailLanguage: row.email_language
+                }));
+                const checkKlaviyoRecordExist = await checkKlaviyoRecord(shopName);
+                const checkKlaviyoApiKeyResult = await checkKlaviyoApiKey(
+                    checkKlaviyoRecordExist[0]?.private_key
+                );
+                if (
+                    activePlanId >= 4 &&
+                    checkKlaviyoRecordExist?.length > 0 &&
+                    checkKlaviyoApiKeyResult.type === "success"
+                ) {
+                    const userItems = {
+                        variant_id: payload.id,
+                        title: results[0].title,
+                        shopName: shopName,
+                        storeName: results[0].storeName,
+                        productImage: payload.image.src,
+                        handle: payload.handle,
+                        product_id: results[0].product_id,
+                        wgLanguage: results[0].email_language,
+                        wgReceiveEmail: results[0].send_emails,
+                    };
+                    resolvedCustomerData.forEach(async (customer) => {
+                        await KlaviyoIntegrationEmailRemainderFxn(
+                            userItems,
+                            checkKlaviyoRecordExist,
+                            customer.email,
+                            lowInStockKlaviyo,
+                            shopName
+                        );
+                    });
+                    return;
+                }
+                const [emailData] = await database.query(
+                    `SELECT seml.low_in_stock_temp, seml.temp_language, se.sender_name, se.reply_to
+                            FROM ${store_email_temp_table} AS se
+                            INNER JOIN ${email_reminder_table} AS er ON er.id = se.id
+                            INNER JOIN store_email_multi_language AS seml ON seml.temp_id = se.temp_id
+                            WHERE er.shop_name = ?`,
+                    [shopName]
+                );
+                if (!emailData || emailData.length === 0) {
+                    console.error("Error — Missing low in stock template");
+                    return;
+                }
+                if (!foundItem.id) {
+                    console.error("Error — foundItem.id is missing", foundItem.id);
+                    return;
+                }
+                lowInStock(
+                    resolvedCustomerData,
+                    payload.title,
+                    foundItem.id,
+                    payload.handle,
+                    shopName,
+                    shop,
+                    supportEmail,
+                    payload.image.src,
+                    logo,
+                    app_install_id,
+                    // JSON.parse(emailData[0].low_in_stock_temp),
+                    emailData,
+                    emailQuota,
+                    emailData[0].sender_name,
+                    storeName,
+                    emailData[0].reply_to ? emailData[0].reply_to : replyTO
+                );
             }
-        } catch (error) {
-            webhookErr(error);
-            console.error("Error occurred:", error);
         }
+    } catch (error) {
+        webhookErr(error);
+        console.error("Error occurred:", error);
     }
 }
 
 export async function productUpdate(payload, shop) {
-    // console.log("11111 --- ", payload)
-    // console.log("22222 --- ", shop)
+    // console.log("PRICE DROP")
     if (!shop) return;
-    // console.log("Webhook PRICE DROP --", shop);
     let emailQuotaExceeded = false;
     try {
         const shopName = shop;
-        const result = await queryDatabase(`
-      SELECT ai.active_plan_id as activePlanId, ai.shop_email, ai.store_name, er.logo, er.app_install_id, er.price_drop as priceDropCheck
-      FROM app_installation as ai, email_reminder as er
-      WHERE ai.app_install_id = er.app_install_id AND ai.shop_name = ?`, [shopName]);
-
-        const { priceDropCheck = "no", logo, app_install_id, shop_email, activePlanId = 1, store_name } = result[0] || {};
+        const [result] = await database.query(
+            `
+            SELECT 
+                ai.active_plan_id AS activePlanId,
+                ai.shop_email, 
+                ai.store_name, 
+                er.logo, 
+                er.app_install_id, 
+                er.price_drop AS priceDropCheck
+            FROM app_installation AS ai
+            JOIN email_reminder AS er 
+                ON ai.app_install_id = er.app_install_id
+            WHERE ai.shop_name = ?
+        `,
+            [shopName]
+        );
+        const {
+            priceDropCheck = "no",
+            logo,
+            app_install_id,
+            shop_email,
+            activePlanId = 1,
+            store_name,
+        } = result[0] || {};
         const emailQuota = await returnEmailQuota(shopName);
-
         const checkKlaviyoRecordExist = await checkKlaviyoRecord(shopName);
-        const checkKlaviyoApiKeyResult = await checkKlaviyoApiKey(checkKlaviyoRecordExist[0]?.private_key);
-
-        // Determine if price drop is valid and if email can be sent via Klaviyo
-        const isPriceDropValid = (activePlanId >= 4 && priceDropCheck === "yes" && checkKlaviyoRecordExist && checkKlaviyoRecordExist.length > 0 && checkKlaviyoApiKeyResult.type === "success");
-
-        const rowsToSend = [];
-
+        const checkKlaviyoApiKeyResult = await checkKlaviyoApiKey(
+            checkKlaviyoRecordExist[0]?.private_key
+        );
+        const isPriceDropValid =
+            activePlanId >= 4 &&
+            priceDropCheck === "yes" &&
+            checkKlaviyoRecordExist?.length > 0 &&
+            checkKlaviyoApiKeyResult.type === "success";
         const updatePriceAndSendEmail = async (del, row) => {
             if (Number(del.price) < Number(row.price)) {
-                rowsToSend.push(row);
-                const dropPercentage = calculateDropPercentage(row.price, del.price);
+                const dropPercentage = calculateDropPercentage(
+                    row.price,
+                    del.price
+                );
                 const finalPercentage = `${dropPercentage.toFixed(2)}%`;
-
                 await updateProductPrice(row.id, del.price);
                 const userItems = {
                     variant_id: payload.id,
                     title: row.title,
                     shopName,
                     storeName: row.storeName,
-                    productImage: payload.image.src,
+                    productImage: payload.image?.src,
                     handle: payload.handle,
                     product_id: row.product_id,
                     price: del.price,
+                    wgLanguage: row.email_language,
+                    wgReceiveEmail: row.send_emails,
                 };
-                // Conditional email sending
                 if (isPriceDropValid) {
-                    // Send Klaviyo email for price drop
-                    await KlaviyoIntegrationEmailRemainderFxn(userItems, checkKlaviyoRecordExist, row.email, priceDropKlaviyo, shopName);
+                    await KlaviyoIntegrationEmailRemainderFxn(
+                        userItems,
+                        checkKlaviyoRecordExist,
+                        row.email,
+                        priceDropKlaviyo,
+                        shopName
+                    );
                 } else {
-                    const emailData = await queryDatabase(`
-            SELECT se.price_drop_temp, se.sender_name, se.reply_to FROM ${store_email_temp_table} AS se
-            JOIN ${email_reminder_table} AS er ON er.id = se.id AND er.shop_name = ?
-            `, [shopName]);
+                    const [emailData] = await database.query(
+                        `SELECT seml.price_drop_temp, seml.temp_language, se.sender_name, se.reply_to
+                            FROM ${store_email_temp_table} AS se
+                            INNER JOIN ${email_reminder_table} AS er ON er.id = se.id
+                            INNER JOIN store_email_multi_language AS seml ON seml.temp_id = se.temp_id
+                            WHERE er.shop_name = ?`,
+                        [shopName]
+                    );
 
-                    const resolvedCustomerData = [{ email: row.email, name: "Customer" }];
+                    const resolvedCustomerData = [
+                        { email: row.email, name: "Customer", sendEmail: row.send_emails, emailLanguage: row.email_language },
+                    ];
+
                     await priceDrop(
                         resolvedCustomerData,
                         payload.title,
@@ -400,94 +455,94 @@ export async function productUpdate(payload, shop) {
                         shopName,
                         shop,
                         supportEmail,
-                        payload.image.src,
+                        payload.image?.src,
                         logo,
                         app_install_id,
-                        JSON.parse(emailData[0]?.price_drop_temp),
-                        databaseQuery,
+                        // JSON.parse(emailData[0]?.price_drop_temp),
+                        emailData,
+                        database.query,
                         emailData[0]?.sender_name,
                         store_name,
-                        emailData[0]?.reply_to ? emailData[0]?.reply_to : shop_email,
+                        emailData[0]?.reply_to || shop_email
                     );
                 }
             } else if (Number(del.price) > Number(row.price)) {
                 await updateProductPrice(row.id, del.price);
             }
         };
-
-        // Process price drop if valid
         if (isPriceDropValid || (activePlanId >= 3 && priceDropCheck === "yes")) {
             for (const del of payload.variants) {
-
                 try {
-                    const result = await queryDatabase(`
-                    SELECT u.email, u.store_name as storeName, w.price, w.variant_id, w.id, w.product_id, w.title, w.handle as productHandle
-                    FROM ${user_table} as u, ${Wishlist_table} as wt, ${product_table} as w
-                    WHERE u.shop_name = ? AND u.id = wt.wishlist_user_id AND wt.wishlist_id = w.wishlist_id
-                    AND user_type = "User" AND u.email_valid = 1 AND w.variant_id = ?`, [shopName, del.id]);
+                    const [rows] = await database.query(
+                        `SELECT 
+                            u.email, 
+                            u.store_name AS storeName,
+                            w.price, 
+                            w.variant_id, 
+                            w.id, 
+                            w.product_id,
+                            w.title,
+                            w.handle AS productHandle,
+                            u.send_emails,
+                            u.email_language 
+                        FROM ${user_table} AS u
+                        JOIN ${Wishlist_table} AS wt ON u.id = wt.wishlist_user_id
+                        JOIN ${product_table} AS w ON wt.wishlist_id = w.wishlist_id
+                        WHERE 
+                            u.shop_name = ? 
+                            AND user_type="User"
+                            AND send_emails= "yes"
+                            AND u.email_valid = 1
+                            AND w.variant_id = ?
+                    `,
+                        [shopName, String(del.id)]
+                    );
 
-                    if (result.length === 0) {
+                    if (rows.length === 0) {
                         console.log("No product available of this variant");
-                        return; // Exit the function early
+                        continue;
                     }
-
-                    for (const [index, row] of result.entries()) {
+                    for (const [index, row] of rows.entries()) {
                         if (isPriceDropValid) {
                             await updatePriceAndSendEmail(del, row);
                         } else {
-
-                            const emailsSentSoFar = emailQuota[0]?.emails_sent + index + 1;
+                            const emailsSentSoFar =
+                                emailQuota[0]?.emails_sent + index + 1;
                             const limit = emailQuota[0]?.email_quota;
-                            // Check if within quota
-                            const isEmailQuotaValid = (activePlanId >= 3 && priceDropCheck === "yes" && emailsSentSoFar <= limit);
-
+                            const isEmailQuotaValid =
+                                activePlanId >= 3 &&
+                                priceDropCheck === "yes" &&
+                                emailsSentSoFar <= limit;
                             if (isEmailQuotaValid) {
                                 await updatePriceAndSendEmail(del, row);
                             } else {
                                 const exceededBy = emailsSentSoFar - limit;
                                 if (exceededBy <= 5) {
-                                    if (!emailQuotaExceeded) { // Call only once
-                                        await handleEmailQuotaExceeded(emailQuota, shopName);
-                                        const insertData = await databaseQuery(
-                                            `INSERT INTO email_reports (shop_name, email_type, subject, user_email) VALUES ('${shopName}', 'Limit cross', 'Wishlist GURU - Monthly email limit reached', '${emailQuota[0]?.shop_email}')`
+                                    if (!emailQuotaExceeded) {
+                                        await handleEmailQuotaExceeded(
+                                            emailQuota,
+                                            shopName
+                                        );
+                                        await database.query(
+                                            `INSERT INTO email_reports 
+                                            (shop_name, email_type, subject, user_email) 
+                                            VALUES (?, 'Limit cross', 'Wishlist GURU - Monthly email limit reached', ?)
+                                        `,
+                                            [
+                                                shopName,
+                                                emailQuota[0]?.shop_email,
+                                            ]
                                         );
                                         emailQuotaExceeded = true;
                                     }
                                 } else {
-                                    console.log(`Email quota exceeded by ${exceededBy}, within buffer limit. Skipping handler.`);
+                                    console.log(
+                                        `Email quota exceeded by ${exceededBy}, within buffer limit. Skipping handler.`
+                                    );
                                     return;
                                 }
                                 break;
                             }
-
-                            // const emailsSentSoFar = emailQuota[0]?.emails_sent + index + 1;
-                            // const isEmailQuotaValid = (activePlanId >= 3 && priceDropCheck === "yes" && emailsSentSoFar <= emailQuota[0]?.email_quota);
-
-                            // console.log("emailsSentSoFar -- ", emailsSentSoFar)
-                            // console.log("emailQuota[0]?.email_quota -- ", emailQuota[0]?.email_quota)
-
-                            // if (isEmailQuotaValid) {
-                            //     console.log("Sending Mail --- ")
-                            //     await updatePriceAndSendEmail(del, row);
-                            // }
-                            // else {
-                            //     console.log("Limit cross --- ")
-
-                            //     console.log("emailQuotaExceeded -- ", emailQuotaExceeded)
-
-                            //     if (!emailQuotaExceeded) {  // Only call handleEmailQuotaExceeded once
-                            //         console.log('Email quota exceeded. Cannot send more emails.');
-                            //         await handleEmailQuotaExceeded(emailQuota, shopName);
-
-                            //         const insertData = await databaseQuery(
-                            //             `INSERT INTO email_reports (shop_name, email_type, subject, user_email) VALUES ('${shopName}', 'Limit cross', 'Wishlist GURU - Monthly email limit reached', '${emailQuota[0]?.shop_email}')`
-                            //         );
-
-                            //         emailQuotaExceeded = true;  // Set the flag to true after the first call
-                            //     }
-                            //     break;
-                            // }
-
                         }
                     }
                 } catch (error) {
@@ -504,84 +559,95 @@ export async function productUpdate(payload, shop) {
 
 export async function subscriptionUpdation(payload, shop) {
     // console.log("WEBHOOK Subscription -- ");
-    const session = await shopify.config.sessionStorage.findSessionsByShop(shop);
+    try {
+        const session = await shopify.config.sessionStorage.findSessionsByShop(shop);
+        const countData = await shopify.api.rest.Shop.all({
+            session: session[0],
+        });
+        const shopName = countData.data[0].myshopify_domain;
 
-    // let gidString = payload.app_subscription.admin_graphql_api_id;
-    // let parts = gidString.split('/');
-    // let numericPart = parts[parts.length - 1];
-    // const nameParts = payload.app_subscription.name.split('/');
-    // const planName = nameParts[0];
-    // const oldPanType = nameParts[1];
-    // const planType = oldPanType === 'EVERY_30_DAYS' ? "MONTHLY" : oldPanType
+        const plansData = await shopify.api.rest.RecurringApplicationCharge.all({
+            session: session[0],
+        });
 
-    const countData = await shopify.api.rest.Shop.all({
-        session: session[0],
-    });
-    const shopName = countData.data[0].myshopify_domain;
-    const plansData = await shopify.api.rest.RecurringApplicationCharge.all({
-        session: session[0],
-    });
-    let anArray = plansData.data;
-    const activePlan = anArray.filter((val) => val.status === "active");
-    // console.log("ACTIVE PLAN -- ", activePlan.length);
+        const activePlan = plansData.data.filter((val) => val.status === "active");
+        const [getPrevPlan] = await database.query(
+            `SELECT ail.log_id, ail.plan_id, ail.app_install_id  
+            FROM app_installation_logs AS ail
+            JOIN app_installation AS ai 
+                ON ail.app_install_id = ai.app_install_id
+            WHERE ai.shop_name = ?
+            ORDER BY ail.log_date DESC 
+            LIMIT 1
+        `,
+            [shopName]
+        );
 
-    database.query(
-        `SELECT ail.log_id, ail.plan_id, ail.app_install_id  FROM app_installation_logs as ail, app_installation as ai WHERE ai.shop_name="${shopName}" AND ail.app_install_id = ai.app_install_id ORDER BY ail.log_date DESC LIMIT 1;`,
-        async (err, getPrevPlan) => {
-            if (err) {
-                console.log(err);
-            } else {
-                // console.log("getPrevPlan --- ", getPrevPlan)
-                if (activePlan.length === 0 && getPrevPlan[0].plan_id > 1) {
-                    database.query(
-                        `INSERT INTO app_installation_logs(app_install_id, plan_id, plan_name, plan_type, log_date) VALUES (${getPrevPlan[0].app_install_id
-                        },'1','Free',"null",'${getCurrentDate()}')`,
-                        (err, insertingFreePlan) => {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                database.query(
-                                    `UPDATE app_installation SET active_plan_id="1" , active_plan_name="Free" WHERE app_install_id=${getPrevPlan[0].app_install_id};`,
-                                    (err, updatingPlanName_id) => {
-                                        if (err) {
-                                            console.log(err);
-                                        } else {
-                                            console.log("success");
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    );
-                }
-            }
+        if (!getPrevPlan) return;
+        if (activePlan.length === 0 && getPrevPlan.plan_id > 1) {
+            await database.query(
+                `INSERT INTO app_installation_logs
+                    (app_install_id, plan_id, plan_name, plan_type, log_date)
+                VALUES (?, '1', 'Free', 'null', ?)
+            `,
+                [getPrevPlan.app_install_id, getCurrentDate()]
+            );
+            await database.query(
+                `UPDATE app_installation 
+                SET active_plan_id = "1", active_plan_name = "Free" 
+                WHERE app_install_id = ?
+            `,
+                [getPrevPlan.app_install_id]
+            );
+            console.log("success");
         }
-    );
+    } catch (err) {
+        console.log(err);
+        logger?.error?.(err);
+    }
 }
 
 export async function shopUpdate(payload, shop) {
-    database.query(
-        `UPDATE app_installation SET shopify_plan="${payload.plan_name}" WHERE shop_name="${shop}";`,
-        (err, updatingPlanName) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("success");
-            }
-        }
-    );
+    try {
+        await database.query(
+            `UPDATE app_installation SET shopify_plan = ? WHERE shop_name = ?`,
+            [payload.plan_name, shop]
+        );
+
+        console.log("success");
+    } catch (err) {
+        console.log(err);
+        logger?.error?.(err);
+    }
 }
 
 export async function updateShopDomain(payload, shop) {
     try {
         const { host } = payload;
-
-        const langUrl = await queryAsync(`SELECT s.lang_id, sl.url FROM ${store_languages_table} AS s INNER JOIN ${store_languages_url_table} AS sl ON s.lang_id = sl.lang_id WHERE s.shop_name = '${shop}'`);
-        const tempUrl = await queryAsync(`SELECT id,language FROM ${store_email_temp_table} WHERE shop_name = '${shop}'`);
-
+        // Replaces queryAsync
+        const dbQuery = async (sql, params = []) => {
+            const [rows] = await database.query(sql, params);
+            return rows;
+        };
+        // 1️⃣ Fetch existing language URLs
+        const langUrl = await dbQuery(
+            `SELECT s.lang_id, sl.url 
+            FROM ${store_languages_table} AS s 
+            INNER JOIN ${store_languages_url_table} AS sl 
+                ON s.lang_id = sl.lang_id 
+            WHERE s.shop_name = ?
+            `,
+            [shop]
+        );
+        const tempUrl = await dbQuery(
+            `SELECT id, language 
+            FROM ${store_email_temp_table} 
+            WHERE shop_name = ?
+            `,
+            [shop]
+        );
         const originalLangUrls = JSON.parse(JSON.stringify(langUrl));
         const originalTempUrls = JSON.parse(JSON.stringify(tempUrl));
-
         const updatedLangUrls = originalLangUrls.map((entry) => {
             const currentDomain = extractDomain(entry.url);
             if (currentDomain !== host) {
@@ -589,7 +655,6 @@ export async function updateShopDomain(payload, shop) {
             }
             return entry;
         });
-
         const updatedTempUrls = originalTempUrls.map((entry) => {
             const currentDomain = extractDomain(entry.language);
             if (currentDomain !== host) {
@@ -597,33 +662,28 @@ export async function updateShopDomain(payload, shop) {
             }
             return entry;
         });
-
         for (const entry of updatedLangUrls) {
-            const original = langUrl.find(e => e.lang_id === entry.lang_id);
-
+            const original = langUrl.find((e) => e.lang_id === entry.lang_id);
             if (original && original.url !== entry.url) {
-                await queryAsync(`
-          UPDATE ${store_languages_url_table}
-          SET url = ?
-          WHERE lang_id = ? AND url = ?
-        `, [entry.url, entry.lang_id, original.url]);
+                await dbQuery(
+                    `UPDATE ${store_languages_url_table}
+                    SET url = ?
+                    WHERE lang_id = ? AND url = ?`,
+                    [entry.url, entry.lang_id, original.url]
+                );
             }
-            // console.log("updated lang url")
         }
-
         for (const entry of updatedTempUrls) {
-            const original = tempUrl.find(e => e.id === entry.id);
+            const original = tempUrl.find((e) => e.id === entry.id);
             if (original && original.language !== entry.language) {
-                await queryAsync(`
-          UPDATE ${store_email_temp_table}
-          SET language = ?
-          WHERE id = ? AND language = ?
-        `, [entry.language, entry.id, original.language]);
+                await dbQuery(
+                    `UPDATE ${store_email_temp_table}
+                    SET language = ?
+                    WHERE id = ? AND language = ?`,
+                    [entry.language, entry.id, original.language]
+                );
             }
-            // console.log("updated form url")
         }
-
-        // console.log("domain updated in db")
     } catch (error) {
         logger.error(error);
         console.log(error);
@@ -631,111 +691,187 @@ export async function updateShopDomain(payload, shop) {
 }
 
 export async function shopifyPlanUpdate(payload) {
-    console.log("SHOPIFY PLAN UPDATE ----- RUNNING ")
     try {
         const now = new Date();
-        const formattedNow = now.toISOString().slice(0, 19).replace('T', ' ');
+        const formattedNow = now.toISOString().slice(0, 19).replace("T", " ");
 
-        database.query(
-            `SELECT shopify_plan, app_install_id, access_token FROM ${app_installation_table} WHERE shop_name = ?`,
-            [payload.myshopify_domain],
-            async (err, mainResult) => {
-                if (err) {
-                    console.error("Database select error:", err);
-                    logger.error(err);
-                    return;
-                }
-
-                if (!mainResult || mainResult.length === 0) {
-                    console.warn(`No installation found for shop: ${payload.myshopify_domain}`);
-                    return;
-                }
-
-                const installation = mainResult[0];
-
-                if (installation.shopify_plan !== "affiliate" && installation.shopify_plan !== "partner_test") {
-                    console.log(`No plan change for shop 1: ${payload.myshopify_domain}`);
-                    return;
-                }
-
-                if (installation.shopify_plan === payload.plan_name) {
-                    console.log(`No plan change for shop 2: ${payload.myshopify_domain}`);
-                    return;
-                }
-
-                database.query(
-                    `UPDATE ${app_installation_table} SET active_plan_name = ?, active_plan_id = ?, shopify_plan = ?, updated_date = ?, store_type = ? WHERE shop_name = ?`,
-                    ['Free', 1, payload.plan_name, formattedNow, "live", payload.myshopify_domain],
-                    (updateErr, updateResult) => {
-                        if (updateErr) {
-                            console.error("Update error:", updateErr);
-                            logger.error(updateErr);
-                            return;
-                        }
-
-                        if (updateResult.affectedRows > 0) {
-                            database.query(
-                                `INSERT INTO ${app_installation_log_table} (app_install_id, plan_id, plan_name, payment_type, promo_code) VALUES (?, ?, ?, ?, ?)`,
-                                [installation.app_install_id, 1, "Free", "live", null],
-                                (logErr) => {
-                                    if (logErr) {
-                                        console.error("Log insert error:", logErr);
-                                        logger.error(logErr);
-                                    } else {
-                                        console.log("Plan change logged for shop:", payload.myshopify_domain);
-                                    }
-                                }
-                            );
-                        }
-                    }
-                );
-
-                const shopifyNodes = await authSession(payload.myshopify_domain, installation.access_token);
-                const activeCharges = await shopifyNodes.recurringApplicationCharge.list();
-                const currentPlan = activeCharges.filter(charge => charge.status === 'active');
-                await shopifyNodes.recurringApplicationCharge.delete(currentPlan[0]?.id);
-
-                let dataQuery;
-                try {
-                    dataQuery = await shopifyNodes.graphql(`
-            query {
-              currentAppInstallation {
-                id
-              }
-            }
-          `);
-                } catch (graphqlErr) {
-                    console.error("GraphQL query failed:", graphqlErr);
-                    return;
-                }
-
-                if (!dataQuery?.currentAppInstallation?.id) {
-                    console.error("Failed to fetch currentAppInstallation from Shopify");
-                    return;
-                }
-
-                const bodyData = {
-                    key: "current-plan",
-                    namespace: "wishlist-app",
-                    ownerId: dataQuery.currentAppInstallation.id,
-                    type: "single_line_text_field",
-                    value: "1",
-                }
-
-                const { query, variables } = await createAppDataMetafields(bodyData);
-                const data = await shopifyNodes.graphql(query, variables);
-                console.log("metafield created successfully", data)
-            }
+        const [mainResult] = await database.query(
+            `SELECT shopify_plan, app_install_id, access_token, store_type, active_plan_id, active_plan_name
+       FROM ${app_installation_table}
+       WHERE shop_name = ?`,
+            [payload.myshopify_domain]
         );
+
+        if (!mainResult || mainResult.length === 0) {
+            console.warn(`No installation found for shop: ${payload.myshopify_domain}`);
+            return;
+        }
+
+        const installation = mainResult[0];
+        const oldPlan = installation.shopify_plan;
+        const storeType = installation.store_type;
+        const newPlan = payload.plan_name;
+        if (oldPlan === newPlan) {
+            console.log("No plan change detected:", payload.myshopify_domain);
+            return;
+        }
+        if (newPlan === "frozen") {
+            console.log("Skipping – new plan is frozen:", newPlan);
+            return;
+        }
+        if (
+            !["affiliate", "partner_test", "frozen"].includes(oldPlan) &&
+            storeType !== "test"
+        ) {
+            console.log(
+                `Skipping – not eligible old plan (${oldPlan}) or storeType (${storeType})`
+            );
+            return;
+        }
+        const shopifyNodes = await authSession(
+            payload.myshopify_domain,
+            installation.access_token
+        );
+        const [updateResult] = await database.query(
+            `UPDATE ${app_installation_table} SET active_plan_name = ?, active_plan_id = ?, shopify_plan = ?, updated_date = ?, store_type = ?, store_published = ? WHERE shop_name = ?`, ["Free", 1, newPlan, formattedNow, "live", 1, payload.myshopify_domain]
+        );
+        if (updateResult.affectedRows > 0) {
+            await database.query(
+                `INSERT INTO ${app_installation_log_table}
+         (app_install_id, plan_id, plan_name, payment_type, promo_code)
+         VALUES (?, ?, ?, ?, ?)`,
+                [installation.app_install_id, 1, "Free", "live", null]
+            );
+        }
+        if (installation.active_plan_name !== "Free") {
+            await deleteSubAndCreateMetafield(shopifyNodes);
+        }
+        const data = { oldPlan, newPlan };
+        const htmlContent = await quotesOverTemplate(
+            payload.shop_owner,
+            "",
+            payload.myshopify_domain,
+            0,
+            appName,
+            "Wishlist Guru",
+            0,
+            0,
+            data
+        );
+
+        const html2 = `
+      <p>Hiii...</p>
+      <p>We’re pleased to inform you that the Shopify plan has been changed from <b>${oldPlan}</b> to <b>${newPlan}</b> by the store:</p>
+      <p>Shop Name: ${payload.myshopify_domain}</p>
+      <p>Shop URL: ${payload.domain}</p>
+      <p>Email: ${payload.email}</p>
+      <p>Customer Email: ${payload.customer_email}</p>
+      <p>Shopify old plan: ${oldPlan}</p>
+      <p>Shopify new plan: ${newPlan}</p>
+    `;
+        const recipients = [
+            ...(installation.active_plan_name !== "Free"
+                ? [{ email: payload?.email || payload?.customer_email, html: htmlContent }]
+                : []),
+            { email: supportEmail, html: html2 },
+            { email: "randeep.webframez@gmail.com", html: html2 },
+        ];
+
+        // 9️⃣ Send emails
+        for (const data of recipients) {
+            await sendEmail({
+                from: supportEmail,
+                to: data.email,
+                replyTo: supportEmail,
+                subject: `Wishlist Guru - Shopify plan changed for shop ${payload.myshopify_domain}`,
+                html: data.html,
+            });
+        }
     } catch (error) {
-        console.log("error", error)
-        logger.error(error)
+        console.error("Error in shopifyPlanUpdate:", error);
+        logger.error(error);
     }
-};
+}
+
+async function deleteSubAndCreateMetafield(shopifyNodes) {
+    try {
+        const activeCharges = await shopifyNodes.recurringApplicationCharge.list();
+        const currentPlanId = activeCharges.filter(charge => charge.status === 'active');
+        if (currentPlanId?.length) {
+            await shopifyNodes.recurringApplicationCharge.delete(currentPlanId[0]?.id);
+
+            let dataQuery;
+            try {
+                dataQuery = await shopifyNodes.graphql(`
+                query {
+                  currentAppInstallation {
+                    id
+                  }
+                }
+              `);
+            } catch (graphqlErr) {
+                console.error("GraphQL query failed:", graphqlErr);
+                return;
+            }
+            if (!dataQuery?.currentAppInstallation?.id) {
+                console.error("Failed to fetch currentAppInstallation");
+                return;
+            }
+            const bodyData = {
+                key: "current-plan",
+                namespace: "wishlist-app",
+                ownerId: dataQuery.currentAppInstallation.id,
+                type: "single_line_text_field",
+                value: "1",
+            };
+            const { query, variables } = await createAppDataMetafields(bodyData);
+            const finalVariables = variables.variables;
+            const data = await shopifyNodes.graphql(query, finalVariables);
+            console.log("metafield updated:", data);
+        }
+    } catch (error) {
+        logger.error(error.message)
+        console.log("error", error)
+    }
+}
+
+async function quotesOverTemplate(owner, userName, shopName, percentageValue, APPNAME, MAINAPPNAME, usedQuotes, quotaLimit, data) {
+
+    let htmlData = `
+        <p style="font-size:12px;line-height:24px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align:left;max-width: 567px;margin: 5px auto;">Hi <b style="color: #1248A1;">${owner}</b>,</p>
+        
+        <p style="font-size:12px;line-height:24px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align:left;max-width: 567px;margin: 5px auto;">We hope you're enjoying using ${MAINAPPNAME} to manage customer wishlist products.</p>
+
+        <p style="font-size:12px;line-height:24px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align:left;max-width: 567px;margin: 5px auto;">Just a quick heads-up — you have changed your Shopify plan from <b>${data?.oldPlan}</b> to <b>${data?.newPlan}</b>. Since your store is now live, we are required to cancel your Partner Test subscription. Your ${MAINAPPNAME} subscription has been moved to the free plan, and to continue using our services you will need to choose one of the paid plans.</p>
+    `
 
 
+    return `
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        <title>Wishlist Guru Email Template</title>
+        </head>
+        <body style="margin: 0; padding: 0; width: 100%; height: 100%; -webkit-font-smoothing: antialiased;text-size-adjust:100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; line-height: 100%;background-color:#e0e7ef;color: #000000;">
+        <div style="background-color: #e1e1e1;max-width: 700px;margin: 5px auto; padding-bottom:20px;">
+    
+          <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0"
+          style="border-collapse: collapse; border-spacing: 0;padding: 0;width:100%;">
+            <tr>
+                <td style="padding:15px;border-bottom: 1px dotted #ebe3e3;"><a href="https://wishlist-guru.myshopify.com/" target="_blank" style="text-decoration: none;outline: none; box-shadow: none;display: flex; max-width: 200px;margin: 5px auto;"><img src="https://cdn.shopify.com/s/files/1/0643/8374/6245/files/wishlist-mailer-logo.png?v=1758788454" alt="quote_logo" style="margin:0 auto; max-width:200px;"/></a></td>
+            </tr>
+          </table>
+  
+         ${htmlData}
 
-// ---------------------extra function that we are using in the webhooks---------------------
+          <p style="font-size:12px;line-height:24px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align:left;max-width: 567px;margin: 5px auto;">If you have any questions, reply to this email or contact us at <a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=support@webframez.com", target="_blank" style="color: #1248A1;font-weight: 700;">support@webframez.com</a></p>
+        </div>
+        </body>
+        </html>
+      `;
+}
 
 export const extractDomain = (url) => {
     try {
@@ -831,19 +967,30 @@ async function deleteUserDataAtUninstallation(shopName) {
 }
 
 async function returnEmailQuota(shopName) {
-    return await new Promise((resolve, reject) => {
-        database.query(
-            `SELECT ai.shop_email, ai.customer_email, ai.store_owner, p.email_quota, (SELECT COUNT(er.email_type) FROM email_reports as er WHERE shop_name="${shopName}" AND MONTH(er.date) = MONTH(CURRENT_DATE()) AND YEAR(er.date) = YEAR(CURRENT_DATE())) AS emails_sent FROM app_installation AS ai JOIN plan AS p ON ai.active_plan_id = p.plan_id WHERE ai.shop_name='${shopName}';`,
-            (err, emailResult) => {
-                if (err) {
-                    webhookErr(err);
-                    reject(err);
-                } else {
-                    resolve(emailResult);
-                }
-            }
-        );
-    });
+    try {
+        const query = `
+            SELECT 
+                ai.shop_email, 
+                ai.customer_email, 
+                ai.store_owner, 
+                p.email_quota, 
+                (
+                    SELECT COUNT(er.email_type) 
+                    FROM email_reports AS er 
+                    WHERE shop_name = ? 
+                    AND MONTH(er.date) = MONTH(CURRENT_DATE()) 
+                    AND YEAR(er.date) = YEAR(CURRENT_DATE())
+                ) AS emails_sent
+            FROM app_installation AS ai
+            JOIN plan AS p ON ai.active_plan_id = p.plan_id
+            WHERE ai.shop_name = ?;
+        `;
+        const [emailResult] = await database.query(query, [shopName, shopName]);
+        return emailResult;
+    } catch (err) {
+        webhookErr(err);
+        throw err;
+    }
 }
 
 function webhookErr(reason) {
@@ -872,28 +1019,20 @@ function databaseQuery(query) {
 
 const checkKlaviyoRecord = async (shopName) => {
     try {
-        const result = await new Promise((resolve, reject) => {
-            database.query(
-                `SELECT * FROM ${klaviyo_table} WHERE shop_name='${shopName}'`,
-                (err, result) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result);
-                    }
-                }
-            );
-        });
+        const [result] = await database.query(
+            `SELECT * FROM ${klaviyo_table} WHERE shop_name = ?`,
+            [shopName]
+        );
 
         return result;
     } catch (error) {
         logger.error(error);
-
+        console.error(error);
+        return [];
     }
 };
 
 export async function checkKlaviyoApiKey(apiKey) {
-
     const url = 'https://a.klaviyo.com/api/accounts';
     const options = {
         headers: {
@@ -902,15 +1041,12 @@ export async function checkKlaviyoApiKey(apiKey) {
             Authorization: `Klaviyo-API-Key ${apiKey}`,
         },
     };
-
     const maxRetries = 5;
     let retries = 0;
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
     while (retries < maxRetries) {
         try {
             const response = await axios.get(url, options);
-
             // Check if there are errors in the response
             if (response.data.errors) {
                 return { type: 'error' };
@@ -926,7 +1062,6 @@ export async function checkKlaviyoApiKey(apiKey) {
                     : Math.pow(2, retries) * 1000; // Exponential backoff
                 // console.log(`Rate limit exceeded. Retrying in ${retryAfter / 1000} seconds...`);
                 logger.error(`Rate limit exceeded. Retrying in ${retryAfter / 1000} seconds...`);
-
                 await delay(retryAfter); // Wait for retryAfter or exponential backoff
             } else {
                 // Handle other errors
@@ -941,7 +1076,6 @@ export async function checkKlaviyoApiKey(apiKey) {
 }
 
 const checkEmailSubscribeOrNot = (data, authKey) => {
-
     const {
         customerEmail
     } = data;
@@ -1044,7 +1178,9 @@ function calculateDropPercentage(previousPrice, updatedPrice) {
 }
 
 async function updateProductPrice(productId, newPrice) {
-    await queryDatabase(`UPDATE ${product_table} SET price = ? WHERE id = ?`, [newPrice, productId]);
+    await database.query(
+        `UPDATE ${product_table} SET price = ? WHERE id = ?`,
+        [String(newPrice), Number(productId)]);
 }
 
 async function handleEmailQuotaExceeded(emailQuota, shopName) {

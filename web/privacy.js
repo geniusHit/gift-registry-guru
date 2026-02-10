@@ -89,83 +89,83 @@ export default {
 
 
   APP_UNINSTALLED: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: async (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        appDeletion(payload, shop);
-      },
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      appDeletion(payload, shop);
     },
-    APP_SUBSCRIPTIONS_UPDATE: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        // console.log("payload", payload, shop);
-        subscriptionUpdation(payload, shop)
-      },
+  },
+  APP_SUBSCRIPTIONS_UPDATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      // console.log("payload", payload, shop);
+      subscriptionUpdation(payload, shop)
     },
-    VARIANTS_IN_STOCK: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: async (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        // console.log("payload --- ", payload)
-        variantsInStock(payload, shop)
-      },
+  },
+  VARIANTS_IN_STOCK: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      // console.log("payload --- ", payload)
+      variantsInStock(payload, shop)
     },
-  
-    PRODUCTS_UPDATE: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: async (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        if (ab !== undefined) {
-          inventoryUpdate(payload, shop, ab)
-        } else {
-          productUpdate(payload, shop)
-        }
-        ab = undefined
-  
-      },
+  },
+
+  PRODUCTS_UPDATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      if (ab !== undefined) {
+        inventoryUpdate(payload, shop, ab)
+      } else {
+        productUpdate(payload, shop)
+      }
+      ab = undefined
+
     },
-  
-    INVENTORY_LEVELS_UPDATE: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: async (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        ab = payload
-      },
+  },
+
+  INVENTORY_LEVELS_UPDATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      ab = payload
     },
-  
-    SHOP_UPDATE: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: async (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        shopUpdate(payload, shop)
-        // console.log("SHOP UPDATE WEBHOOK --- ", shop);
-        shopifyPlanUpdate(payload, shop);
-        // console.log("PAYLOAD --- ", payload);
-      },
+  },
+
+  SHOP_UPDATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      shopUpdate(payload, shop)
+      // console.log("SHOP UPDATE WEBHOOK --- ", shop);
+      shopifyPlanUpdate(payload, shop);
+      // console.log("PAYLOAD --- ", payload);
     },
-  
-    DOMAINS_UPDATE: {
-      deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/api/webhooks",
-      callback: async (topic, shop, body, webhookId) => {
-        const payload = JSON.parse(body);
-        updateShopDomain(payload, shop);
-      },
+  },
+
+  DOMAINS_UPDATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, webhookId) => {
+      const payload = JSON.parse(body);
+      updateShopDomain(payload, shop);
     },
-  
-  
-  
-  
-  
+  },
+
+
+
+
+
   // import { DeliveryMethod } from "@shopify/shopify-api";
-  
+
   // /**
   //  * @type {{[key: string]: import("@shopify/shopify-api").WebhookHandler}}
   //  */
@@ -201,7 +201,7 @@ export default {
   //       // }
   //     },
   //   },
-  
+
   //   /**
   //    * Store owners can request that data is deleted on behalf of a customer. When
   //    * this happens, Shopify invokes this privacy webhook.
@@ -230,7 +230,7 @@ export default {
   //       // }
   //     },
   //   },
-  
+
   //   /**
   //    * 48 hours after a store owner uninstalls your app, Shopify invokes this
   //    * privacy webhook.
@@ -250,5 +250,5 @@ export default {
   //     },
   //   },
   // };
-  
+
 };

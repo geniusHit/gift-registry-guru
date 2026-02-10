@@ -26,7 +26,7 @@ export function userWishlistTableFxn(dataArray, customer, emailData, app_install
   const shopDomainData = `<a href="${serverURL}/handleRedirect?redirectUrl=https://${replacements.shopDomain}&data=${encodeURIComponent(JSON.stringify(dataToParmas))}" target="_blank">${replacements.shopDomain}</a>`
 
 
-  const goToWishlistData = `<a href="${serverURL}/handleRedirect?redirectUrl=https://${replacements.shopDomain}/apps/wf-gift-registry&data=${encodeURIComponent(JSON.stringify(dataToParmas))}"     
+  const goToWishlistData = `<a href="${serverURL}/handleRedirect?redirectUrl=https://${replacements.shopDomain}/apps/wg-wishlist&data=${encodeURIComponent(JSON.stringify(dataToParmas))}"     
   style="text-decoration:none !important; outline:none;box-shadow:none;display:inline-block;text-transform:uppercase;font-size:12px;line-height:14px;background:${emailData?.goToWishlistBtnStyle?.bgColor ? emailData?.goToWishlistBtnStyle?.bgColor : '#7F50A7'};padding:12px 10px;color:${emailData?.goToWishlistBtnStyle?.textColor ? emailData?.goToWishlistBtnStyle?.textColor : '#fff'} !important;font-weight:600;font-family:'Poppins', sans-serif;margin:10px auto;text-align:center;border-radius:${emailData?.goToWishlistBtnStyle?.borderRadius ? `${emailData?.goToWishlistBtnStyle?.borderRadius}px` : '10px'};background-image:${emailData?.goToWishlistBtnStyle?.icon === "no" ? "url('')" : 'url(https://cdn.shopify.com/s/files/1/0580/0869/8979/files/wishlist-icon.svg?v=1719902841)'};background-repeat:no-repeat;background-size:18px;background-position: 10px;"><span style="color:${emailData?.goToWishlistBtnStyle?.textColor || '#ffffff'} !important; text-decoration:none !important; font-family: Arial, Helvetica, sans-serif;">${emailData?.goToWishlistBtnStyle?.icon === "no" ? "" : '<span style="width:18px;margin-right:5px;display:inline-block;"></span>'}${emailData?.goToWishlistBtn ? emailData?.goToWishlistBtn : 'Go to wishlist'} </span> </a>`
 
 
@@ -38,7 +38,7 @@ export function userWishlistTableFxn(dataArray, customer, emailData, app_install
       title: data.title,
       variantId: data.variant_id,
       handle: data.handle,
-      imageUrl: data.productImage,
+      imageUrl: data?.image ? data.image : data.productImage,
       price: data.price,
       shopDomain: shopDomain
     };
@@ -226,7 +226,7 @@ export function userWishlistTableFxn(dataArray, customer, emailData, app_install
         <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0"
         style="border-collapse: collapse; border-spacing: 0;padding: 0;width:100%;">
         <tr><td style="background:${emailData.contentBgColor ? emailData.contentBgColor : 'transparent'};padding-top:30px;padding-bottom:30px;padding-left:15px;padding-right:15px;">
-        <div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;margin:0;text-align: center;">
+        <div class="content-paragraph" style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;margin:0;text-align: center;">
         
         ${bodyData}
 

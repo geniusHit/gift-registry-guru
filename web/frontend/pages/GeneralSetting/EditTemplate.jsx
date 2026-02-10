@@ -1,4 +1,4 @@
-import { AlphaCard, Tabs, Text, Button, TextField, Checkbox, Grid, RadioButton } from '@shopify/polaris';
+import { AlphaCard, Tabs, Text, Button, TextField, Checkbox, Grid, RadioButton, Spinner } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from "react-draft-wysiwyg";
@@ -15,9 +15,23 @@ import { useForm } from 'react-hook-form';
 import { userWishlistTableFxn } from '../../../backend/emailTemplates/userWishlistTableFxn';
 import RangeController from '../../hooks/useRangeController';
 import SingleFieldController from '../../hooks/useSingleFieldController';
+import { getSessionToken } from '@shopify/app-bridge-utils';
+import createApp from "@shopify/app-bridge";
+import { english, french, dutch, greek, arabic, german, chinese, brazilian, danish, swedish, spanish, chineseTraditional, czech, italian, ukrainian, japanese, korean, norwegianBokmal, polish, portugueseBrazil, portuguesePortugal, thai, turkish, finnish, herbew, hungarian, bulgarian, lithuanian, irish, romanian, filipino, indonesian, russian, vietnamese, albanian, latvian, estonian } from '../../assets/Languages/emailTemplate';
+
 
 
 const EditTemplate = ({ value }) => {
+
+  const hostValue = sessionStorage.getItem("shopify_host")
+  const app = createApp({
+    apiKey: import.meta.env.VITE_SHOPIFY_API_KEY,
+    host: new URLSearchParams(window.location.search).get("host") || hostValue,
+    forceRedirect: true,
+  });
+
+  const languageMap = { english, french, dutch, greek, arabic, german, chinese, brazilian, danish, swedish, spanish, chineseTraditional, czech, italian, ukrainian, japanese, korean, norwegianBokmal, polish, portugueseBrazil, portuguesePortugal, thai, turkish, finnish, herbew, hungarian, bulgarian, lithuanian, irish, romanian, filipino, indonesian, russian, vietnamese, albanian, latvian, estonian };
+
   const { handleSubmit, control, watch, reset, } = useForm();
   const watchColors = watch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -35,8 +49,11 @@ const EditTemplate = ({ value }) => {
   const [isLogo, setIsLogo] = useState(false);
   const [bodyContent, setBodyContent] = useState('');
   const [smtpDetail, setSmtpDetail] = useState([]);
+  const [multiLanguages, setMultiLanguages] = useState([])
 
-  const { tempData, search, file, serverURL, appInstallId, shopData, Swal, myLanguage, loaderGif, headerSave, setHeaderSave, priceDropData, lowStockData, backInStockData, weeklyEmailData, getTemplates } = value;
+  // console.log("bodyContent ---- ", bodyContent)
+
+  const { tempData, search, file, serverURL, appInstallId, shopData, Swal, myLanguage, loaderGif, headerSave, setHeaderSave, priceDropData, lowStockData, backInStockData, weeklyEmailData, getTemplates, getDefaultData, currentPlan, emailTempWordingRef, setEmailTempWording } = value;
 
   const logoResult = file?.name || null;
   const searchParams = new URLSearchParams(search.trim());
@@ -92,12 +109,37 @@ const EditTemplate = ({ value }) => {
         })
       }
       await getSmtpDataFromSql(shopData.shopName);
+      // await getMultiLanguages(shopData.shopName);
     };
     loadTemplate();
     setIsLoaded(true);
-
-
   }, [tempData]);
+
+
+  // async function getMultiLanguages() {
+
+  //   try {
+  //     const response = await fetch(`${serverURL}/get-all-language-list`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         shopName: data
+  //       }),
+  //     });
+  //     let result = await response.json();
+
+  //     if (result.success === true) {
+  //       setSmtpDetail(result.data);
+  //     }
+
+  //   } catch (error) {
+  //     console.log("Err -", error)
+  //   }
+
+
+  // }
 
 
 
@@ -114,11 +156,11 @@ const EditTemplate = ({ value }) => {
         }),
       });
       let result = await response.json();
-
+      // console.log("ggggggggggggg ", result)
       if (result.success === true) {
         setSmtpDetail(result.data);
+        setMultiLanguages(result.language);
       }
-
     } catch (error) {
       console.log("Err -", error)
     }
@@ -286,7 +328,9 @@ const EditTemplate = ({ value }) => {
     }
 
     const bodyContent = getBodyContent(htmlContent);
+    editorStateFirst, editorFooterState, isLogo, watchColors
     setBodyContent(bodyContent);
+
   }, [editorStateFirst, editorFooterState, isLogo, watchColors]);
 
   const getEditorStateContent = (editorState) => {
@@ -329,8 +373,8 @@ const EditTemplate = ({ value }) => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           const tempName = temp_type === "PriceDrop" ? priceDropData : temp_type === "LowInStock" ? lowStockData : temp_type === "BackInStock" ? backInStockData : weeklyEmailData
-          await updateData(tempName)
-          await getTemplates(shopData)
+          await updateData(tempName);
+          await getTemplates(shopData);
         }
       })
     } catch (error) {
@@ -399,6 +443,12 @@ const EditTemplate = ({ value }) => {
       imageUrl: loaderGif,
       showConfirmButton: false,
     });
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentTempId = urlParams.get('temp_id');
+
+
     try {
       const response = await fetch(`${serverURL}/email-template-update`, {
         method: "POST",
@@ -409,7 +459,9 @@ const EditTemplate = ({ value }) => {
           shopName: shopData.shopName,
           tempName: JSON.stringify(tempName),
           tempClm: temp_type,
-          tempId: tempId,
+          // tempId: tempId,
+          tempId: currentTempId,
+
           // senderName: emailSenderName
         }),
       });
@@ -541,10 +593,12 @@ const EditTemplate = ({ value }) => {
       showLoaderOnConfirm: true,
       preConfirm: async (inputValue) => {
         try {
+          const token = await getSessionToken(app);
           const response = await fetch(`${serverURL}/send-test-email`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
               recieverEmail: inputValue,
@@ -590,6 +644,44 @@ const EditTemplate = ({ value }) => {
     }
   };
 
+
+  async function tempLanguageHandler(event) {
+    // const url = new URL(window.location.href);
+    // url.searchParams.set('temp_id', newTempId);
+    // window.history.replaceState({}, '', url.toString());
+    // searchParams.set("temp_id", 4545)
+
+
+    const selectedLanguage = event.target.value;
+    const templates = languageMap[selectedLanguage] || languageMap.english;
+    setEmailTempWording(templates);
+    emailTempWordingRef.current = templates;
+    getDefaultData(currentPlan, shopData, selectedLanguage);
+
+  }
+
+  const wgLocal = {
+    CustomerToken: "{Customer Email}",
+    ProductTitleToken: "{Product Title}",
+    DomainToken: "{Your Shop Domain}",
+    LogoToken: "{Logo}",
+    ProductToken: "{Product Grid}",
+    shopButtonToken: "{Shop Button}",
+    wishlistButtonToken: "{Go To Wishlist}",
+
+  }
+
+
+  const hasContentParagraphData = (() => {
+    if (!bodyContent) return false;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(bodyContent, "text/html");
+    const el = doc.querySelector(".content-paragraph");
+
+    return el && el.textContent.trim().length > 0;
+  })();
+
   return (
     !isLoaded ? <SkeletonPage1 />
       :
@@ -606,13 +698,13 @@ const EditTemplate = ({ value }) => {
                 </div>
 
                 <div className='pb-15'>
-                  <p><span className='keySpan'>{myLanguage.CustomerToken}</span>: <span>{myLanguage.CustomerTokenValue}</span></p>
-                  <p><span className='keySpan'>{myLanguage.ProductToken}</span>: <span>{myLanguage.ProductTokenValue}</span></p>
-                  <p><span className='keySpan'>{myLanguage.DomainToken}</span>: <span>{myLanguage.DomainTokenValue}</span></p>
-                  <p><span className='keySpan'>{myLanguage.LogoToken}</span>: <span>{myLanguage.LogoTokenValue}</span></p>
-                  <p><span className='keySpan'>{myLanguage.ProductToken}</span>: <span>{myLanguage.ProductTokenValue}</span></p>
-                  <p><span className='keySpan'>{myLanguage.shopButtonToken}</span>: <span>{myLanguage.shopButtonTokenValue}</span></p>
-                  <p><span className='keySpan'>{myLanguage.wishlistButtonToken}</span>: <span>{myLanguage.wishlistButtonTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.CustomerToken}</span>: <span>{myLanguage.CustomerTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.ProductTitleToken}</span>: <span>{myLanguage.ProductTitleTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.DomainToken}</span>: <span>{myLanguage.DomainTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.LogoToken}</span>: <span>{myLanguage.LogoTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.ProductToken}</span>: <span>{myLanguage.ProductTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.shopButtonToken}</span>: <span>{myLanguage.shopButtonTokenValue}</span></p>
+                  <p><span className='keySpan'>{wgLocal.wishlistButtonToken}</span>: <span>{myLanguage.wishlistButtonTokenValue}</span></p>
                 </div>
               </div>
 
@@ -951,7 +1043,34 @@ const EditTemplate = ({ value }) => {
                     <div className='wf-resetButton'><Button onClick={resetHandler}>{myLanguage.resetBtn}</Button></div>
                   </div>
                 </div>
-                <div dangerouslySetInnerHTML={{ __html: bodyContent }} style={{ pointerEvents: 'none' }} />
+
+
+                {multiLanguages.length > 1 ?
+                  <div style={{ display: "flex", flexDirection: "space-between", marginBottom: "15px" }}>
+                    <div>To send emails in different languages to different users, select the desired language, translate all inputs, and save them</div>
+                    <div>
+                      <select onChange={tempLanguageHandler}>
+                        {multiLanguages.map((data, index) => {
+                          return (
+                            <option key={index} value={data.type === "default" ? data.type : data.language}>
+                              {/* {data.language} */}
+                              {data.language.charAt(0).toUpperCase() + data.language.slice(1)}
+                            </option>
+                          )
+                        })}
+                      </select></div>
+                  </div> : ""}
+
+                {/* <div dangerouslySetInnerHTML={{ __html: bodyContent }} style={{ pointerEvents: 'none' }} /> : */}
+
+                {hasContentParagraphData ? (
+                  <div dangerouslySetInnerHTML={{ __html: bodyContent }} style={{ pointerEvents: 'none' }} />
+                ) : (
+                  <div style={{ textAlign: "center" }}>
+                    <Spinner accessibilityLabel="Spinner example" size="large" />
+                  </div>
+                )}
+
               </AlphaCard>
             </div>
           </div>

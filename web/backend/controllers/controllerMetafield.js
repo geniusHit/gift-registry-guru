@@ -77,7 +77,7 @@ const sendInstallationMail = async (req, res) => {
         subject: "Thanks for installing Wishlist Guru App",
         html: mailHtml,
     };
-    // sendEmail(emailContent);
+    sendEmail(emailContent);
 
     const shop_domain = shopData.data[0].myshopify_domain;
     const customer_email = shopData.data[0].customer_email;
@@ -347,7 +347,9 @@ export const appMetafieldGetAll = async (req, res) => {
     const client = new shopify.api.clients.Graphql({
         session: res.locals.shopify.session,
     });
+    console.log("req.query.limit = ", req.query.limit)
     let ourQuery = await getAllAppDataMetafields(req.query.limit);
+    console.log("ourQuery = ", ourQuery)
     const data = await client.request(ourQuery);
     res.status(200).send({ data: data, msg: "Get all app-data-metafields of this app" });
 };
@@ -433,35 +435,202 @@ export const getShopApi = async (req, res) => {
     res.status(200).send({ countData });
 };
 
+// export const subscriptionCreate = async (req, res) => {
+//     const { shop, plan, promoData } = req.body;
+
+//     console.log("KKKKK ---- ", shop, plan, promoData)
+
+
+//     try {
+//         const query = `
+//       SELECT ail.app_install_id, ail.plan_name 
+//       FROM app_installation AS ai
+//       INNER JOIN app_installation_logs AS ail
+//       ON ai.app_install_id = ail.app_install_id
+//       WHERE ai.shop_name = ?;
+//     `;
+
+//         await database.query(query, [shop], async (err, checkTrial) => {
+//             if (err) {
+//                 console.error("Database query error:", err);
+//                 return res.status(500).json({ error: "Internal server error", err });
+//             }
+
+//             const setTrialDays =
+//                 checkTrial.length === 0 ||
+//                     !checkTrial.some((data) => data.plan_name === plan)
+//                     ? 10
+//                     : 0;
+
+//             getCuponCodeData(req, res, setTrialDays);
+//         });
+//     } catch (error) {
+//         logger.error(error);
+//         console.error("Unexpected error:", error);
+//         res.status(500).json({ error: "Unexpected server error", error });
+//     }
+// };
+
+// async function getCuponCodeData(req, res, setTrialDays) {
+//     const { shop, plan, price, interval, returnUrl, promoData } = req.body;
+//     let afterDiscount = price;
+
+//     if (!promoData) {
+//         return await getPaidPlan(
+//             req,
+//             res,
+//             setTrialDays,
+//             afterDiscount
+//         );
+//     }
+
+//     if (promoData.trial_days) {
+//         setTrialDays = promoData.trial_days;
+//     }
+
+//     if (promoData.discount_type) {
+//         afterDiscount = calculateDiscount(
+//             afterDiscount,
+//             promoData.discount,
+//             promoData.discount_type
+//         );
+//     }
+
+//     await getPaidPlan(
+//         req,
+//         res,
+//         Number(setTrialDays),
+//         afterDiscount
+//     );
+// }
+
+// function calculateDiscount(price, discount, type) {
+//     if (type === "percentage") {
+//         return price - (price * discount) / 100;
+//     } else if (type === "flat") {
+//         return price - discount;
+//     }
+//     return price;
+// }
+
+// async function getPaidPlan(req, res, trialDay, packagePrice) {
+
+//     const finalPaymentAmount = Number(packagePrice).toFixed(2);
+
+//     // console.log("trial_days -----  ", trialDay);
+//     // console.log("finalPaymentAmount ----- ", finalPaymentAmount);
+
+//     const mainString = req.body.shop;
+//     // const string1 = "wishlist-guru";
+//     // const string2 = "randeep";
+//     const checkFreeAccounts =
+//         // mainString.includes(string1) ||
+//         // mainString.includes(string2) ||
+//         req?.body?.promoData?.promo_code?.includes("PARTNER");
+
+//     const datas = {
+//         plan: {
+//             appRecurringPricingDetails: {
+//                 price: {
+//                     amount: finalPaymentAmount,
+//                     // amount: req.body.price,
+//                     currencyCode: "USD"
+//                 },
+//                 interval: req.body.interval
+//             }
+//         }
+//     }
+
+//     const client = await new shopify.api.clients.Graphql({
+//         session: res.locals.shopify.session
+//     });
+
+//     let newQuery = `mutation appSubscriptionCreate($name: String!, $lineItems: [AppSubscriptionLineItemInput!]!, $returnUrl: URL!, $test: Boolean, $trialDays: Int) {
+//           appSubscriptionCreate(name: $name, lineItems: $lineItems, returnUrl: $returnUrl, test: $test, trialDays: $trialDays) {
+//             appSubscription {
+//               id
+//             }
+//             confirmationUrl
+//             userErrors {
+//               field
+//               message
+//             }
+//           }
+//         }`
+
+//     const data = await client.request(newQuery, {
+//         variables: {
+//             "name": `${req.body.plan}/${req.body.interval}/${req?.body?.promoData?.promo_code || null}/${checkFreeAccounts ? "test" : "live"}`,
+//             "test": checkFreeAccounts,
+//             "returnUrl": req.body.returnUrl,
+//             "lineItems": [datas],
+//             "trialDays": trialDay,
+
+//         }
+//     });
+
+//     res.status(200).send({ data: data.data.appSubscriptionCreate, msg: "Get all data of this app  " });
+// }
+
+// export const subscriptionCreate = async (req, res) => {
+//     const { shop, plan, promoData } = req.body;
+//     try {
+//         const query = `
+//       SELECT ail.app_install_id, ail.plan_name 
+//       FROM app_installation AS ai
+//       INNER JOIN app_installation_logs AS ail
+//       ON ai.app_install_id = ail.app_install_id
+//       WHERE ai.shop_name = ?;
+//     `;
+
+//         await database.query(query, [shop], async (err, checkTrial) => {
+//             if (err) {
+//                 console.error("Database query error:", err);
+//                 return res.status(500).json({ error: "Internal server error", err });
+//             }
+
+//             const setTrialDays =
+//                 checkTrial.length === 0 ||
+//                     !checkTrial.some((data) => data.plan_name === plan)
+//                     ? 10
+//                     : 0;
+
+//             getCuponCodeData(req, res, setTrialDays);
+//         });
+//     } catch (error) {
+//         logger.error(error);
+//         console.error("Unexpected error:", error);
+//         res.status(500).json({ error: "Unexpected server error", error });
+//     }
+// };
+
+
 export const subscriptionCreate = async (req, res) => {
     const { shop, plan, promoData } = req.body;
+
     try {
         const query = `
-      SELECT ail.app_install_id, ail.plan_name 
-      FROM app_installation AS ai
-      INNER JOIN app_installation_logs AS ail
-      ON ai.app_install_id = ail.app_install_id
-      WHERE ai.shop_name = ?;
-    `;
+            SELECT ail.app_install_id, ail.plan_name 
+            FROM app_installation AS ai
+            INNER JOIN app_installation_logs AS ail
+            ON ai.app_install_id = ail.app_install_id
+            WHERE ai.shop_name = ?;
+        `;
 
-        database.query(query, [shop], async (err, checkTrial) => {
-            if (err) {
-                console.error("Database query error:", err);
-                return res.status(500).json({ error: "Internal server error", err });
-            }
+        const [checkTrial] = await database.query(query, [shop]);
 
-            const setTrialDays =
-                checkTrial.length === 0 ||
-                    !checkTrial.some((data) => data.plan_name === plan)
-                    ? 10
-                    : 0;
+        const setTrialDays =
+            checkTrial.length === 0 ||
+                !checkTrial.some((data) => data.plan_name === plan)
+                ? 10
+                : 0;
 
-            getCuponCodeData(req, res, setTrialDays);
-        });
+        return getCuponCodeData(req, res, setTrialDays);
+
     } catch (error) {
         logger.error(error);
         console.error("Unexpected error:", error);
-        res.status(500).json({ error: "Unexpected server error", error });
+        return res.status(500).json({ error: "Unexpected server error", error });
     }
 };
 
@@ -568,7 +737,22 @@ async function getPaidPlan(req, res, trialDay, packagePrice) {
 
 export const subscriptionCancel = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id, planCancel, shopData } = req.body;
+        const emailContent = {
+            from: supportEmail,
+            to: "webframez@gmail.com",
+            // cc: "webframez@gmail.com",
+            subject: `Wishlist Guru – Subscription cancelled for ${shopData.shopName}`,
+            html: `Hii.. <br><br>
+                    ${shopData.shopName} has cancelled their Wishlist GURU subscription for the ${planCancel} plan.<br>
+                    Shop Name: ${shopData.shopName}<br>
+                    Store URL: ${shopData.domain || ""}<br>
+                    Email: ${shopData.email}<br>
+                    Customer Email: ${shopData.customerEmail}<br><br>
+            Thank you.`,
+        };
+        sendEmail(emailContent);
+
         await shopify.api.rest.RecurringApplicationCharge.delete({
             session: res.locals.shopify.session,
             id: id,

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Frame, Page, LegacyCard, IndexTable, Button, Text, AlphaCard, Thumbnail, DropZone, TextField, Grid, Select } from '@shopify/polaris';
 import SkeletonPage1 from '../SkeletonPage1';
 import Swal from "sweetalert2";
@@ -15,6 +15,7 @@ import Footer from '../Footer';
 import axios from 'axios';
 import EditTemplate from './EditTemplate';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { english } from '../../assets/Languages/emailTemplate';
 
 
 const EmailSetting = () => {
@@ -39,73 +40,62 @@ const EmailSetting = () => {
     const [headerSave, setHeaderSave] = useState(false);
     const [emailSenderName, setEmailSenderName] = useState("");
     const [replyToEmail, setReplyToEmail] = useState("");
+    const [emailTempWording, setEmailTempWording] = useState(english);
+    const emailTempWordingRef = useRef(english);
+
 
     const watchAllFields = watch();
 
-    const priceDropData = {
-        firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">Dear {Customer Email} We've got some electrifying news just for you! Brace yourself for jaw-dropping discounts because the price of {Product Title} just took a thrilling dive! <br />{Product Grid}<br />Are you ready to seize this golden opportunity? Don't miss out on owning {Product Title} at an unbeatable price! Act fast and head straight to our Shopify store to grab yours before it's too late! <br /> Should you have any questions or need assistance, feel free to reach out to us. Hurry, these deals won't last forever! Embrace the savings and elevate your shopping experience today!{Shop Button}
-        </div>`,
 
-        emailSubject: `Price Drop Alert: 🎉 Incredible Savings Await for {Product Title}! 🎉 - {Your Shop Domain}`,
-
-        footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">If you have any questions, reply to this email or contact us at support@webframez.com</div>`,
-
-        isLogo: true,
-
-        headerBgColor: '',
-        contentBgColor: '',
-        contentColor: '',
-        footerBgColor: '',
-        footerColor: '',
-    }
-
-    const backInStockData = {
-        firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">Dear {Customer Email} We are excited to inform you that {Product Title} is now back in stock! After high demand and a temporary shortage, we've replenished our inventory and are ready to fulfill your orders. <br /> Don't miss out on the chance to get your hands on {Product Title} Whether it's for yourself or a special someone, now is the perfect time to make your purchase. Hurry and place your order before it sells out again! Click the button below to shop now.<br/>{Product Grid}<br/>Thank you for your patience and continued support. We can't wait to see you enjoy your {Product Title} P.S. Quantities are limited, so act fast!{Shop Button}</div>`,
-
-        emailSubject: `{Product Title} is Back in Stock - {Your Shop Domain}`,
-
-        footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">If you have any questions, reply to this email or contact us at support@webframez.com</div>`,
-
-        isLogo: true,
-
-        headerBgColor: '',
-        contentBgColor: '',
-        contentColor: '',
-        footerBgColor: '',
-        footerColor: '',
-    }
-
-    const lowStockData = {
-        firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">Dear {Customer Email}</b> We hope you're doing well! We're reaching out to inform you that our {Product Title} is almost sold out. This is your last chance to grab it before it's gone! To secure your {Product Title} now.<br/>{Product Grid}<br/>Should you have any questions or need assistance, feel free to reach out to us. Thank you for shopping with us at {Your Shop Domain}</div>`,
-
-        emailSubject: `Important: Limited Stock Alert for {Product Title} 🚨 - {Your Shop Domain}`,
-
-        footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">If you have any questions, reply to this email or contact us at support@webframez.com</div>`,
-
-        isLogo: true,
-
-        headerBgColor: '',
-        contentBgColor: '',
-        contentColor: '',
-        footerBgColor: '',
-        footerColor: '',
-    }
-
-    const weeklyEmailData = {
-        firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width:100%;margin: 0 auto 25px;">Hi, Your last month wishlist items are waiting for you. BUY NOW..{Product Grid}{Go To Wishlist}</div>`,
-
-        emailSubject: `Your Monthly Wishlist Update`,
-
-        footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">If you have any questions, reply to this email or contact us at support@webframez.com</div>`,
-
-        isLogo: true,
-
-        headerBgColor: '',
-        contentBgColor: '',
-        contentColor: '',
-        footerBgColor: '',
-        footerColor: '',
-    }
+    const buildEmailTemplates = () => {
+        const t = emailTempWordingRef.current;
+        return {
+            priceDropData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">${t.PriceDrop.firstRow}</div>`,
+                emailSubject: `${t.PriceDrop.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.PriceDrop.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            },
+            backInStockData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">${t.BackInStock.firstRow}</div>`,
+                emailSubject: `${t.BackInStock.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.BackInStock.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            },
+            lowStockData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">${t.LowInStock.firstRow}</div>`,
+                emailSubject: `${t.LowInStock.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.LowInStock.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            },
+            weeklyEmailData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width:100%;margin: 0 auto 25px;">${t.WeeklyEmail.firstRow}</div>`,
+                emailSubject: `${t.WeeklyEmail.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.WeeklyEmail.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            }
+        };
+    };
 
     useEffect(() => {
         useEffectLite();
@@ -125,7 +115,15 @@ const EmailSetting = () => {
     }
 
 
-    async function getDefaultData(planValue, shopAPI) {
+    async function getDefaultData(planValue, shopAPI, tempLanguage = "default") {
+
+        const {
+            priceDropData,
+            backInStockData,
+            lowStockData,
+            weeklyEmailData
+        } = buildEmailTemplates();
+
         try {
             let getDefaultData = await fetch(`${serverURL}/get-email-reminder-checks`, {
                 method: "POST",
@@ -135,6 +133,7 @@ const EmailSetting = () => {
                 body: JSON.stringify({
                     shopName: shopAPI.shopName,
                     language: `https://${shopAPI.domain}/`,
+                    tempLanguage: tempLanguage,
                     backInStock: JSON.stringify(backInStockData),
                     lowInStock: JSON.stringify(lowStockData),
                     priceDrop: JSON.stringify(priceDropData),
@@ -170,7 +169,7 @@ const EmailSetting = () => {
             setAppInstallId(results?.app_install_id)
             planValue >= 2 && getBlob(results)
             setIsLoading(true);
-            await getTemplates(shopAPI)
+            await getTemplates(shopAPI, tempLanguage);
             let checkElement = document.querySelector(".dontRunAgain");
             if (checkElement === null) {
                 utilityFunction.upgradeButtonFxn();
@@ -310,7 +309,7 @@ const EmailSetting = () => {
         </div>
     );
 
-    async function getTemplates(shopAPI) {
+    async function getTemplates(shopAPI, tempLanguage) {
         try {
             let getDefaultData = await fetch(`${serverURL}/get-email-temp-data`, {
                 method: "POST",
@@ -320,19 +319,27 @@ const EmailSetting = () => {
                 body: JSON.stringify({
                     shopName: shopAPI.shopName,
                     language: `https://${shopAPI.domain}/`,
+                    tempLanguage: tempLanguage
                 }),
             })
             let results = await getDefaultData.json();
-
+            // console.log("VVVVVV ---- ", results.data[0])
 
             const mainResult =
                 [
-                    { temp_id: results.data[0].temp_id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "BackInStock", tempName: "Back In Stock", back_in_stock_temp: JSON.parse(results.data[0].back_in_stock_temp) },
-                    { temp_id: results.data[0].temp_id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "LowInStock", tempName: "Low In Stock", low_in_stock_temp: JSON.parse(results.data[0].low_in_stock_temp) },
-                    { temp_id: results.data[0].temp_id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "PriceDrop", tempName: "Price Drop", price_drop_temp: JSON.parse(results.data[0].price_drop_temp) },
-                    { temp_id: results.data[0].temp_id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "WeeklyEmail", tempName: "Monthly Email", weekly_email_temp: JSON.parse(results.data[0].weekly_email_temp) },
+                    { temp_id: results.data[0].id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "BackInStock", tempName: "Back In Stock", back_in_stock_temp: JSON.parse(results.data[0].back_in_stock_temp) },
+                    { temp_id: results.data[0].id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "LowInStock", tempName: "Low In Stock", low_in_stock_temp: JSON.parse(results.data[0].low_in_stock_temp) },
+                    { temp_id: results.data[0].id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "PriceDrop", tempName: "Price Drop", price_drop_temp: JSON.parse(results.data[0].price_drop_temp) },
+                    { temp_id: results.data[0].id, senderName: results.data[0].sender_name, replyToMail: results.data[0].reply_to, type: "WeeklyEmail", tempName: "Monthly Email", weekly_email_temp: JSON.parse(results.data[0].weekly_email_temp) },
                 ];
-            setTempData(mainResult)
+            setTempData(mainResult);
+
+            const url = new URL(window.location.href);
+            if (url.searchParams.has('temp_id')) {
+                url.searchParams.set('temp_id', results.data[0].id);
+                window.history.replaceState({}, '', url.toString());
+            }
+
         } catch (error) {
             console.log("errr ", error)
         }
@@ -387,13 +394,18 @@ const EmailSetting = () => {
         Swal: Swal,
         myLanguage: myLanguage,
         loaderGif: loaderGif,
-        priceDropData: priceDropData,
-        lowStockData: lowStockData,
-        backInStockData: backInStockData,
-        weeklyEmailData: weeklyEmailData,
+        priceDropData: buildEmailTemplates().priceDropData,
+        lowStockData: buildEmailTemplates().lowStockData,
+        backInStockData: buildEmailTemplates().backInStockData,
+        weeklyEmailData: buildEmailTemplates().weeklyEmailData,
         headerSave: headerSave,
         setHeaderSave: setHeaderSave,
-        getTemplates: getTemplates
+        getTemplates: getTemplates,
+
+        getDefaultData: getDefaultData,
+        currentPlan: currentPlan,
+        setEmailTempWording: setEmailTempWording,
+        emailTempWordingRef: emailTempWordingRef
     }
 
 
@@ -794,9 +806,6 @@ const EmailSetting = () => {
                                 },
                             }}
                         >
-
-
-
                             <EditTemplate value={dataTOsend} />
 
                             <div style={{ marginTop: "40px" }}>

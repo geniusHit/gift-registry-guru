@@ -363,10 +363,10 @@ export default function Dashboard() {
         });
 
         const getDatesOfPlan = await getDatesOfplans();
+
         // setPlanData(getDatesOfPlan);
         await getAllAppDataMetafields(allData);
         const getCurrentPlan = await appMetafield.getCurrentPlan();
-
         const planArr = await getPlanData(Number(getCurrentPlan.currentPlan));
         setShowCurrentPlan(planArr);
 
@@ -531,6 +531,7 @@ export default function Dashboard() {
         try {
             const response = await fetch(`/api/all-theme-data`);
             const result1 = await response.json();
+
             themeListMain.current = result1.settingFile;
             let newArr = [{
                 value: "",

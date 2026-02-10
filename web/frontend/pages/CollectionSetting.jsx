@@ -165,23 +165,47 @@ const CollectionSetting = () => {
                     }
                 }
 
-
                 if (!bData.collectionShowCount) {
                     bData.collectionShowCount = "no";
                     checkExist = true
                 }
-
-                checkExist && saveMetaFxn(bData)
+                checkExist && saveMetaFxn(bData);
+                // console.log("bData --- ", bData)
 
                 reset({
-                    collectionIconType: bData.collectionIconType,
+                    // collectionIconType: bData.collectionIconType,
+                    // iconDefaultColor: bData?.iconDefaultColor?.color ? bData?.iconDefaultColor?.color : (await CssFilterConverter.filterToHex(bData.iconDefaultColor)).color,
+                    // iconSelectedColor: bData?.iconSelectedColor?.color ? bData?.iconSelectedColor?.color : (await CssFilterConverter.filterToHex(bData.iconSelectedColor)).color,
+                    // iconPosition: bData.iconPosition,
+                    // iconSize: bData.iconSize,
+                    // iconDefaultBgColor: bData.iconDefaultBgColor,
+                    // iconSelectedBgColor: bData.iconSelectedBgColor,
+                    // quickViewShowAs: bData.quickViewShowAs,
+                    // quickViewShowOption: bData.quickViewShowOption,
+                    // quickViewShowOptionImage: bData.quickViewShowOptionImage,
+                    // quickViewShowOptionTitle: bData.quickViewShowOptionTitle,
+                    // quickViewShowOptionAddToCart: bData.quickViewShowOptionAddToCart,
+                    // quickViewShowOptionAddToCartPosition: bData.quickViewShowOptionAddToCartPosition,
+                    // collectionType: bData.collectionType,
+                    // isQuickViewShowOptionImage: bData.isQuickViewShowOptionImage,
+                    // isQuickViewShowOptionTitle: bData.isQuickViewShowOptionTitle,
+                    // isQuickViewShowOptionAddToCart: bData.isQuickViewShowOptionAddToCart,
+                    // collectionShowCount: bData?.collectionShowCount === "yes" ? "increaseNdecrease" || "no" : bData?.collectionShowCount,
+
+
+
+
+
+                    // iconDefaultColor: { filterColor: bData.iconDefaultColor.filterColor, color: bData.iconDefaultColor.color },
+                    // iconSelectedColor: { filterColor: bData.iconSelectedColor.filterColor, color: bData.iconSelectedColor.color },
 
                     iconDefaultColor: bData?.iconDefaultColor?.color ? bData?.iconDefaultColor?.color : (await CssFilterConverter.filterToHex(bData.iconDefaultColor)).color,
                     iconSelectedColor: bData?.iconSelectedColor?.color ? bData?.iconSelectedColor?.color : (await CssFilterConverter.filterToHex(bData.iconSelectedColor)).color,
 
-
                     iconPosition: bData.iconPosition,
                     iconSize: bData.iconSize,
+                    collectionIconType: bData.collectionIconType,
+                    checkIconType: bData.checkIconType,
                     iconDefaultBgColor: bData.iconDefaultBgColor,
                     iconSelectedBgColor: bData.iconSelectedBgColor,
                     quickViewShowAs: bData.quickViewShowAs,
@@ -191,15 +215,10 @@ const CollectionSetting = () => {
                     quickViewShowOptionAddToCart: bData.quickViewShowOptionAddToCart,
                     quickViewShowOptionAddToCartPosition: bData.quickViewShowOptionAddToCartPosition,
                     collectionType: bData.collectionType,
-
-
                     isQuickViewShowOptionImage: bData.isQuickViewShowOptionImage,
                     isQuickViewShowOptionTitle: bData.isQuickViewShowOptionTitle,
                     isQuickViewShowOptionAddToCart: bData.isQuickViewShowOptionAddToCart,
-
-                    // collectionShowCount: bData?.collectionShowCount === "yes" && "increaseNdecrease" || "no"
-
-                    collectionShowCount: bData?.collectionShowCount === "yes" ? "increaseNdecrease" || "no" : bData?.collectionShowCount,
+                    collectionShowCount: bData?.collectionShowCount === "yes" ? "increaseNdecrease" || "no" : bData?.collectionShowCount
 
                 })
             }
@@ -251,12 +270,9 @@ const CollectionSetting = () => {
             showConfirmButton: false,
         });
         let dataSubmit = {
-            // iconDefaultColor: iconDefaultColorWatch.color,
-            // iconSelectedColor: iconSelectedColorWatch.color,
 
             iconDefaultColor: { filterColor: iconDefaultColorWatch.color, color: data.iconDefaultColor },
             iconSelectedColor: { filterColor: iconSelectedColorWatch.color, color: data.iconSelectedColor },
-
             iconPosition: data.iconPosition,
             iconSize: data.iconSize,
             collectionIconType: data.collectionIconType,
@@ -270,12 +286,25 @@ const CollectionSetting = () => {
             quickViewShowOptionAddToCart: data.quickViewShowOptionAddToCart,
             quickViewShowOptionAddToCartPosition: data.quickViewShowOptionAddToCartPosition,
             collectionType: data.collectionType,
-
             isQuickViewShowOptionImage: data.isQuickViewShowOptionImage,
             isQuickViewShowOptionTitle: data.isQuickViewShowOptionTitle,
             isQuickViewShowOptionAddToCart: data.isQuickViewShowOptionAddToCart,
-
             collectionShowCount: data.collectionShowCount
+
+            // collectionIconType: "saveOutlineSolid",
+            // iconPosition: "icon-top-right",
+            // iconSize: "medium",
+            // iconType: "save",
+            // iconDefaultColor: "brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(378%) hue-rotate(261deg) brightness(99%) contrast(93%)",
+            // iconSelectedColor: "brightness(0) saturate(100%) invert(53%) sepia(66%) saturate(2681%) hue-rotate(301deg) brightness(100%) contrast(102%)",
+            // iconDefaultBgColor: "#FFFFFF",
+            // iconSelectedBgColor: "#FFFFFF",
+            // collectionType: "iconType",
+            // quickViewShowAs: "icon",
+            // isQuickViewShowOptionImage: "on-image",
+            // quickViewShowOptionImage: "icon-top-left",
+            // collectionShowCount: "no"
+
         };
 
         const getAppMetafieldId = await appMetafield.getAppMetafieldId();
@@ -660,9 +689,9 @@ const CollectionSetting = () => {
                                                             <ColorPickerController control={control} controllerName={`iconDefaultBgColor`} id={`iconDefaultBgColor`} label={myLanguage.collectionIconDefaultBgColor} setSaveBar={setSaveBar} />
                                                         </div>
 
-                                                        <div className={`${renderWhichIcon().onlyFilledIcon ? 'disableOneByOne' : ""}`}>
-                                                            <ColorPickerController control={control} controllerName={`iconSelectedColor`} id={`iconSelectedColor`} label={myLanguage.collectionIconSelectedColor} setSaveBar={setSaveBar} />
-                                                        </div>
+                                                        {/* <div className={`${renderWhichIcon().onlyFilledIcon ? 'disableOneByOne' : ""}`}> */}
+                                                        <ColorPickerController control={control} controllerName={`iconSelectedColor`} id={`iconSelectedColor`} label={myLanguage.collectionIconSelectedColor} setSaveBar={setSaveBar} />
+                                                        {/* </div> */}
 
                                                         <div className={`${renderWhichIcon().whichIcon ? 'disableOneByOne' : ""}`}>
                                                             <ColorPickerController control={control} controllerName={`iconSelectedBgColor`} id={`iconSelectedBgColor`} label={myLanguage.collectionIconSelectedBgColor} setSaveBar={setSaveBar} />

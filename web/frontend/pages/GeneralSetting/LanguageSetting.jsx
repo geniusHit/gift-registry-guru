@@ -150,7 +150,7 @@ const LanguageSetting = () => {
                     createAccountAnchor: dData.createAccountAnchor,
                     searchBarText: dData.searchBarText,
                     noFoundSearchText: dData.noFoundSearchText,
-                    poweredByText: dData.poweredByText,
+                    // poweredByText: dData.poweredByText,
                     quantityText: dData.quantityText,
                     productNotAvailableText: dData.productNotAvailableText,
                     quotaLimitAlert: dData.quotaLimitAlert,
@@ -246,7 +246,7 @@ const LanguageSetting = () => {
             createAccountAnchor: data.createAccountAnchor,
             searchBarText: data.searchBarText,
             noFoundSearchText: data.noFoundSearchText,
-            poweredByText: data.poweredByText,
+            // poweredByText: data.poweredByText,
             quantityText: data.quantityText,
             productNotAvailableText: data.productNotAvailableText,
             quotaLimitAlert: data.quotaLimitAlert,
@@ -563,7 +563,8 @@ const LanguageSetting = () => {
             })
 
             const result = await storeLanguagesData.json();
-            const newResult = result?.data?.[0]?.translations;
+            // const newResult = result?.data?.[0]?.translations;
+            const newResult = result?.data?.[0]?.[0]?.translations;
 
             if (!newResult) throw new Error("No translation data found");
 

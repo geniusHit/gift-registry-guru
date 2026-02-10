@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import { DeleteMinor } from '@shopify/polaris-icons';
 import WebframezApps from './WebframezApps';
 // import bannerImage from '../assets/banner-image.png';
+import bannerImage from '../assets/BFCMimg.png';
 
 const PlanComponent = ({ setCurrentState }) => {
 
@@ -61,7 +62,6 @@ const PlanComponent = ({ setCurrentState }) => {
     const toastMarkup = active ? (
         <Toast content={errorMsg} onDismiss={toggleActive} />
     ) : null;
-
 
     // ----------- appy promo for test accounts -----------
     const partnerData = {
@@ -222,9 +222,6 @@ const PlanComponent = ({ setCurrentState }) => {
 
     async function savePlanInMetaField(data) {
         const getAppMetafieldId = await appMetafield.getAppMetafieldId();
-
-        console.log("getAppMetafieldId )))", getAppMetafieldId)
-
         const appMetadata = {
             key: "current-plan",
             namespace: "wishlist-app",
@@ -260,6 +257,7 @@ const PlanComponent = ({ setCurrentState }) => {
             imageUrl: loaderGif,
             showConfirmButton: false,
         });
+
         if (validPromoValue?.promo_code) {
             const planNames = validPromoValue.plan_name.split(',').map(name => name.trim());
             // if (validPromoValue.plan_name !== "all" && validPromoValue.plan_name !== planType.planName) {
@@ -297,6 +295,7 @@ const PlanComponent = ({ setCurrentState }) => {
 
 
     async function proccedToPayment(value, promoData = null) {
+
         localStorage.setItem("wishlist-guru-inhouse", true);
         Swal.fire({
             text: "Please wait for a while...",
@@ -318,6 +317,7 @@ const PlanComponent = ({ setCurrentState }) => {
                 body: JSON.stringify({ price: value.amount, interval: value.interval, shop: shop.shopName, plan: value.planName, returnUrl: returnData, promoData: promoData }),
             });
             const result = await response.json();
+
             const urlName = result.data.confirmationUrl;
             const subscription = useSubscriptionUrl(urlName);
             subscription.ReloadPage();
@@ -346,13 +346,19 @@ const PlanComponent = ({ setCurrentState }) => {
             await appMetafield.createAppMetafield(appMetadata);
         })
 
+        let planToBeCancel = planData.filter((data) => data.plan_id === Number(status));
+
         try {
             const response = await fetch("/api/subscription/cancel", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ id: checkSubStatus }),
+                body: JSON.stringify({
+                    id: checkSubStatus,
+                    planCancel: planToBeCancel[0].name,
+                    shopData: shop
+                }),
             });
             const result = await response.json();
             if (result.msg === "Subscription Cancelled") {
@@ -374,8 +380,6 @@ const PlanComponent = ({ setCurrentState }) => {
         }
     };
 
-
-
     async function getGeneralSettingData() {
         const dataArray = await appMetafield.getAllAppMetafields();
         for (let i = 0; i < dataArray.length; i++) {
@@ -385,7 +389,6 @@ const PlanComponent = ({ setCurrentState }) => {
             }
         }
     };
-
 
     const handleToggleChange = (value) => {
         // setToggleValue(!toggleValue);
@@ -455,10 +458,6 @@ const PlanComponent = ({ setCurrentState }) => {
         }
     }
     // console.log("togg", toggleValue)
-
-
-
-
 
     const handleChangePromo = useCallback(
         (newValue) => {
@@ -574,7 +573,14 @@ const PlanComponent = ({ setCurrentState }) => {
                         </div>
 
                         <div className='pricing-plan-table'>
-                            {planData.map(({ plan_id, name, yearly_price, monthly_price, plan_feature, sp_monthly_price, sp_yearly_price }) => {
+                            {planData.map(({ plan_id, name, yearly_price, monthly_price, plan_feature, sp_monthly_price, sp_yearly_price, prev_monthly_price, prev_yearly_price }) => {
+
+                                console.log("prev_monthly_price --- ", prev_monthly_price);
+                                console.log("prev_yearly_price --- ", prev_yearly_price);
+
+                                console.log("plan_id --- ", plan_id)
+
+
                                 const isYearly = toggleValue;
                                 const subscriptionAmount = isYearly ? getShopifyPlan === "shopify_plus" ? sp_yearly_price : yearly_price : getShopifyPlan === "shopify_plus" ? sp_monthly_price : monthly_price;
                                 const subscriptionType = isYearly ? "ANNUAL" : "EVERY_30_DAYS";
@@ -586,11 +592,16 @@ const PlanComponent = ({ setCurrentState }) => {
                                                 <LegacyCard sectioned subdued>
                                                     <div className='basicClass'>
                                                         <h2>{name}</h2>
-                                                        <div className='pricing-price'>${subscriptionAmount}
+                                                        <div className='pricing-price' style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", padding: "6px 0" }}>${subscriptionAmount}
 
                                                             {/* <span>{isYearly ? `/${myLanguage.yearPlan}` : `/${myLanguage.month}`}</span> */}
 
+                                                            {plan_id !== 1 ?
+                                                                <div style={{ marginLeft: "7px", fontSize: "15px" }}>Was $<span style={{ textDecoration: "line-through" }}>{isYearly ? prev_yearly_price : prev_monthly_price}</span></div> : ""}
+                                                            {plan_id !== 1 ? <span style={{ color: "red" }}>Limited Time Offer</span> : ""}
+
                                                         </div>
+
                                                         <div dangerouslySetInnerHTML={{ __html: plan_feature }} />
 
                                                         {Number(status) === plan_id ? <Button>SELECTED</Button> : ""}
@@ -656,7 +667,14 @@ const PlanComponent = ({ setCurrentState }) => {
                                 <div className='promo-code-list'>
                                     {/* <div className='wfq-main-promo'><span>Get 15 days trial</span> <span className='wfq-apply-span'><span className='bold-promo-list'>TRIAL15</span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("TRIAL15")}>{myLanguage.applyNow}</Button></div></span></div> */}
 
-                                    {/* <div className='wfq-main-promo'><span>Flat 20% off on all plans</span> <span className='wfq-apply-span'><span className='bold-promo-list'>GET20OFF</span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("GET20OFF")}>{myLanguage.applyNow}</Button></div></span></div> */}
+                                    {/* <div className='wfq-main-promo'><span>{myLanguage.planBasicBFCM}</span> <span className='wfq-apply-span'><span className='bold-promo-list'>BFCM-Basic</span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("BFCM-Basic")}>{myLanguage.applyNow}</Button></div></span></div>
+
+                                    <div className='wfq-main-promo'><span>{myLanguage.planProBFCM}</span> <span className='wfq-apply-span'><span className='bold-promo-list'>BFCM-Pro</span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("BFCM-Pro")}>{myLanguage.applyNow}</Button></div></span></div>
+
+                                    <div className='wfq-main-promo'><span>{myLanguage.planPremiumBFCM}</span> <span className='wfq-apply-span'><span className='bold-promo-list'>BFCM-Premium</span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("BFCM-Premium")}>{myLanguage.applyNow}</Button></div></span></div>
+
+                                    <div className='wfq-main-promo'><span>{myLanguage.planAllBFCM}</span> <span className='wfq-apply-span'><span className='bold-promo-list'>BFCM-Yearly </span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("BFCM-Yearly ")}>{myLanguage.applyNow}</Button></div></span></div> */}
+
 
                                     {getShopifyPlan === "partner_test" || getShopifyPlan === "affiliate" ?
                                         <div className='wfq-main-promo'><span>{myLanguage.partnerPromo}</span> <span className='wfq-apply-span'><span className='bold-promo-list'>PARTNER</span><div className='wfq-quote-form-btn disable-app'><Button size='slim' onClick={() => handleApplyPromo("PARTNER")}>{myLanguage.applyNow}</Button></div></span></div> :

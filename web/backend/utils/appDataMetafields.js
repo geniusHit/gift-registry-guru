@@ -72,7 +72,7 @@ export async function getOneAppDataMetafield(data) {
                     }
                   }`
 
-  return await query
+  return query
 };
 
 

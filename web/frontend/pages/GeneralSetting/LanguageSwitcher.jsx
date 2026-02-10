@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import mainDomain from '../../assets/mainDomain.png';
 import subDomain from '../../assets/subDomain.png';
+import { english, french, dutch, greek, arabic, german, chinese, brazilian, danish, swedish, spanish, chineseTraditional, czech, italian, ukrainian, japanese, korean, norwegianBokmal, polish, portugueseBrazil, portuguesePortugal, thai, turkish, finnish, herbew, hungarian, bulgarian, lithuanian, irish, romanian, filipino, indonesian, russian, vietnamese, albanian, latvian, estonian } from '../../assets/Languages/emailTemplate';
 
 
 const LanguageSwitcher2 = ({ data }) => {
@@ -39,6 +40,8 @@ const LanguageSwitcher2 = ({ data }) => {
     const sendData = data.sendData
     const appName = data.appName;
     const saveDataInMeta = data.saveDataInMeta;
+
+    const languageMap = { english, french, dutch, greek, arabic, german, chinese, brazilian, danish, swedish, spanish, chineseTraditional, czech, italian, ukrainian, japanese, korean, norwegianBokmal, polish, portugueseBrazil, portuguesePortugal, thai, turkish, finnish, herbew, hungarian, bulgarian, lithuanian, irish, romanian, filipino, indonesian, russian, vietnamese, albanian, latvian, estonian };
 
     useEffect(() => {
         useEffectLite();
@@ -88,7 +91,7 @@ const LanguageSwitcher2 = ({ data }) => {
                         <Button onClick={() => handleEditModal(lang_id, url_id)}><Icon source={EditMajor} color="base" /></Button>
                         {
                             type !== "default" &&
-                            <Button onClick={() => hanldleDeleteLang(lang_id, url_id)}><Icon source={DeleteMajor} tone="base" /></Button>
+                            <Button onClick={() => hanldleDeleteLang(lang_id, url_id, lang_name)}><Icon source={DeleteMajor} tone="base" /></Button>
                         }
                         <div className='editBtn disable-app'>
                             <Button onClick={() => handleGoToLanguage(lang_id, type)} size='slim'>{myLanguage.editTranslations}</Button>
@@ -101,8 +104,60 @@ const LanguageSwitcher2 = ({ data }) => {
 
     const handleChange = useCallback(() => setActive(!active), [active]);
 
-    const saveLanguageAndUrl = async (data, idValue = "") => {
 
+
+
+    const buildEmailTemplates = (data) => {
+        const t = data;
+        return {
+            priceDropData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">${t.PriceDrop.firstRow}</div>`,
+                emailSubject: `${t.PriceDrop.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.PriceDrop.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            },
+            backInStockData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">${t.BackInStock.firstRow}</div>`,
+                emailSubject: `${t.BackInStock.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.BackInStock.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            },
+            lowStockData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width: 520px;margin: 0 auto 25px;">${t.LowInStock.firstRow}</div>`,
+                emailSubject: `${t.LowInStock.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.LowInStock.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            },
+            weeklyEmailData: {
+                firstRow: `<div style="font-size:16px;line-height:26px;color:#222;font-weight:400;font-family:'Poppins', sans-serif;text-align: center;max-width:100%;margin: 0 auto 25px;">${t.WeeklyEmail.firstRow}</div>`,
+                emailSubject: `${t.WeeklyEmail.emailSubject}`,
+                footerRow: `<div style="margin: 0 auto 30px;text-align: center;font-size: 15px;line-height: 20px;font-weight: 400;color: #222;font-family: 'Poppins', sans-serif; max-width: 500px;">${t.WeeklyEmail.footerRow}</div>`,
+                isLogo: true,
+                headerBgColor: '',
+                contentBgColor: '',
+                contentColor: '',
+                footerBgColor: '',
+                footerColor: '',
+            }
+        };
+    };
+
+    const saveLanguageAndUrl = async (data, idValue = "") => {
         if (idValue && idValue.nativeEvent) {
             idValue = null;
         }
@@ -119,7 +174,6 @@ const LanguageSwitcher2 = ({ data }) => {
 
             const ifTypeOfUrl = urlValue.endsWith('/') ? true : urlValue.startsWith('/') ? true : false
             // console.log("ifTypeOfUrl", ifTypeOfUrl)
-
 
             if (typeOfUrl === "type3") {
             } else {
@@ -184,6 +238,9 @@ const LanguageSwitcher2 = ({ data }) => {
                 await fetchData(shopData);
                 setSmaalLoader(false)
                 reset();
+
+                // -----adding new email temp of  new language-----
+                await addingEmailTempOfNewLanguage(data.storeFrontLanguage);
             } catch (error) {
                 console.error(error);
             }
@@ -192,6 +249,39 @@ const LanguageSwitcher2 = ({ data }) => {
             setSmaalLoader(false)
         }
     };
+
+
+    async function addingEmailTempOfNewLanguage(newLanguage) {
+
+        if (newLanguage) {
+            const selectedLanguage = newLanguage;
+            const templates = languageMap[selectedLanguage] || languageMap.english;
+            const { priceDropData, backInStockData, lowStockData, weeklyEmailData } = buildEmailTemplates(templates);
+            const { domain, shopName } = shopData;
+
+            try {
+                let getDefaultData = await fetch(`${serverURL}/get-email-reminder-checks`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        shopName: shopName,
+                        language: `https://${domain}/`,
+                        tempLanguage: newLanguage,
+                        backInStock: JSON.stringify(backInStockData),
+                        lowInStock: JSON.stringify(lowStockData),
+                        priceDrop: JSON.stringify(priceDropData),
+                        weeklyEmail: JSON.stringify(weeklyEmailData)
+                    }),
+                })
+                let results = await getDefaultData.json();
+
+            } catch (error) {
+                console.log("errr ", error)
+            }
+        }
+    }
 
 
     async function updateAndSaveData(data, shopName, idValue) {
@@ -228,7 +318,7 @@ const LanguageSwitcher2 = ({ data }) => {
         await getDataFromDB(id)
     }
 
-    async function hanldleDeleteLang(id, urlId) {
+    async function hanldleDeleteLang(id, urlId, lang_name) {
         try {
             Swal.fire({
                 title: myLanguage.swalDeleteHeading,
@@ -249,7 +339,8 @@ const LanguageSwitcher2 = ({ data }) => {
                         body: JSON.stringify({
                             shopName: shopData.shopName,
                             id: id,
-                            urlId: urlId
+                            urlId: urlId,
+                            language: lang_name
                         }),
                     })
                     let results = await userDatas.json();

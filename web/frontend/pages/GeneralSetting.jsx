@@ -423,6 +423,7 @@ const GeneralSetting = () => {
                         <div style={{ marginTop: "40px" }}>
                             <Footer myLanguage={myLanguage} />
                         </div>
+
                     </Page>
                 </div>
             }
@@ -431,3 +432,4 @@ const GeneralSetting = () => {
 }
 
 export default GeneralSetting;
+

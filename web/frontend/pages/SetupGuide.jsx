@@ -92,7 +92,6 @@ const SetupGuide = ({ values }) => {
         { value: "vietnamese", label: "Vietnamese" },
         { value: "latvian", label: "Latvian" },
         { value: "estonian", label: "Estonian" },
-
     ];
 
     function renderAdminOption() {
@@ -103,7 +102,6 @@ const SetupGuide = ({ values }) => {
     const toastMarkupErr = activeErr ? (
         <Toast error content={errorText} onDismiss={toggleActiveErr} />
     ) : null;
-
 
     const tabsData = getPlanState > 1 ? [
         { id: 'step-1', content: 'Choose Theme And Activate App', panelID: 'step-1-content' },
@@ -168,14 +166,10 @@ const SetupGuide = ({ values }) => {
         if (!checkUserDomain) {
             clarityFxn();
         }
-
-
-
         // console.log("JJJJJ ----- ", getBrowserLang())
         // console.log("getThemeId --- ", getThemeId)
         await isThemeAlreadyOn();
     }
-
 
     function clarityFxn() {
         (function (c, l, a, r, i, t, y) {
@@ -205,10 +199,8 @@ const SetupGuide = ({ values }) => {
         }
     };
 
-
     const checkThemeStatus = async () => {
         const isThemeToggle = await themeToggle(getThemeId)
-
         if (!isThemeToggle.heartButton) {
             clearInterval(intervalId);
         }
@@ -237,7 +229,6 @@ const SetupGuide = ({ values }) => {
         }
     };
 
-
     async function getDatesOfplans() {
         try {
             const response = await fetch(`/api/all-theme-data`);
@@ -255,7 +246,6 @@ const SetupGuide = ({ values }) => {
                     })
                 } else {
                     if (dev.role === 'development') {
-
 
                     }
                     else {
@@ -333,7 +323,6 @@ const SetupGuide = ({ values }) => {
                 setGetThemeId(Number(value));
                 setShowSmallLoader(true);
                 setThemeName(prevName => prevName = getSelectedThemeNameFxn(Number(value)));
-
                 const isThemeToggle = await themeToggle(Number(value));
                 setShowSmallLoader(false);
                 setSetUpCollection(isThemeToggle.collectionButton)
@@ -348,7 +337,6 @@ const SetupGuide = ({ values }) => {
             toggleActiveErr();
             setShowSmallLoader1(false)
         } else if (isDemo === true) {
-
             setSelectedTab(1);
             setShowSmallLoader1(false);
             const response = await fetch(`/api/get-theme-data-by-id?id=${Number(getThemeId)}`);
@@ -367,18 +355,15 @@ const SetupGuide = ({ values }) => {
             }
             await apiInstallation(sendData);
             setShowSmallLoader(false);
-
         }
         else {
             setShowSmallLoader1(true)
             const isThemeToggle = await themeToggle(getThemeId);
-
             if (!isThemeToggle.collectionButton) {
                 setAlreadyOn(true)
             } else {
                 setAlreadyOn(false)
             }
-
             if (isThemeToggle.heartButton) {
                 setErrorText("Please.. enable the block button first !!");
                 toggleActiveErr();
@@ -386,7 +371,6 @@ const SetupGuide = ({ values }) => {
             } else {
                 setSelectedTab(1)
                 setShowSmallLoader1(false)
-
                 const response = await fetch(`/api/get-theme-data-by-id?id=${Number(getThemeId)}`);
                 const getThemeName = await response.json();
                 let saveData = {
@@ -500,8 +484,6 @@ const SetupGuide = ({ values }) => {
             setLang = { ...estonianMessage, languageSetting: adminLang, textMsgLanguage: textLang };
         }
 
-
-
         const isToggleTheme = await themeToggle(getThemeId)
         if (themeName && isHeartBtn && adminLang && textLang) {
             if (getPlanState > 1 && !isToggleTheme.heartButton && !isToggleTheme.collectionButton) {
@@ -545,12 +527,10 @@ const SetupGuide = ({ values }) => {
             text: "You will be redirect to the dahsboard page",
         });
         // window.top.location.href = `https://${values?.shopApi?.domain}/admin/apps/${appName}/Dashboard`;
-
         navigate({
             pathname: `/`,
             search: ``
         })
-
         setShowSmallLoader1(false);
     };
 
@@ -643,7 +623,6 @@ const SetupGuide = ({ values }) => {
         return <div>
             <div style={{ marginBottom: "20px" }}>
                 <Text variant="headingMd" as="h2">{setupState.myLanguage.y1}</Text>
-
                 <Select
                     label={setupState.myLanguage.y2}
                     options={renderAdminOption()}
@@ -651,10 +630,8 @@ const SetupGuide = ({ values }) => {
                     onChange={(value) => setAdminLang(value)}
                 />
             </div>
-
             <div>
                 <Text variant="headingMd" as="h2">{setupState.myLanguage.y3}</Text>
-
                 <Select
                     label={setupState.myLanguage.y4}
                     options={languageTypes}
@@ -665,59 +642,23 @@ const SetupGuide = ({ values }) => {
         </div>
     }
 
-
     const goToSupppportMail = () => {
         window.open(`https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=support@webframez.com`, "_blank");
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     // ---------------here to get browser language---------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     const getBrowserLang = () => {
         const browserLanguage = navigator.language || navigator.userLanguage || "en";
         const dontSplitCodes = new Set(["pt-BR", "zh-CN", "zh-TW", "pt-PT"]);
         return dontSplitCodes.has(browserLanguage) ? browserLanguage : browserLanguage.split("-")[0];
     }
 
-
     const isThemeAlreadyOn = async () => {
         try {
             // homeState.themeId && await themeToggle(homeState.themeId, homeState?.themRole || "live")
             const mainLang = getBrowserLang();
-
-            console.log("mainLang -- ", mainLang)
             const adminLanguage = languages.find(item => item.code === mainLang);
-
-            console.log("adminLanguage -- ", adminLanguage)
             const whichLang = setupGuideLanguage[mainLang] || setupGuideLanguage['en'];
-
-            console.log("whichLang --- ", whichLang)
-
             setSetupState((prevState) => ({
                 // ...prevState,
                 myLanguage: whichLang,
@@ -726,7 +667,6 @@ const SetupGuide = ({ values }) => {
                 // storeFrontLanguage: adminLanguage.name,
                 mainBrowserLang: mainLang
             }))
-
             // await Promise.all([
             //     setMetaFieldId(apiHook, setSetupState)
             // ])
@@ -734,11 +674,6 @@ const SetupGuide = ({ values }) => {
             console.log(error)
         }
     }
-
-
-
-
-
 
     const handleTrasnlate = () => {
         const browserLanguage = getBrowserLang();
@@ -754,15 +689,6 @@ const SetupGuide = ({ values }) => {
         }))
     }
 
-
-
-
-
-
-
-
-
-
     return (
         !setupLoading ? <SkeletonPage1 /> :
             <Frame>
@@ -770,31 +696,20 @@ const SetupGuide = ({ values }) => {
                     fullWidth
                     title={setupState?.myLanguage?.sG}
                     subtitle={setupState.myLanguage.sGSH}
-
                     primaryAction={setupState.mainBrowserLang !== "en" && (
                         <div className='disable-app'>
                             <Button onClick={handleTrasnlate}>{setupState.browserLang ? "Translate Into English" : "Translate Into Local Language"}</Button>
                         </div>
-                    )}
-
-                >
+                    )}>
                     <div className='wf-style-wishbtn wf-setup-guide'>
-                        {/* <Tabs tabs={tabsData} selected={selectedTab} fitted> */}
                         <LegacyCard.Section >
-
                             {selectedTab === 0 && (
                                 themeName === "" || !switchTheme ?
                                     <div className='wf-dashboard-box-inner'>
-                                        {/* <h1 className='stepPera'>STEP 1 - Choose theme and activate app</h1> */}
                                         <div className='wg-mainThemeDiv'>
-                                            <img
-                                                src={ColGif}
-                                                alt="icon"
-                                            />
+                                            <img src={ColGif} alt="icon" />
                                             <div>
-                                                {/* <h1 className='stepPera'>STEP 1 - Choose theme and activate app</h1> */}
                                                 <h1 className='stepPera'>{setupState.myLanguage.sG}</h1>
-
                                                 <Text variant="headingMd" as="h2">{setupState.myLanguage.ct}
                                                     <span style={{ marginLeft: "10px" }}>
                                                         {showThemeButton === "appIsEmbedded" ?
@@ -817,36 +732,22 @@ const SetupGuide = ({ values }) => {
                                                         }
                                                     </div>
                                                 </div>
-
                                                 <h4><span>{setupState.myLanguage.n5} </span> {setupState.myLanguage.n4}</h4>
                                             </div>
-
-
                                         </div>
-
-                                        <div className='outerSetupButtons'>
-                                            {stepOneButton()}
-                                        </div>
+                                        {/* <div className='outerSetupButtons'>
+                                                {stepOneButton()}
+                                            </div> */}
                                     </div>
-
                                     :
-
                                     <div className='wf-dashboard-box-inner'>
-                                        {/* <h1 className='stepPera'>STEP 1 - Choose Theme And Activate App</h1> */}
-
-                                        {
-                                            (!showSmallLoader && showThemeButton === "appIsEmbedded") &&
+                                        {(!showSmallLoader && showThemeButton === "appIsEmbedded") &&
                                             <>
                                                 <div className='wg-mainThemeDiv'>
-                                                    <img
-                                                        src={ColGif}
-                                                        alt="icon"
-                                                    />
+                                                    <img src={ColGif} alt="icon" />
                                                     <div>
                                                         <h1 className='stepPera'>{setupState.myLanguage.n6}</h1>
-
                                                         <div className='appActivated'>
-
                                                             <span>{setupState.myLanguage.n7}  <b> {themeName} </b>theme </span><span style={{ maxWidth: "max-content" }}><Button onClick={handleSwitchTheme} className='disable-app'>{setupState.myLanguage.n8}</Button></span>
                                                         </div>
                                                         <br />
@@ -855,73 +756,44 @@ const SetupGuide = ({ values }) => {
                                                         </h2>
                                                     </div>
                                                 </div>
-
                                                 <div className='outerSetupButtons'>
                                                     {stepOneButton()}
                                                 </div>
                                             </>
                                         }
                                     </div>
-
                             )}
-
-
-
-
                             {selectedTab === 1 && (
                                 <div className='wf-dashboard-box-inner'>
                                     {getPlanState > 1 ? (
                                         <>
-                                            {/* <h1 className='stepPera'>STEP 2 - Enable Collection Icon</h1> */}
                                             <div className='wg-mainThemeDiv'>
-                                                <img
-                                                    src={ColGif}
-                                                    alt="icon"
-                                                />
+                                                <img src={ColGif} alt="icon" />
                                                 <div>
                                                     <div className='wf-stepdefaultMain'>
                                                         <h1 className='stepPera'>{setupState.myLanguage.r1}</h1>
-
                                                         <span className='wf-stepdefault2'>{setupState.myLanguage.r2}
                                                             : <div className='basic-plan' >basic</div></span>
-                                                        {
-                                                            setUpCollection &&
-                                                            setupState.myLanguage.r3
-                                                        }
-
-
+                                                        {setUpCollection && setupState.myLanguage.r3}
                                                     </div>
-
-
-                                                    {
-                                                        setUpCollection ?
-                                                            <div className='enable-app wfq-zoom-button'><Button onClick={collectionIconClick} >{setupState.myLanguage.n3}</Button></div>
-                                                            :
-                                                            <>
-                                                                <br />
-                                                                {
-                                                                    alreadyOn
-                                                                        ?
-                                                                        <h2 className='stepTwoSetupGuide'><span style={{ fontSize: '32px' }}>✅</span> {setupState.myLanguage.r4}</h2>
-                                                                        :
-                                                                        <h2 className='stepTwoSetupGuide'> <span style={{ fontSize: '32px' }}>✅</span> {setupState.myLanguage.r5}</h2>
-                                                                }
-                                                            </>
+                                                    {setUpCollection ?
+                                                        <div className='enable-app wfq-zoom-button'><Button onClick={collectionIconClick} >{setupState.myLanguage.n3}</Button></div>
+                                                        :
+                                                        <>
+                                                            <br />
+                                                            {alreadyOn ?
+                                                                <h2 className='stepTwoSetupGuide'><span style={{ fontSize: '32px' }}>✅</span> {setupState.myLanguage.r4}</h2>
+                                                                : <h2 className='stepTwoSetupGuide'> <span style={{ fontSize: '32px' }}>✅</span> {setupState.myLanguage.r5}</h2>}
+                                                        </>
                                                     }
                                                 </div>
-                                                {/* <img
-                                                    src={ColGif}
-                                                    alt="icon"
-                                                /> */}
                                             </div>
 
                                             <div className='outerSetupButtons'>
                                                 <div className='setupButtons'>
-                                                    {
-                                                        showSmallLoader2 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <Button onClick={collectionPrevious}>{setupState.myLanguage.r6}</Button>
-                                                    }
-
-                                                    <Button onClick={handleCollectionBtn}>{setupState.myLanguage.r7}</Button>
+                                                    {showSmallLoader2 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <Button onClick={collectionPrevious}>{setupState.myLanguage.r6}</Button>}
+                                                    {setUpCollection ? "" :
+                                                        <Button onClick={handleCollectionBtn}>{setupState.myLanguage.r7}</Button>}
                                                 </div>
                                             </div>
                                         </>
@@ -930,12 +802,9 @@ const SetupGuide = ({ values }) => {
                                             <div className='wf-dashboard-box-inner'>
                                                 <h1 className='stepPera'>{setupState.myLanguage.r8}</h1>
                                                 {renderLang()}
-
                                                 <div className='outerSetupButtons'>
                                                     <div className='setupButtons'>
-                                                        {
-                                                            showSmallLoader2 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <Button onClick={collectionPrevious}>{setupState.myLanguage.r6}</Button>
-                                                        }
+                                                        {showSmallLoader2 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <Button onClick={collectionPrevious}>{setupState.myLanguage.r6}</Button>}
                                                         <div>
                                                             {showSmallLoader1 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <span className='save-setup'><Button onClick={handleComplete}>{setupState.myLanguage.r9}</Button></span>}
                                                         </div>
@@ -947,18 +816,12 @@ const SetupGuide = ({ values }) => {
                                 </div>
                             )}
                             {getPlanState > 1 && selectedTab === 2 && (
-
                                 <div className='wf-dashboard-box-inner'>
                                     <h1 className='stepPera'>{setupState.myLanguage.q1}</h1>
-
                                     {renderLang()}
-
                                     <div className='outerSetupButtons'>
                                         <div className='setupButtons'>
-                                            {
-                                                showSmallLoader2 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <Button onClick={languagePrevious}>{setupState.myLanguage.r6}</Button>
-                                            }
-
+                                            {showSmallLoader2 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <Button onClick={languagePrevious}>{setupState.myLanguage.r6}</Button>}
                                             <div>
                                                 {showSmallLoader1 ? <Spinner accessibilityLabel="Spinner example" size="large" /> : <span className='save-setup'><Button onClick={handleComplete}>{setupState.myLanguage.r9}</Button></span>}
                                             </div>
@@ -966,22 +829,16 @@ const SetupGuide = ({ values }) => {
                                     </div>
                                 </div>
                             )}
-
                             <br></br>
-
                             <div style={{ backgroundColor: "#FFB800", padding: "20px", borderRadius: "20px" }}>
                                 <b>{setupState.myLanguage.n5} </b>{setupState.myLanguage.q2} <span onClick={goToSupppportMail} style={{ cursor: "pointer", textDecoration: "underline", color: "blue" }}>support@webframez.com</span>
                             </div>
-
-
                         </LegacyCard.Section>
-                        {/* </Tabs> */}
                     </div>
                     {toastMarkupErr}
                 </Page>
             </Frame >
     )
 }
-
 export default SetupGuide;
 
