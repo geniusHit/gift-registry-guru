@@ -3366,6 +3366,8 @@ span.drawerDisableClass {
 
 .wgr-description {
     text-align: left;
+    display: flex;
+    justify-content: space-between;
 }
 
 .wgr-listing-row .wishlist-modal-all .wf-multi-Wish-heading {

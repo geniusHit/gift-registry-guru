@@ -3594,6 +3594,7 @@ async function wgrListingPageTypeFunction(page = 1) {
     // showing loader 
 
     // console.log("allWishlistData ---- ", allWishlistData)
+    console.log("wgrListingPageTypeFunction -------")
     const startIndex = (page - 1) * wgrRowsPerPage;
     const endIndex = startIndex + wgrRowsPerPage;
 
@@ -3616,8 +3617,14 @@ async function wgrListingPageTypeFunction(page = 1) {
         listingDiv.innerHTML = `There is currently no registry. Please create your first registry by <a href="/apps/wf-gift-registry/create" >clicking here</a>.`
 
     } else {
-
-        listingDiv.innerHTML = `${allWishlistData.map(data => {
+        const currentList = allWishlistData.slice(startIndex, endIndex)
+        listingDiv.innerHTML = `${currentList.map(data => {
+            console.log("data = ", data)
+            console.log("Object.keys(data) = ", Object.keys(data))
+            let firstKey = Object.keys(data)[0]
+            console.log("firstKey = ", firstKey)
+            console.log("totalItems = ", data[firstKey].length)
+            let totalItemsInRegistry = data[firstKey].length
             const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
             return `
                                 <div class="wgr-listing-row">
@@ -3641,11 +3648,18 @@ async function wgrListingPageTypeFunction(page = 1) {
                                             </div>
 
                                             <div class="wgr-description" onclick="redirectToSingleWishlist22('${listName}')">
-                                                <b>Description:</b><span>${data.description}</span>
+                                                <div>
+                                                    <b>Description:</b><span>${data.description}</span>
+                                                </div>
+                                                <div>
+                                                    <b>Total Items: ${totalItemsInRegistry}</b>
+                                                </div>
                                             </div>
                                 </div>
                                 `;
-        }).join("")}`;
+        }).join("")}
+            ${renderPagination(allWishlistData.length)}
+        `;
     }
 
 
@@ -3819,7 +3833,7 @@ async function redirectToSingleWishlist(singleWishlist, singleUser = "") {
     }
 }
 
-async function wgrFindRegistry() {
+async function wgrFindRegistry(page) {
     wgrAddNavigationSection();
     // loader---css
     document.querySelector(".wgr-search-result").innerHTML = `<div class="loader-css" ><span> </span></div>`
@@ -3827,7 +3841,7 @@ async function wgrFindRegistry() {
     document.querySelector(".wgr-search-input").innerHTML = `
 <div class="main-search-wgr">
                             <div>
-                                 <select name="wishlistEventType" id="search-event-type" onchange="wgrFindWithEvent(event)">
+                                 <select name="wishlistEventType" id="search-event-type" onchange="wgrFindWithEvent(event, 1)">
                                   <option value="all" >All events</option>
                                         ${eventOption.map(value => {
         return `<option value="${value.value}" >
@@ -3847,7 +3861,7 @@ async function wgrFindRegistry() {
                                 `;
 
     // -----------show public registries of this store by default-----------
-    showPublicRegistryData();
+    showPublicRegistryData(page);
 
 }
 
@@ -3912,7 +3926,6 @@ function getPublicSearch() {
 }
 
 function wgrShowFilteredData(dataArray, inputValue, page = 1) {
-    console.log("ffffff")
     const startIndex = (page - 1) * wgrRowsPerPage;
     const endIndex = startIndex + wgrRowsPerPage;
     console.log("page = ", page)
@@ -3920,7 +3933,7 @@ function wgrShowFilteredData(dataArray, inputValue, page = 1) {
     console.log("endIndex = ", endIndex)
 
     currentArray = dataArray.slice(startIndex, endIndex)
-
+    console.log("allWishlistData = ", allWishlistData)
     if (dataArray.length !== 0) {
         document.querySelector(".wgr-search-result").innerHTML = `
                         <div class="wgr-back-button">
@@ -3928,6 +3941,10 @@ function wgrShowFilteredData(dataArray, inputValue, page = 1) {
                             <span onclick="wgrResetPublicListing()">Back</span>
                         </div>
                 ${currentArray.map(data => {
+            let wishlistName = data.wishlist_name
+            let wishlistData = allWishlistData.filter((data) => data[wishlistName])
+            let totalItemsInRegistry = wishlistData[0][wishlistName].length
+
             return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
                                             <div class="wishlist-modal-all"> 
                                                 <div class="wf-multi-Wish-heading">
@@ -3937,7 +3954,12 @@ function wgrShowFilteredData(dataArray, inputValue, page = 1) {
                                                 </div>
                                             </div>
                                             <div class="wgr-description">
-                                                <b>Description:</b><span>${data.wishlist_description}</span>
+                                                <div>
+                                                    <b>Description:</b><span>${data.wishlist_description}</span>
+                                                </div>
+                                                <div>
+                                                    <b>Total Items: ${totalItemsInRegistry}</b>
+                                                </div>
                                             </div>
                                 </div>
                                 `;
@@ -3955,12 +3977,14 @@ function wgrShowFilteredData(dataArray, inputValue, page = 1) {
 
 
 function wgrResetPublicListing() {
-    wgrFindRegistry();
+    currentEvent = "all"
+    wgrFindRegistry(1);
 }
 
 var eventData = [], currentEvent = "all"
 function wgrFindWithEvent(event, page = 1) {
     const selectedEventValue = event.target.value;
+    wgrCurrentPage = 1
     currentEvent = selectedEventValue
     let newArr = []
     if (selectedEventValue === "all") {
@@ -3976,7 +4000,8 @@ function wgrFindWithEvent(event, page = 1) {
 }
 
 
-async function showPublicRegistryData() {
+async function showPublicRegistryData(page) {
+    console.log("page from showPublicRegistryData = ", page)
     try {
         const response = await fetch(`${serverURL}/get-public-registry-by-store`, {
             method: "POST",
@@ -3989,6 +4014,10 @@ async function showPublicRegistryData() {
         const result = await response.json();
         const publicData = result?.data || [];
         publicRegistryList = result?.data || [];
+
+        if (page !== undefined) {
+            wgrCurrentPage = page
+        }
 
         if (publicData.length !== 0) {
             renderPublicRegistries(publicData, wgrCurrentPage);
@@ -4018,7 +4047,12 @@ function renderPublicRegistries(publicData, page = 1) {
 
     document.querySelector(".wgr-search-result").innerHTML = `
         <h3>All Public Registries of this store</h3>
-        ${paginatedData.map(data => `
+        ${paginatedData.map(data => {
+        let wishlistName = data.wishlist_name
+        let wishlistData = allWishlistData.filter((data) => data[wishlistName])
+        let totalItemsInRegistry = wishlistData[0][wishlistName].length
+
+        return `
             <div class="wgr-listing-row">
                 <div class="wishlist-modal-all"> 
                     <div class="wf-multi-Wish-heading">
@@ -4034,11 +4068,16 @@ function renderPublicRegistries(publicData, page = 1) {
 
                 <div class="wgr-description"
                     onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
-                    <b>Description:</b>
-                    <span>${data.wishlist_description || ''}</span>
+                    <div>
+                        <b>Description:</b>
+                        <span>${data.wishlist_description || ''}</span>
+                    </div>
+                    <div>
+                        <b>Total Items: ${totalItemsInRegistry}</b>
+                    </div>
                 </div>
             </div>
-        `).join("")}
+        `}).join("")}
 
         ${renderPagination(publicData.length)}
     `;
@@ -4084,16 +4123,33 @@ function renderPagination(totalItems) {
 }
 
 function changePage(page) {
-    const totalPages = Math.ceil(publicRegistryList.length / wgrRowsPerPage);
-    if (page < 1 || page > totalPages) return;
+    console.log("page = ", page)
+    console.log("window.location.href = ", window.location.href)
+    console.log(`https://${Shopify.shop}/apps/wf-gift-registry/list`)
+    console.log(window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/list`)
     wgrCurrentPage = page;
     console.log("currentEvent = ", currentEvent)
-    if (currentEvent === "all") {
-        renderPublicRegistries(publicRegistryList, wgrCurrentPage);
+    if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/find`) {
+        console.log("case 1")
+        const totalPages = Math.ceil(publicRegistryList.length / wgrRowsPerPage);
+        console.log("totalPages = ", totalPages)
+        if (page < 1 || page > totalPages) return;
+
+        if (currentEvent === "all") {
+            renderPublicRegistries(publicRegistryList, wgrCurrentPage);
+        }
+        else {
+            wgrShowFilteredData(eventData, currentEvent, page)
+        }
+    }
+    else if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/list`) {
+        console.log("case 2")
+        wgrListingPageTypeFunction(page)
     }
     else {
-        wgrShowFilteredData(eventData, currentEvent, page)
+        console.log("case else")
     }
+
     document
         .querySelector(".wgr-search-result")
         ?.scrollIntoView({ behavior: "smooth" });
