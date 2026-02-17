@@ -86,15 +86,20 @@ const MyRoutes = () => {
         return (
             <>
                 <Link to="/" rel="home" />
-                <Link to="/Analytic">{myLanguage?.analyticPage}</Link>
-                <Link to="/ButtonSetting">{myLanguage?.buttonSetting}</Link>
-                <Link to="/GeneralSetting">{myLanguage?.generalSetting}</Link>
+                {/* <Link to="/Analytic">{myLanguage?.analyticPage}</Link> */}
+                <Link to="/Analytic">Analytic</Link>
+                {/* <Link to="/ButtonSetting">{myLanguage?.buttonSetting}</Link> */}
+                <Link to="/ButtonSetting">Button Customisation</Link>
+                {/* <Link to="/Registries">Registries</Link> */}
                 <Link to="/CollectionSetting">{myLanguage?.collectionSetting}</Link>
-                <Link to="/Analytic/UserReport">{myLanguage?.reportPage}</Link>
+                <Link to="/GeneralSetting">{myLanguage?.generalSetting}</Link>
+                <Link to="/PricingPlan">Plan</Link>
                 <Link to="/EmailReports">{myLanguage?.emailReportsPage}</Link>
-                <Link to="/ShareStats">{myLanguage?.shareStats}</Link>
-                <Link to="/PricingPlan">{myLanguage?.paidPlans}</Link>
-                <Link to="/RequestFormModal">{myLanguage?.getSupport}</Link>
+                {/* <Link to="/Analytic/UserReport">{myLanguage?.reportPage}</Link>
+                <Link to="/EmailReports">{myLanguage?.emailReportsPage}</Link>
+                <Link to="/ShareStats">{myLanguage?.shareStats}</Link> */}
+                {/* <Link to="/PricingPlan">{myLanguage?.paidPlans}</Link> */}
+                {/* <Link to="/RequestFormModal">{myLanguage?.getSupport}</Link> */}
             </>
         )
     }

@@ -5448,6 +5448,12 @@ export const getWishlistUsersData = async (req, res) => {
              ORDER BY w.id DESC`
         );
 
+        const [allRegistries] = await database.query(`
+            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
+            JOIN ${Wishlist_table}
+            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id;
+        `)
+
         let results = [];
         for (let abItem of userData) {
             let count = 0;
@@ -5470,6 +5476,7 @@ export const getWishlistUsersData = async (req, res) => {
             cartData,
             wishlistItemData,
             results,
+            allRegistries
         });
     } catch (err) {
         console.error(err);

@@ -3594,7 +3594,6 @@ async function wgrListingPageTypeFunction(page = 1) {
     // showing loader 
 
     // console.log("allWishlistData ---- ", allWishlistData)
-    console.log("wgrListingPageTypeFunction -------")
     const startIndex = (page - 1) * wgrRowsPerPage;
     const endIndex = startIndex + wgrRowsPerPage;
 
@@ -3620,10 +3619,7 @@ async function wgrListingPageTypeFunction(page = 1) {
         const currentList = allWishlistData.slice(startIndex, endIndex)
         listingDiv.innerHTML = `${currentList.map(data => {
             console.log("data = ", data)
-            console.log("Object.keys(data) = ", Object.keys(data))
             let firstKey = Object.keys(data)[0]
-            console.log("firstKey = ", firstKey)
-            console.log("totalItems = ", data[firstKey].length)
             let totalItemsInRegistry = data[firstKey].length
             const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
             return `
@@ -3652,7 +3648,7 @@ async function wgrListingPageTypeFunction(page = 1) {
                                                     <b>Description:</b><span>${data.description}</span>
                                                 </div>
                                                 <div>
-                                                    <b>Total Items: ${totalItemsInRegistry}</b>
+                                                    <b>Total Items:</b> ${totalItemsInRegistry}
                                                 </div>
                                             </div>
                                 </div>
@@ -3928,9 +3924,6 @@ function getPublicSearch() {
 function wgrShowFilteredData(dataArray, inputValue, page = 1) {
     const startIndex = (page - 1) * wgrRowsPerPage;
     const endIndex = startIndex + wgrRowsPerPage;
-    console.log("page = ", page)
-    console.log("startIndex = ", startIndex)
-    console.log("endIndex = ", endIndex)
 
     currentArray = dataArray.slice(startIndex, endIndex)
     console.log("allWishlistData = ", allWishlistData)
@@ -3958,7 +3951,7 @@ function wgrShowFilteredData(dataArray, inputValue, page = 1) {
                                                     <b>Description:</b><span>${data.wishlist_description}</span>
                                                 </div>
                                                 <div>
-                                                    <b>Total Items: ${totalItemsInRegistry}</b>
+                                                    <b>Total Items: </b>${totalItemsInRegistry}
                                                 </div>
                                             </div>
                                 </div>
@@ -3982,7 +3975,7 @@ function wgrResetPublicListing() {
 }
 
 var eventData = [], currentEvent = "all"
-function wgrFindWithEvent(event, page = 1) {
+function wgrFindWithEvent(event) {
     const selectedEventValue = event.target.value;
     wgrCurrentPage = 1
     currentEvent = selectedEventValue
@@ -4001,7 +3994,6 @@ function wgrFindWithEvent(event, page = 1) {
 
 
 async function showPublicRegistryData(page) {
-    console.log("page from showPublicRegistryData = ", page)
     try {
         const response = await fetch(`${serverURL}/get-public-registry-by-store`, {
             method: "POST",
@@ -4034,9 +4026,6 @@ async function showPublicRegistryData(page) {
 function renderPublicRegistries(publicData, page = 1) {
     const startIndex = (page - 1) * wgrRowsPerPage;
     const endIndex = startIndex + wgrRowsPerPage;
-    console.log("page = ", page)
-    console.log("startIndex = ", startIndex)
-    console.log("endIndex = ", endIndex)
     const paginatedData = publicData.slice(startIndex, endIndex);
 
     if (paginatedData.length === 0) {
@@ -4073,7 +4062,7 @@ function renderPublicRegistries(publicData, page = 1) {
                         <span>${data.wishlist_description || ''}</span>
                     </div>
                     <div>
-                        <b>Total Items: ${totalItemsInRegistry}</b>
+                        <b>Total Items: </b> ${totalItemsInRegistry}
                     </div>
                 </div>
             </div>
@@ -4084,7 +4073,6 @@ function renderPublicRegistries(publicData, page = 1) {
 }
 
 function renderPagination(totalItems) {
-    console.log("totalItems = ", totalItems)
     const totalPages = Math.ceil(totalItems / wgrRowsPerPage);
     if (totalPages <= 1) return "";
     let startPage = Math.max(1, wgrCurrentPage - Math.floor(maxVisiblePages / 2));
@@ -4123,16 +4111,9 @@ function renderPagination(totalItems) {
 }
 
 function changePage(page) {
-    console.log("page = ", page)
-    console.log("window.location.href = ", window.location.href)
-    console.log(`https://${Shopify.shop}/apps/wf-gift-registry/list`)
-    console.log(window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/list`)
     wgrCurrentPage = page;
-    console.log("currentEvent = ", currentEvent)
     if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/find`) {
-        console.log("case 1")
         const totalPages = Math.ceil(publicRegistryList.length / wgrRowsPerPage);
-        console.log("totalPages = ", totalPages)
         if (page < 1 || page > totalPages) return;
 
         if (currentEvent === "all") {
@@ -4143,11 +4124,7 @@ function changePage(page) {
         }
     }
     else if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/list`) {
-        console.log("case 2")
         wgrListingPageTypeFunction(page)
-    }
-    else {
-        console.log("case else")
     }
 
     document
@@ -4361,8 +4338,6 @@ async function wfGetMetaObjectData(handle) {
 // ----------recreated with promises.all----------
 
 async function renderMultiModalContentFxn(arrayList) {
-
-    console.log("arrayList --- ", arrayList)
     shareWishlistFXN();
     // updateCustomerData();
     if (arrayList.length === 0) {
@@ -4520,12 +4495,12 @@ async function renderMultiModalContentFxn(arrayList) {
 
                 const productOptionString = data?.product_option ? data.product_option.replace(/"/g, '&quot;') : '';
 
+                // <div class="copy-icon-main" onClick="copyItem(${data.product_id}, ${data.variant_id}, '${data.handle}', '${data.price}', '${data.image}', '${data.title}', '${data.quantity}', '${key.replace(/'/g, "\\'")}')">
+                //                 <div class="copy-multiwishlist-icon"></div>
+                //             </div>
+
                 wishlistBody += `<div class="wishlist-grid1">
-                        
-                            <div class="copy-icon-main" onClick="copyItem(${data.product_id}, ${data.variant_id}, '${data.handle}', '${data.price}', '${data.image}', '${data.title}', '${data.quantity}', '${key.replace(/'/g, "\\'")}')">
-                                <div class="copy-multiwishlist-icon"></div>
-                            </div>
-                       
+
                     <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}')">
                         <div class="deleteIcon"></div>
                     </div>
@@ -4594,7 +4569,7 @@ async function renderMultiModalContentFxn(arrayList) {
                                     />
                                     <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
                                 </div>`
-                            : `<div class="quantity-minus-plus drawerDisableClass">
+                            : `Update Quantity: <div class="quantity-minus-plus drawerDisableClass">
                                     <div class="drawerDisableClass">-</div>
                                     <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
                                     <div class="drawerDisableClass">+</div>
@@ -5236,7 +5211,7 @@ async function renderDrawerContentFxn() {
                             }
                                             ${foundVariant?.available === true
                                 ? `
-                                            <div class="quantity-minus-plus">
+                                            Update Quantity: <div class="quantity-minus-plus">
                                                 <div class="quant-minus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">-</div>
                                                 <input 
                                         type="text" 
@@ -5250,7 +5225,8 @@ async function renderDrawerContentFxn() {
                                     />
                                                 <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
                                             </div>`
-                                : `<div class="quantity-minus-plus drawerDisableClass">
+                                : `Update Quantity:
+ <div class="quantity-minus-plus drawerDisableClass">
                                                 <div class="drawerDisableClass">-</div>
                                                 <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
                                                 <div class="drawerDisableClass">+</div>
@@ -11928,8 +11904,9 @@ async function getMultiwishlistData(data) {
     }
 }
 
-getDataFromSql()
+// getDataFromSql()
 async function getDataFromSql(data) {
+    console.log("data = ", data)
     let allData = [];
     const getCurrentLogin = await getCurrentLoginFxn();
 
@@ -11975,7 +11952,6 @@ async function getDataFromSql(data) {
 
         allData = result?.data;
         allWishlistData = result?.data;
-        console.log("allWishlistData = ", allWishlistData)
         localStorage.setItem("wg-local-list", JSON.stringify(result?.data));
         // console.log("%%%%%%%%%%%%% SAVING IN LOCAL STORAGE AGAIN %%%%%%%%%%%%%");
 
@@ -12014,7 +11990,6 @@ async function getDataFromSql(data) {
         };
 
         // Step 4: Save back to localStorage
-        console.log("JSON.stringify(mergedData) = ", JSON.stringify(mergedData))
         localStorage.setItem("wg-local-data", JSON.stringify(mergedData));
 
         storeFrontDefLang = result?.defLanguageData;

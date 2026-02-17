@@ -1273,6 +1273,10 @@ h4.price11 span {
     position: relative;
 }
 
+.wishlist-page-main .show-title .wishlist-grid1 {
+    background-color: white !important;
+}
+
 .loader-css {
     background-image: url("https://i.gifer.com/ZKZg.gif");
     height: 50px;
@@ -3577,7 +3581,11 @@ span.drawerDisableClass {
 }
 
 
-
+#wg-modal-inner-content {
+    background-color: #FAFAFA;
+    border-radius: 10px;
+    padding: 20px;
+}
 
 
 @media screen and (max-width: 1199px) {

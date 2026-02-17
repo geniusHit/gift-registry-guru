@@ -1044,3 +1044,46 @@ div#basic-collapsible\ collapse-hover {
     color: black;
     width: 200px;
 }
+
+
+#registries {
+    padding: 0px 1.5rem;
+}
+
+#registries .nav {
+    padding: 22px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#registries .nav p {
+    font-weight: 600;
+    font-size: 15pt;
+}
+
+.Polaris-Button{
+    border-radius: 8px !important;
+    padding: 6px !important;
+}
+
+.Polaris-Button__Text {
+    display: flex;
+    align-items: center;
+}
+
+#registries .header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header .icon {
+    width: 15px;
+}
+
+#registries .vertical-line {
+    width: 2px;
+    height: 20px;
+    background-color: gray;
+}
