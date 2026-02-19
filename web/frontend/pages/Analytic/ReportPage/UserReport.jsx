@@ -72,6 +72,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
 
     async function checkGetAllItem(res) {
+        console.log("res = ", res)
         try {
             const userData = await fetch(`${serverURL}/get-wishlist-users-data`, {
                 method: "POST",
@@ -200,6 +201,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
 
     const handlePagination = async (newPage) => {
+        console.log("handlePagination function called")
         setCurrentPage(newPage);
         setIsClicked(!isClicked)
         const myParam = searchParams.get('selectedData');
@@ -231,7 +233,11 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         ],
     );
 
-    const registriesListTable = allRegistries.map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name }, index) => {
+    const startIndex = (parseInt(checkCurrentPage) - 1) * parseInt(listingPerPage)
+    const endIndex = startIndex + parseInt(listingPerPage)
+    console.log("startIndex = ", startIndex)
+    console.log("endIndex = ", endIndex)
+    const registriesListTable = allRegistries.slice(startIndex, endIndex).map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name }, index) => {
         console.log("wishlistItems = ", wishlistItems)
         const totalItems = wishlistItems.filter((item) => item.wishlist_id === wishlist_id)
         console.log("totalItems = ", totalItems)
@@ -553,7 +559,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                     mode={mode}
                                     setMode={setMode}
                                 />
-                                <IndexTable
+                                {/* <IndexTable
                                     itemCount={userList.length}
 
                                     selectable={false}
@@ -568,7 +574,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                     ]}
                                 >
                                     {userListTable}
-                                </IndexTable>
+                                </IndexTable> */}
                                 <IndexTable
                                     itemCount={allRegistries.length}
 
@@ -595,8 +601,10 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                         onNext={() => {
                                             handlePagination(parseInt(currentPage) + 1)
                                         }}
-                                        hasNext={startIndexValue.current.end < totalRecords.current}
-                                        hasPrevious={currentPage > 1}
+                                        // hasNext={startIndexValue.current.end < totalRecords.current}
+                                        hasNext={endIndex<allRegistries.length}
+                                        // hasPrevious={parseInt(currentPage) > 1}
+                                        hasPrevious={parseInt(checkCurrentPage)>1}
                                         label={`Total Registries: ${allRegistries.length} `}
                                         accessibilityLabel="Pagination"
                                         nextTooltip="Next page"

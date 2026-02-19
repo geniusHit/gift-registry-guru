@@ -5413,6 +5413,9 @@ export const getWishlistUsersData = async (req, res) => {
         let query = "";
         let cartQuery = "";
         let itemQuery = "";
+        let startDate = "", endDate = "";
+        startDate = req.body?.startDate || ""
+        endDate = req.body?.endDate || ""
 
         if (req.body.checkStatusInItem === true) {
             query += `AND created_at >= "${req.body.startDate}" AND CAST(created_at as DATE) <= "${req.body.endDate}"`;
@@ -5448,11 +5451,31 @@ export const getWishlistUsersData = async (req, res) => {
              ORDER BY w.id DESC`
         );
 
-        const [allRegistries] = await database.query(`
+        console.log("startDate = ", startDate)
+        console.log("endDate = ", endDate)
+        if (startDate === "" || endDate === "") {
+            var [allRegistries] = await database.query(`
             SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id;
-        `)
+            `)
+        }
+        else if (startDate !== "" && endDate !== "" && startDate === endDate) {
+            var [allRegistries] = await database.query(`
+            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
+            JOIN ${Wishlist_table}
+            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
+            AND ${Wishlist_table}.created_at LIKE '%${startDate}%'
+            `)
+        }
+        else {
+            var [allRegistries] = await database.query(`
+            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
+            JOIN ${Wishlist_table}
+            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
+            AND ${Wishlist_table}.created_at BETWEEN '${startDate}' AND '${endDate}'
+            `)
+        }
 
         let results = [];
         for (let abItem of userData) {
@@ -5639,6 +5662,7 @@ export const getWishlistCartData = async (req, res) => {
 
 export const getCurrentUserWishlistData = async (req, res) => {
     try {
+        console.log("req.body = ", req.body)
         let lastQuery = "";
         let query = "";
         const { startDate, endDate, wishlistId, shopName, checkStatusInItem } =
@@ -5725,8 +5749,9 @@ export const getCurrentUserWishlistData = async (req, res) => {
         // ------------------------------------
         // 6️⃣ Get product count
         // ------------------------------------
-        const [productCount] = await database.query(
-            `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+        if (startDate === "" || endDate === "") {
+            var [productCount] = await database.query(
+                `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
              WHERE u.id = wt.wishlist_user_id
                AND w.wishlist_id = wt.wishlist_id
@@ -5734,7 +5759,44 @@ export const getCurrentUserWishlistData = async (req, res) => {
                AND wt.wishlist_user_id = ${wishlistId}
              GROUP BY w.variant_id, wt.wishlist_name
              ORDER BY w.id DESC`
-        );
+            );
+        }
+        else if (startDate !== "" && endDate !== "" && startDate===endDate) {
+            var [productCount] = await database.query(
+                `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+             FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+             WHERE u.id = wt.wishlist_user_id
+               AND w.wishlist_id = wt.wishlist_id
+               AND u.shop_name='${shopName}'
+               AND wt.wishlist_user_id = ${wishlistId}
+               AND w.created_at='${startDate}'
+             GROUP BY w.variant_id, wt.wishlist_name
+             ORDER BY w.id DESC`
+            );
+        }
+        else{
+            var [productCount] = await database.query(
+                `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+             FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+             WHERE u.id = wt.wishlist_user_id
+               AND w.wishlist_id = wt.wishlist_id
+               AND u.shop_name='${shopName}'
+               AND wt.wishlist_user_id = ${wishlistId}
+               AND w.created_at BETWEEN '${startDate}' AND '${endDate}'
+             GROUP BY w.variant_id, wt.wishlist_name
+             ORDER BY w.id DESC`
+            );
+        }
+        // const [productCount] = await database.query(
+        //     `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+        //      FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+        //      WHERE u.id = wt.wishlist_user_id
+        //        AND w.wishlist_id = wt.wishlist_id
+        //        AND u.shop_name='${shopName}'
+        //        AND wt.wishlist_user_id = ${wishlistId}
+        //      GROUP BY w.variant_id, wt.wishlist_name
+        //      ORDER BY w.id DESC`
+        // );
 
         // ------------------------------------
         // 7️⃣ Send Final Response

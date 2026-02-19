@@ -53,6 +53,8 @@ const GetWishlistData = () => {
     const [allItems, setAllItems] = useState([])
     const [registryItems, setRegistryItems] = useState([])
     let id = useParams();
+    const startIndex = (parseInt(getItemPageNo) - 1) * parseInt(getItemRecordPerPage)
+    const endIndex = startIndex + parseInt(getItemRecordPerPage)
     // console.log("id111111111111111111111111", id)
 
     // useEffect(()=>{
@@ -104,6 +106,15 @@ const GetWishlistData = () => {
     const [selectedWishlistItem, setSelectedWishlistItem] = useState(currentWishlist || 'all')
     const [userList, setUserList] = useState([])
     const [userData, setUserData] = useState([])
+
+
+    useEffect(() => {
+        console.log("userData = ", userData)
+    }, [userData])
+
+    useEffect(() => {
+        console.log("registryItems = ", registryItems)
+    }, [registryItems])
 
     const toggleActive = useCallback(() => setCopyActive((copyActive) => !copyActive), []);
     const toastMarkup = copyActive ? (
@@ -776,7 +787,7 @@ const GetWishlistData = () => {
             {/* {type === "User" ? <IndexTable.Cell>{email}</IndexTable.Cell> : <div className='show-less-text' ><IndexTable.Cell>{email}</IndexTable.Cell></div>} */}
             <IndexTable.Cell>{email.length > 30 ? email.substring(0, 30) + '...' : email}</IndexTable.Cell>
             <IndexTable.Cell>{isEmail.current.length > 30 ? isEmail.current.substring(0, 30) + '...' : isEmail.current}</IndexTable.Cell>
-            <IndexTable.Cell>{wishlistItemCount}</IndexTable.Cell>
+            <IndexTable.Cell>{registryItems.length}</IndexTable.Cell>
             <IndexTable.Cell>{addToCartCount}</IndexTable.Cell>
             <IndexTable.Cell>{type}</IndexTable.Cell>
 
@@ -812,17 +823,21 @@ const GetWishlistData = () => {
         },
     );
 
-    const registryItemsTable = registryItems.map(
+    console.log("startIndex = ", startIndex)
+    console.log("endIndex = ", endIndex)
+    const hasNext = endIndex < registryItems.length
+    const hasPrevious = parseInt(getItemPageNo) > 1
+    const registryItemsTable = registryItems.slice(startIndex, endIndex).map(
         ({ id, variant_id, title, price, image, total_quantity, created_at, wishlist_name }, index) => {
             return (
                 <IndexTable.Row id={index} key={index} position={index}>
-                    <IndexTable.Cell>{index+1}</IndexTable.Cell>
+                    <IndexTable.Cell>{index + 1}</IndexTable.Cell>
                     <IndexTable.Cell>{title}</IndexTable.Cell>
                     <IndexTable.Cell><img src={image} alt='image' height="40px" width="40px" /></IndexTable.Cell>
                     <IndexTable.Cell>{price}</IndexTable.Cell>
                     <IndexTable.Cell>{total_quantity}</IndexTable.Cell>
-                    <IndexTable.Cell>{price * total_quantity}</IndexTable.Cell>
-                    <IndexTable.Cell>{extractedDate(created_at)}</IndexTable.Cell>
+                    <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>
+                    <IndexTable.Cell>{created_at}</IndexTable.Cell>
                     <IndexTable.Cell><Button onClick={() => deleteUserHandle(id, variant_id)}><Icon source={DeleteMajor} color="base" /></Button></IndexTable.Cell>
                 </IndexTable.Row>
             )
@@ -869,7 +884,7 @@ const GetWishlistData = () => {
     };
 
     async function checkGetAllItem(checkSelectedLabel, checkSelectedData, shopApi, resp) {
-        // console.log("NNN ", checkSelectedLabel, checkSelectedData, shopApi, resp)
+        console.log("NNN ", checkSelectedLabel, checkSelectedData, shopApi, resp)
         if (resp === "resp") {
             setIsCartLoading(!isCartLoading)
             setIsItemLoading(!isItemLoading)
@@ -894,6 +909,11 @@ const GetWishlistData = () => {
                 body: JSON.stringify(requestBody),
             });
             let result = await userData.json();
+            console.log("result = ", result)
+            const wishlist_id = searchParams.get("wishlist_id")
+            const items = result?.productResult.filter((item) => item.wishlist_id === parseInt(wishlist_id))
+            console.log("items = ", items)
+            setRegistryItems(items)
             setSharedWishlistArr(result.wishlistData)
             setCheckCurrentItemData(result.productResult)
             if (selectedWishlistItem !== "all") {
@@ -957,9 +977,6 @@ const GetWishlistData = () => {
             setIsItemLoading(isItemLoading)
             setIsCartLoading(isCartLoading)
         }
-
-
-
     };
 
 
@@ -1365,7 +1382,7 @@ const GetWishlistData = () => {
 
                         </Modal>
 
-                        <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} />
+                        <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} />
 
                         <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} />
 
