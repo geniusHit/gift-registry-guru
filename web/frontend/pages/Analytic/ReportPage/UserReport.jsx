@@ -43,6 +43,8 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     const [checkDatePicker, setCheckDatePicker] = useState(false)
     const startIndexValue = useRef({ start: null, end: null });
     const [sortSelected, setSortSelected] = useState(['date desc']);
+    const [allRegistries, setAllRegistries] = useState([])
+    const [wishlistItems, setWishlistItems] = useState([])
 
     useEffect(() => {
         useEffectLite();
@@ -70,6 +72,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
 
     async function checkGetAllItem(res) {
+        console.log("res = ", res)
         try {
             const userData = await fetch(`${serverURL}/get-wishlist-users-data`, {
                 method: "POST",
@@ -79,6 +82,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                 body: JSON.stringify(res),
             })
             let result = await userData.json();
+            console.log("result = ", result)
             totalRecords.current = result.mainResult.length;
             if (result.mainResult.length === 0) {
                 setMainData(result.mainResult);
@@ -89,10 +93,16 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                 setUserList(result.mainResult.slice(startIndex, endIndex));
             }
             setIsCount(result.mainResult.length)
+            setAllRegistries(result.allRegistries)
+            setWishlistItems(result.wishlistItemData)
         } catch (error) {
             console.log("errr ", error)
         };
     }
+
+    useEffect(() => {
+        console.log("allRegistries from useeffect = ", allRegistries)
+    }, [allRegistries])
 
     const sortOptions = [
         { label: 'Date', value: 'date asc', directionLabel: 'Ascending' },
@@ -191,6 +201,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
 
     const handlePagination = async (newPage) => {
+        console.log("handlePagination function called")
         setCurrentPage(newPage);
         setIsClicked(!isClicked)
         const myParam = searchParams.get('selectedData');
@@ -201,10 +212,10 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         })
     };
 
-    const viewHandler = async (id) => {
+    const viewHandler = async (id, wishlist_id) => {
         Navigate({
             pathname: `/GetWishlistData/${id}`,
-            search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all`
+            search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all&wishlist_id=${wishlist_id}`
         })
     }
 
@@ -221,6 +232,32 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
             </IndexTable.Row>
         ],
     );
+
+    const startIndex = (parseInt(checkCurrentPage) - 1) * parseInt(listingPerPage)
+    const endIndex = startIndex + parseInt(listingPerPage)
+    console.log("startIndex = ", startIndex)
+    console.log("endIndex = ", endIndex)
+    const registriesListTable = allRegistries.slice(startIndex, endIndex).map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name }, index) => {
+        console.log("wishlistItems = ", wishlistItems)
+        const totalItems = wishlistItems.filter((item) => item.wishlist_id === wishlist_id)
+        console.log("totalItems = ", totalItems)
+        let totalPrice = 0
+        totalItems.map(({price}) => totalPrice+=parseInt(price))
+        console.log("totalPrice = ", totalPrice)
+        console.log("id = ", id)
+
+        return <IndexTable.Row id={id} key={`${id}-${index}`} position={id} >
+            <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>
+            <IndexTable.Cell>{email}</IndexTable.Cell>
+            <IndexTable.Cell>Active</IndexTable.Cell>
+            <IndexTable.Cell>{event_type}</IndexTable.Cell>
+            <IndexTable.Cell>{event_date}</IndexTable.Cell>
+            <IndexTable.Cell>{created_at}</IndexTable.Cell>
+            <IndexTable.Cell>{totalItems.length}</IndexTable.Cell>
+            <IndexTable.Cell>{totalPrice}</IndexTable.Cell>
+            <IndexTable.Cell><Button onClick={() => viewHandler(id, wishlist_id)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+        </IndexTable.Row>
+    })
 
     const selectedUsername = `${myLanguage.reportModalHeading} ${username}`;
     const selectedCartUsername = `${myLanguage.reportModalCartHeading} ${username}`;
@@ -442,6 +479,9 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         await checkGetAllItem(requestBody)
     }
 
+    useEffect(() => {
+        console.log("userList = ", userList)
+    }, [userList])
 
     return (
         <div dir={wishlistTextDirection} className='wf-userReport'>
@@ -519,7 +559,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                     mode={mode}
                                     setMode={setMode}
                                 />
-                                <IndexTable
+                                {/* <IndexTable
                                     itemCount={userList.length}
 
                                     selectable={false}
@@ -534,6 +574,24 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                     ]}
                                 >
                                     {userListTable}
+                                </IndexTable> */}
+                                <IndexTable
+                                    itemCount={allRegistries.length}
+
+                                    selectable={false}
+                                    headings={[
+                                        { title: "Registry" },
+                                        { title: "Owner" },
+                                        { title: "Status" },
+                                        { title: "Event Type" },
+                                        { title: "Event Date" },
+                                        { title: "Date Created" },
+                                        { title: "Products" },
+                                        { title: "Potential Value" },
+                                        { title: "Action" },
+                                    ]}
+                                >
+                                    {registriesListTable}
                                 </IndexTable>
                                 <div className='polaris_pagination'>
                                     <Pagination
@@ -543,9 +601,11 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                         onNext={() => {
                                             handlePagination(parseInt(currentPage) + 1)
                                         }}
-                                        hasNext={startIndexValue.current.end < totalRecords.current}
-                                        hasPrevious={currentPage > 1}
-                                        label={`${myLanguage.tab0heading}: ${totalRecords.current} `}
+                                        // hasNext={startIndexValue.current.end < totalRecords.current}
+                                        hasNext={endIndex<allRegistries.length}
+                                        // hasPrevious={parseInt(currentPage) > 1}
+                                        hasPrevious={parseInt(checkCurrentPage)>1}
+                                        label={`Total Registries: ${allRegistries.length} `}
                                         accessibilityLabel="Pagination"
                                         nextTooltip="Next page"
                                         previousTooltip="Previous page"

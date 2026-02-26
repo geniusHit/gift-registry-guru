@@ -1,7 +1,7 @@
 import { AlphaCard, IndexFilters, IndexTable, LegacyCard, Pagination, Text, useSetIndexFiltersMode, IndexFiltersMode, Spinner, DatePicker, Button } from '@shopify/polaris'
 import React from 'react'
 
-const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, handleFiltersQueryChange, setQueryValue, userList, wishlistDataTable, startIndexValue, totalRecords, handleSortChange, currentPage, isItemLoading, handlePagination, handleModalChange }) => {
+const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, handleFiltersQueryChange, setQueryValue, userList, wishlistDataTable, startIndexValue, totalRecords, handleSortChange, currentPage, isItemLoading, handlePagination, handleModalChange, registryItemsTable, totalRegistryItems, hasNext, hasPrevious }) => {
     const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
     const onHandleCancel = () => { };
 
@@ -45,7 +45,7 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                                 mode={mode}
                                 setMode={setMode}
                             />
-                            <IndexTable
+                            {/* <IndexTable
                                 itemCount={userList.length}
 
                                 selectable={false}
@@ -62,6 +62,24 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                                 ]}
                             >
                                 {wishlistDataTable}
+                                
+                            </IndexTable> */}
+                            <IndexTable
+                                itemCount={userList.length}
+
+                                selectable={false}
+                                headings={[
+                                    { title: myLanguage.tableSrno },
+                                    { title: myLanguage.productTitle },
+                                    { title: myLanguage.productImage },
+                                    { title: myLanguage.productPrice },
+                                    { title: myLanguage.productQuantity },
+                                    { title: myLanguage.wishlistName },
+                                    { title: myLanguage.productCreatedAt },
+                                    { title: myLanguage.tableDelete },
+                                ]}
+                            >
+                                {registryItemsTable}
                             </IndexTable>
                             <div className='polaris_pagination datePerRecord-pagination'>
                                 <Pagination
@@ -71,9 +89,11 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                                     onNext={() => {
                                         handlePagination(parseInt(currentPage) + 1)
                                     }}
-                                    hasNext={startIndexValue.current.end < totalRecords.current}
-                                    hasPrevious={currentPage > 1}
-                                    label={`Total ${totalRecords.current} items`}
+                                    // hasNext={startIndexValue.current.end < totalRecords.current}
+                                    hasNext={hasNext}
+                                    // hasPrevious={currentPage > 1}
+                                    hasPrevious={hasPrevious}
+                                    label={`Total ${totalRegistryItems} items`}
                                     accessibilityLabel="Pagination"
                                     nextTooltip="Next page"
                                     previousTooltip="Previous page"
