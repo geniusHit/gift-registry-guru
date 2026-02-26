@@ -1,5 +1,5 @@
 import express from "express";
-import { apiAllThemeData, apiAppTheme, apiProductsCreate, apiWishAppTheme, appMetafieldCreate, appMetafieldDelete, appMetafieldGetAll, appMetafieldGetId, appMetafieldGetOne, getCurrentUserDetail, getShopApi, getShopLocaleLanguage, getThemeDataById, productsCount, reRegisterWebhook, saveDefaultDataForWishlistApp, subscriptionCancel, subscriptionCreate, subscriptionPlanStatus } from "../controllers/controllerMetafield.js";
+import { apiAllThemeData, apiAppTheme, apiProductsCreate, apiWishAppTheme, appMetafieldCreate, appMetafieldDelete, appMetafieldGetAll, appMetafieldGetId, appMetafieldGetOne, getCurrentUserDetail, getOrdersList, getShopApi, getShopLocaleLanguage, getThemeDataById, productsCount, reRegisterWebhook, saveDefaultDataForWishlistApp, subscriptionCancel, subscriptionCreate, subscriptionPlanStatus } from "../controllers/controllerMetafield.js";
 
 const routerMetafield = express.Router();
 
@@ -22,5 +22,6 @@ routerMetafield.get("/wish-app-theme", apiWishAppTheme);
 routerMetafield.get("/all-theme-data", apiAllThemeData);
 routerMetafield.get("/get-theme-data-by-id", getThemeDataById);
 routerMetafield.get("/products/create", apiProductsCreate);
+routerMetafield.get("/get-order-list", getOrdersList);
 
 export default routerMetafield;

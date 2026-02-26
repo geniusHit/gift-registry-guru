@@ -121,7 +121,7 @@ let modalDrawerTextColor = generalSetting?.wlTextColor?.color ? generalSetting?.
 document.addEventListener("DOMContentLoaded", getCurentPlanSql);
 
 const serverURL = "http://localhost:5000"; // -------------- local
-// const serverURL = "https://enb-solid-blowing-ranking.trycloudflare.com"; // -------------- local
+// const serverURL = "https://airplane-manufacture-creativity-tour.trycloudflare.com"; // -------------- local
 // const serverURL = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL = 'https://wishlist-guru-api.webframez.com'; // -------------- stagging
 
@@ -130,7 +130,6 @@ let injectCodeCondition = injectCoderr?.getAttribute("inject-code-automatic") ||
 
 let varriantId;
 let allWishlistData = JSON.parse(localStorage.getItem("wg-local-list")) || [];
-console.log("allWishlistData = ", allWishlistData)
 let wgAllProducts = [];
 let wgWishlistLanguage = "";
 let wgMultiLanguages = [];
@@ -2436,13 +2435,13 @@ const showCountAll = async () => {
     const totalObjects = await getCount(list);
 
     if (generalSetting?.hideHeaderCounter === "no" || generalSetting?.hideHeaderCounter === undefined) {
-        const countHtml = `<span class="show-count"><b>${allWishlistData.length}</b></span>`;
+        const countHtml = `<span class="show-count"><b>${totalObjects}</b></span>`;
         document.querySelectorAll(".count-span").forEach((countDiv) => {
             countDiv.innerHTML = countHtml;
         });
     }
     else if (generalSetting?.hideHeaderCounter === "hide-at-zero-only") {
-        const countHtml = `<span class="show-count"><b>${allWishlistData.length}</b></span>`;
+        const countHtml = `<span class="show-count"><b>${totalObjects}</b></span>`;
         document.querySelectorAll(".count-span").forEach((countDiv) => {
             countDiv.innerHTML = countHtml;
             if (totalObjects === 0) {
@@ -2773,6 +2772,41 @@ async function updateQuantity(event, product_id, user_id) {
         console.error("Error:", error);
     }
     showCountAll();
+}
+
+
+async function updateQuantity2(event) {
+    // try {
+    const parent = event.target.parentNode;
+    const inputField = parent.querySelector(".quant-update");
+    if (!inputField) return;
+
+
+    console.log("FFFF --- ", inputField)
+
+    const isPlusQuant = event.target.classList.contains("quant-plus");
+    const isMinusQuant = event.target.classList.contains("quant-minus");
+
+    let quantity = parseInt(inputField.value || 1);
+
+    if (isPlusQuant) {
+        quantity++;
+    } else if (isMinusQuant && quantity > 1) {
+        quantity--;
+    } else if (!isPlusQuant && !isMinusQuant) {
+        // User typed manually
+        if (quantity < 1 || isNaN(quantity)) {
+            quantity = 1; // reset to min
+        }
+    }
+
+
+
+
+    inputField.value = quantity;
+    inputField.dataset.quant = quantity;
+
+
 }
 
 async function updateVariantInDB(userId, wgProductId, wgVariantId, listId) {
@@ -3590,12 +3624,10 @@ function wgrAddLoginSection() {
 
 
 
-async function wgrListingPageTypeFunction(page = 1) {
+async function wgrListingPageTypeFunction() {
     // showing loader 
 
     // console.log("allWishlistData ---- ", allWishlistData)
-    const startIndex = (page - 1) * wgrRowsPerPage;
-    const endIndex = startIndex + wgrRowsPerPage;
 
     wgrAddNavigationSection();
 
@@ -3616,11 +3648,8 @@ async function wgrListingPageTypeFunction(page = 1) {
         listingDiv.innerHTML = `There is currently no registry. Please create your first registry by <a href="/apps/wf-gift-registry/create" >clicking here</a>.`
 
     } else {
-        const currentList = allWishlistData.slice(startIndex, endIndex)
-        listingDiv.innerHTML = `${currentList.map(data => {
-            console.log("data = ", data)
-            let firstKey = Object.keys(data)[0]
-            let totalItemsInRegistry = data[firstKey].length
+
+        listingDiv.innerHTML = `${allWishlistData.map(data => {
             const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
             return `
                                 <div class="wgr-listing-row">
@@ -3630,13 +3659,13 @@ async function wgrListingPageTypeFunction(page = 1) {
                                                                 <b>Registry:</b><span data-key="${listName}">${listName}</span> 
                                                         </div>
                                                         <div class="single-wishist">
-                                                            <span class="delete-main-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(data))}'))">
+                                                            <span class="delete-main-icon wf-edit-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(data))}'))">
                                                                 <span class="editWish"></span>
                                                             </span>
-                                                            <span class="delete-main-icon" onclick="deleteWishlist(event, '${listName.replace(/'/g, "\\'")}')">
+                                                            <span class="delete-main-icon wf-delete-icon" onclick="deleteWishlist(event, '${listName.replace(/'/g, "\\'")}')">
                                                                 <span class="deleteWish"></span>
                                                             </span>
-                                                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${data.id}')">
+                                                            <span class="delete-main-icon wf-share-icon" onclick="shareSingleWishlist(event, '${data.id}')">
                                                                 <div class="img_test"><span></span></div>
                                                             </span>
                                                         </div>
@@ -3644,18 +3673,11 @@ async function wgrListingPageTypeFunction(page = 1) {
                                             </div>
 
                                             <div class="wgr-description" onclick="redirectToSingleWishlist22('${listName}')">
-                                                <div>
-                                                    <b>Description:</b><span>${data.description}</span>
-                                                </div>
-                                                <div>
-                                                    <b>Total Items:</b> ${totalItemsInRegistry}
-                                                </div>
+                                                <b>Description:</b><span>${data.description}</span>
                                             </div>
                                 </div>
                                 `;
-        }).join("")}
-            ${renderPagination(allWishlistData.length)}
-        `;
+        }).join("")}`;
     }
 
 
@@ -3667,14 +3689,11 @@ async function wgrListingPageTypeFunction(page = 1) {
 }
 
 function redirectToSingleWishlist22(key) {
-    console.log("key --- ", key);
-    console.log("REDIRECTING TO THE LIST ITEMSSSSSSSSSSSSSSSSSSS");
-
-
+    // console.log("key --- ", key);
+    // console.log("REDIRECTING TO THE LIST ITEMSSSSSSSSSSSSSSSSSSS");
+    // console.log("allWishlistData ------- ", allWishlistData)
     document.querySelector(".wgr-heading").innerHTML = `Items in registry -- ${key} <button class="wf-back-btn" onclick="wfBackToList()">Back</button>`;
-
     document.querySelector(".show-title").innerHTML = `<div class="loader-css" ><span> </span></div>`
-
     const elm1 = document.querySelector('.wgr-listing');
     if (elm1) {
         elm1.style.display = 'none';
@@ -3800,36 +3819,58 @@ function removeTag(el) {
     el.parentElement.remove();
 }
 
-async function redirectToSingleWishlist(singleWishlist, singleUser = "") {
-    const sendID = await getCurrentLoginFxn() || getAccessTokenFromCookie();
-    try {
-        const response = await fetch(`${serverURL}/get-id-from-email`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                shopName: permanentDomain,
-                email: sendID,
-                shopDomain: shopDomain,
-            }),
-        });
-        const result = await response.json();
-        const getID = singleUser === "" ? result.data?.[0]?.id : Number(singleUser);
+async function redirectToSingleWishlist(singleWishlist, singleUser = "", wishlistName = "") {
+    // console.log("allllll ", allWishlistData)
+    // console.log("singleUser --- ", singleUser)
 
-        if (!getID) throw new Error("User ID not found");
-        const encryptedEmail = btoa(getID);
-        const encryptedName = btoa('url');
-        window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
+    if (allWishlistData[0].userId === Number(singleUser)) {
+        // const elm2 = document.querySelector('.show-title');
+        // if (elm2) {
+        //     elm2.style.display = 'block';
+        // }
+        document.querySelector(".wgr-search-result").innerHTML = `
+                        <div class="wgr-back-button">
+                            <h3>Result of "${wishlistName}"</h3>
+                            <span onclick="wgrResetPublicListing()">Back</span>
+                        </div> 
+                        <div class="show-title"></div>`;
 
-    } catch (error) {
-        console.error("Error: ", error);
-        const fallbackMessage = "Firstly add items to your wishlist to share";
-        document.querySelectorAll(".modal-inside").forEach((element) => {
-            element.innerHTML = fallbackMessage;
-        });
+        document.querySelector(".show-title").innerHTML = `<div class="loader-css" ><span> </span></div>`
+
+        let hhh = getWishlistByKey(allWishlistData, wishlistName);
+        renderMultiModalContentFxn(hhh);
+    } else {
+        const sendID = await getCurrentLoginFxn() || getAccessTokenFromCookie();
+        try {
+            const response = await fetch(`${serverURL}/get-id-from-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    shopName: permanentDomain,
+                    email: sendID,
+                    shopDomain: shopDomain,
+                }),
+            });
+            const result = await response.json();
+            const getID = singleUser === "" ? result.data?.[0]?.id : Number(singleUser);
+            if (!getID) throw new Error("User ID not found");
+            const encryptedEmail = btoa(getID);
+            const encryptedName = btoa('url');
+            // window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
+
+            window.open(`${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`, "_blank");
+
+        } catch (error) {
+            console.error("Error: ", error);
+            const fallbackMessage = "Firstly add items to your wishlist to share";
+            document.querySelectorAll(".modal-inside").forEach((element) => {
+                element.innerHTML = fallbackMessage;
+            });
+        }
     }
 }
 
-async function wgrFindRegistry(page) {
+async function wgrFindRegistry() {
     wgrAddNavigationSection();
     // loader---css
     document.querySelector(".wgr-search-result").innerHTML = `<div class="loader-css" ><span> </span></div>`
@@ -3837,7 +3878,7 @@ async function wgrFindRegistry(page) {
     document.querySelector(".wgr-search-input").innerHTML = `
 <div class="main-search-wgr">
                             <div>
-                                 <select name="wishlistEventType" id="search-event-type" onchange="wgrFindWithEvent(event, 1)">
+                                 <select name="wishlistEventType" id="search-event-type" onchange="wgrFindWithEvent(event)">
                                   <option value="all" >All events</option>
                                         ${eventOption.map(value => {
         return `<option value="${value.value}" >
@@ -3857,7 +3898,7 @@ async function wgrFindRegistry(page) {
                                 `;
 
     // -----------show public registries of this store by default-----------
-    showPublicRegistryData(page);
+    showPublicRegistryData();
 
 }
 
@@ -3921,44 +3962,35 @@ function getPublicSearch() {
     }
 }
 
-function wgrShowFilteredData(dataArray, inputValue, page = 1) {
-    const startIndex = (page - 1) * wgrRowsPerPage;
-    const endIndex = startIndex + wgrRowsPerPage;
-
-    currentArray = dataArray.slice(startIndex, endIndex)
-    console.log("allWishlistData = ", allWishlistData)
+function wgrShowFilteredData(dataArray, inputValue) {
     if (dataArray.length !== 0) {
         document.querySelector(".wgr-search-result").innerHTML = `
                         <div class="wgr-back-button">
                             <h3>Showing results for "<i>${inputValue}</i>"</h3>
                             <span onclick="wgrResetPublicListing()">Back</span>
                         </div>
-                ${currentArray.map(data => {
-            let wishlistName = data.wishlist_name
-            let wishlistData = allWishlistData.filter((data) => data[wishlistName])
-            let totalItemsInRegistry = wishlistData[0][wishlistName].length
-
-            return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
+                ${dataArray.map(data => {
+            return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
                                             <div class="wishlist-modal-all"> 
                                                 <div class="wf-multi-Wish-heading">
                                                         <div class="wf-multi-Wish-content" >
                                                                 <b>Registry:</b><span data-key="${data.wishlist_name}">${data.wishlist_name}</span> 
                                                         </div>
+
+                        <div class="single-wishist">
+                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${data.wishlist_id}', '${data.wishlist_user_id}')">
+                                <div class="img_test"><span></span></div>
+                            </span>
+                        </div>
+
                                                 </div>
                                             </div>
                                             <div class="wgr-description">
-                                                <div>
-                                                    <b>Description:</b><span>${data.wishlist_description}</span>
-                                                </div>
-                                                <div>
-                                                    <b>Total Items: </b>${totalItemsInRegistry}
-                                                </div>
+                                                <b>Description:</b><span>${data.wishlist_description}</span>
                                             </div>
                                 </div>
                                 `;
-        }).join("")}
-        ${renderPagination(dataArray.length)}
-        `;
+        }).join("")}`;
     } else {
         document.querySelector(".wgr-search-result").innerHTML = `
                         <div class="wgr-back-button">
@@ -3970,15 +4002,11 @@ function wgrShowFilteredData(dataArray, inputValue, page = 1) {
 
 
 function wgrResetPublicListing() {
-    currentEvent = "all"
-    wgrFindRegistry(1);
+    wgrFindRegistry();
 }
 
-var eventData = [], currentEvent = "all"
 function wgrFindWithEvent(event) {
     const selectedEventValue = event.target.value;
-    wgrCurrentPage = 1
-    currentEvent = selectedEventValue
     let newArr = []
     if (selectedEventValue === "all") {
         wgrFindRegistry();
@@ -3988,12 +4016,11 @@ function wgrFindWithEvent(event) {
     newArr = publicRegistryList.filter(item =>
         item.event_type === selectedEventValue
     );
-    eventData = newArr
     wgrShowFilteredData(newArr, selectedEventValue)
 }
 
 
-async function showPublicRegistryData(page) {
+async function showPublicRegistryData() {
     try {
         const response = await fetch(`${serverURL}/get-public-registry-by-store`, {
             method: "POST",
@@ -4006,10 +4033,6 @@ async function showPublicRegistryData(page) {
         const result = await response.json();
         const publicData = result?.data || [];
         publicRegistryList = result?.data || [];
-
-        if (page !== undefined) {
-            wgrCurrentPage = page
-        }
 
         if (publicData.length !== 0) {
             renderPublicRegistries(publicData, wgrCurrentPage);
@@ -4036,37 +4059,34 @@ function renderPublicRegistries(publicData, page = 1) {
 
     document.querySelector(".wgr-search-result").innerHTML = `
         <h3>All Public Registries of this store</h3>
-        ${paginatedData.map(data => {
-        let wishlistName = data.wishlist_name
-        let wishlistData = allWishlistData.filter((data) => data[wishlistName])
-        let totalItemsInRegistry = wishlistData[0][wishlistName].length
-
-        return `
+        ${paginatedData.map(data => `
             <div class="wgr-listing-row">
                 <div class="wishlist-modal-all"> 
                     <div class="wf-multi-Wish-heading">
                         <div class="wf-multi-Wish-content"
-                            onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
+                            onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
                             <b>Registry:</b>
                             <span data-key="${data.wishlist_name}">
                                 ${data.wishlist_name}
                             </span>
                         </div>
+
+                        <div class="single-wishist">
+                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${data.wishlist_id}', '${data.wishlist_user_id}')">
+                                <div class="img_test"><span></span></div>
+                            </span>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="wgr-description"
-                    onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
-                    <div>
-                        <b>Description:</b>
-                        <span>${data.wishlist_description || ''}</span>
-                    </div>
-                    <div>
-                        <b>Total Items: </b> ${totalItemsInRegistry}
-                    </div>
+                    onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
+                    <b>Description:</b>
+                    <span>${data.wishlist_description || ''}</span>
                 </div>
             </div>
-        `}).join("")}
+        `).join("")}
 
         ${renderPagination(publicData.length)}
     `;
@@ -4111,22 +4131,10 @@ function renderPagination(totalItems) {
 }
 
 function changePage(page) {
+    const totalPages = Math.ceil(publicRegistryList.length / wgrRowsPerPage);
+    if (page < 1 || page > totalPages) return;
     wgrCurrentPage = page;
-    if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/find`) {
-        const totalPages = Math.ceil(publicRegistryList.length / wgrRowsPerPage);
-        if (page < 1 || page > totalPages) return;
-
-        if (currentEvent === "all") {
-            renderPublicRegistries(publicRegistryList, wgrCurrentPage);
-        }
-        else {
-            wgrShowFilteredData(eventData, currentEvent, page)
-        }
-    }
-    else if (window.location.href === `https://${Shopify.shop}/apps/wf-gift-registry/list`) {
-        wgrListingPageTypeFunction(page)
-    }
-
+    renderPublicRegistries(publicRegistryList, wgrCurrentPage);
     document
         .querySelector(".wgr-search-result")
         ?.scrollIntoView({ behavior: "smooth" });
@@ -4227,12 +4235,15 @@ async function pageTypeFunction() {
         modalButtonFxn();
         const getSearchBar = document.querySelector(".searchbar_Input");
         getSearchBar && (getSearchBar.value = "");
-        if (window.location.href.includes("/apps/wf-gift-registry")) {
+        // if (window.location.href.includes("/apps/wf-gift-registry")) {
+        if (window.location.pathname === "/apps/wf-gift-registry") {
             const arrayList = await getDataFromSql();
             // : getWishlistByKey(await getDataFromSql(), "favourites");
+            // console.log("1111111111111----------")
             await renderMultiModalContentFxn(arrayList)
         } else {
-            checkPlanForMulti("multi")
+            // commenting for stopping the auto rendering
+            // checkPlanForMulti("multi")
         }
         shareModalContent.innerHTML = `<h3>${customLanguage.shareWishlistByEmailHeading}</h3>
     <div class="closeByShareModal" aria-hidden="true"  onclick="closeShareModal()"></div>
@@ -4338,6 +4349,8 @@ async function wfGetMetaObjectData(handle) {
 // ----------recreated with promises.all----------
 
 async function renderMultiModalContentFxn(arrayList) {
+
+    console.log("arrayList --- ", arrayList)
     shareWishlistFXN();
     // updateCustomerData();
     if (arrayList.length === 0) {
@@ -4378,13 +4391,13 @@ async function renderMultiModalContentFxn(arrayList) {
                                                     </div>
 
                                                     <div class="single-wishist">
-                                                        <span class="delete-main-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(item))}'))">
+                                                        <span class="delete-main-icon wf-edit-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(item))}'))">
                                                             <span class="editWish"></span>
                                                         </span>
-                                                        <span class="delete-main-icon" onclick="deleteWishlist(event, '${key.replace(/'/g, "\\'")}')">
+                                                        <span class="delete-main-icon wf-delete-icon" onclick="deleteWishlist(event, '${key.replace(/'/g, "\\'")}')">
                                                             <span class="deleteWish"></span>
                                                         </span>
-                                                        <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${keyId}')">
+                                                        <span class="delete-main-icon wf-share-icon" onclick="shareSingleWishlist(event, '${keyId}')">
                                                             <div class="img_test"><span></span></div>
                                                         </span>
                                                     </div>
@@ -4451,7 +4464,6 @@ async function renderMultiModalContentFxn(arrayList) {
                 return `${imageUrl}${separator}width=600`;
             }
 
-
             if (responseStatus.ok) {
                 const variantArray = [
                     foundVariant?.option1,
@@ -4474,6 +4486,8 @@ async function renderMultiModalContentFxn(arrayList) {
                     .replace(/'/g, "/wg-sgl")
                     .replace(/"/g, "/wg-dbl");
 
+                console.log("key 0000 ---- ", key)
+
                 const variantNAME = currentPlan >= 4 ? foundVariant?.name ? foundVariant?.name : data.title : data.title;
                 const variantData = variantArray.length > 0 ? variantArray.join(" / ") : "";
                 const priceToDb =
@@ -4495,13 +4509,13 @@ async function renderMultiModalContentFxn(arrayList) {
 
                 const productOptionString = data?.product_option ? data.product_option.replace(/"/g, '&quot;') : '';
 
-                // <div class="copy-icon-main" onClick="copyItem(${data.product_id}, ${data.variant_id}, '${data.handle}', '${data.price}', '${data.image}', '${data.title}', '${data.quantity}', '${key.replace(/'/g, "\\'")}')">
-                //                 <div class="copy-multiwishlist-icon"></div>
-                //             </div>
-
                 wishlistBody += `<div class="wishlist-grid1">
-
-                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}')">
+                        
+                            <div class="copy-icon-main" onClick="copyItem(${data.product_id}, ${data.variant_id}, '${data.handle}', '${data.price}', '${data.image}', '${data.title}', '${data.quantity}', '${key.replace(/'/g, "\\'")}')">
+                                <div class="copy-multiwishlist-icon"></div>
+                            </div>
+                       
+                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}', ${true}, '${key}')">
                         <div class="deleteIcon"></div>
                     </div>
                     <div class="modal-product-image ${wfGetImage() === null ? "for-default" : ""}"><a href="${wfGetDomain}products/${data.handle
@@ -4569,7 +4583,7 @@ async function renderMultiModalContentFxn(arrayList) {
                                     />
                                     <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
                                 </div>`
-                            : `Update Quantity: <div class="quantity-minus-plus drawerDisableClass">
+                            : `<div class="quantity-minus-plus drawerDisableClass">
                                     <div class="drawerDisableClass">-</div>
                                     <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
                                     <div class="drawerDisableClass">+</div>
@@ -4595,7 +4609,7 @@ async function renderMultiModalContentFxn(arrayList) {
                 let imgg = "";
 
                 wishlistBody += `<div class="wishlist-grid1">
-                                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}')">
+                                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}', ${true}, '${key}')">
                                         <div class="deleteIcon"></div>
                                     </div>
 
@@ -4852,7 +4866,7 @@ async function wfqChangeSelect(event, index, handle, value, prevValue, gridIndex
                 );
             }
         });
-        console.log("After - ", newArrayAfterSelection)
+        // console.log("After - ", newArrayAfterSelection)
         allWishlistData = newArrayAfterSelection;
         localStorage.setItem("wg-local-list", JSON.stringify(newArrayAfterSelection));
 
@@ -4930,10 +4944,10 @@ async function wfqChangeSelect(event, index, handle, value, prevValue, gridIndex
     }
 }
 
-function shareSingleWishlist(event, key) {
+function shareSingleWishlist(event, key, userId = "") {
     // key = key.trim().replaceAll(" ", "%20");/
     event.stopPropagation();
-    openShareWishlistModal(key);
+    openShareWishlistModal(key, userId);
 }
 
 function downloadSingleWishlist(event, key) {
@@ -5211,7 +5225,7 @@ async function renderDrawerContentFxn() {
                             }
                                             ${foundVariant?.available === true
                                 ? `
-                                            Update Quantity: <div class="quantity-minus-plus">
+                                            <div class="quantity-minus-plus">
                                                 <div class="quant-minus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">-</div>
                                                 <input 
                                         type="text" 
@@ -5225,8 +5239,7 @@ async function renderDrawerContentFxn() {
                                     />
                                                 <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
                                             </div>`
-                                : `Update Quantity:
- <div class="quantity-minus-plus drawerDisableClass">
+                                : `<div class="quantity-minus-plus drawerDisableClass">
                                                 <div class="drawerDisableClass">-</div>
                                                 <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
                                                 <div class="drawerDisableClass">+</div>
@@ -6300,6 +6313,8 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
     const wishlistData = await getDataFromSql()
     const addNewClass = `wishlist-modal-${gridCount}`;
 
+    console.log("wishlistData --- ", wishlistData)
+
     // if (arrayList.length === 0) {
     //     document.querySelector(".show-shared-wishlist").innerHTML = "There is item or the wrong url";
     //     return;
@@ -6307,6 +6322,8 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
 
     let wishlistBody = `<div class="wishlist-modal-all">`;
+
+    // console.log("arrayList --- ", arrayList)
 
     for (let itemIndex = 0; itemIndex < arrayList.length; itemIndex++) {
         let item = arrayList[itemIndex];
@@ -6319,6 +6336,13 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                             <b>Registry: </b><span data-key="${key}">${key}</span> 
                             <b>Description: </b><span>${item?.description}</span>
                           </div>
+
+                        <div class="single-wishist">
+                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${item.id}', '${item.userId}')">
+                                <div class="img_test"><span></span></div>
+                            </span>
+                        </div>
+
                       </div>`;
 
         if (items.length === 0) {
@@ -6333,8 +6357,12 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
         wishlistBody += `<div class="wishlist-modal-box ${addNewClass}" data-key="${key}">`
 
+        // console.log("items --- ", items)
 
         let promises = items.map(async (data, itemIndex) => {
+
+            console.log("data --- ", data)
+
             let response;
             let jsonData;
             let foundVariant;
@@ -6402,16 +6430,16 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                 wishlistBody += `
               <div class="wishlist-grid1">
                 <div class="modal-product-image ${wfGetImage() === null ? "for-default" : ""}">
-                  <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+                  
                    ${wfGetImage() === null ? `<div class="default-image"><span></span></div>` : `<img src="${wfGetImage()?.startsWith('//') ? `https:${wfGetImage()}` : wfGetImage()}" alt="${variantNAME}" height="auto" width="100%" />`}
-                  </a>
+                  
                 </div>
 
                 <div class="product-content-sec">
                   <h3 class="title11">
-                    <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+                    
                       ${(variantNAME && variantNAME.includes("(")) ? variantNAME.replace(/\((.*?)\)/, `</span><br><span class="wg-2">$1</span>`).replace(/^/, '<span class="wg-1">') : `<span>${variantNAME}</span>`}
-                    </a>
+                    
                   </h3>
                 <p class="product-selected-variants" style="color: ${modalDrawerTextColor};">${variantData}</p>
 
@@ -6423,8 +6451,47 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
                     <div>
                         Wants: <span class="wg-item-wants">${data.quantity}</span>
-                        Has: <span class="wg-item-has"> 0 </span>
+                        Has: <span class="wg-item-has">${data.items_purchased}</span>
                     </div>
+
+
+
+
+
+
+
+
+
+
+<div class="quantity-div">
+                            ${foundVariant?.available
+                        ? `
+                                Update Quantity: <div class="quantity-minus-plus">
+                                    <div class="quant-minus" onClick="updateQuantity2(event)">-</div>
+                                    <input 
+                                        type="text" 
+                                        class="quant-update" 
+                                        value="1" 
+                                        data-quant="1" 
+                                        min="1"
+                                        name="quantity"
+                                        id="quantity"
+                                        oninput="updateQuantity2(event)"
+                                    />
+                                    <div class="quant-plus" onClick="updateQuantity2(event)">+</div>
+                                </div>`
+                        : `<div class="quantity-minus-plus drawerDisableClass">
+                                    <div class="drawerDisableClass">-</div>
+                                    <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
+                                    <div class="drawerDisableClass">+</div>
+                                </div>`
+                    }
+                        </div>
+
+
+
+
+
 
 
             ${(data.price === null || data.price === "" || data.price === "null") ? "" :
@@ -6435,7 +6502,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                                     ? `<div id="viewItem${itemIndex}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
                                         View Item
                                       </div>`
-                                    : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}')">
+                                    : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex}', ${data.id} )">
                                         ${customLanguage.addToCart}
                                       </div>`
                                 : `<div class="cartButtonStyle wg-out-of-stock" style="cursor: not-allowed; opacity: 0.8">
@@ -6683,7 +6750,8 @@ async function removeItem(
     variant_id,
     user_id,
     handle,
-    showAlert = true
+    showAlert = true,
+    key = ""
 ) {
     let selectedWf = document.querySelectorAll(".wf-wishlist-collection-icon");
     let data = null;
@@ -6735,8 +6803,11 @@ async function removeItem(
 
             showAlert === true && alertToast(`${customLanguage.alertForRemoveButton}`);
 
-            const arrayList = allWishlistData;
 
+            let hhh = getWishlistByKey(allWishlistData, key);
+            // renderMultiModalContentFxn(hhh);
+
+            const arrayList = key !== "" ? hhh : allWishlistData;
 
             let renderFn;
             if (window.location.href === 'https://wishlist-guru.myshopify.com/') {
@@ -7441,8 +7512,24 @@ async function addToCartWf(
     image,
     handle,
     index,
-    productOption = null
+    // productOption = null
+    itemId = null
+
 ) {
+
+
+    // console.log("vvv --- ", event,
+    //     variantId,
+    //     userId,
+    //     productId,
+    //     title,
+    //     price,
+    //     image,
+    //     handle,
+    //     index,
+    //     productOption = null)
+
+
 
     // --------to track meta adds on the add-to-cart button-------- 
     if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
@@ -7478,18 +7565,32 @@ async function addToCartWf(
     if (newVariantId !== null) {
         variantId = newVariantId
     }
-    if (currentPlan >= 4 && productOption && typeof productOption === 'object' && Object.keys(productOption).length > 0) {
-        data = {
-            id: variantId,
-            quantity: quantity || 1,
-            properties: productOption,
-        };
-    } else {
-        data = {
-            id: variantId,
-            quantity: quantity || 1,
-        };
+    // if (currentPlan >= 4 && productOption && typeof productOption === 'object' && Object.keys(productOption).length > 0) {
+    //     data = {
+    //         id: variantId,
+    //         quantity: quantity || 1,
+    //         properties: productOption,
+    //     };
+    // } else {
+    //     data = {
+    //         id: variantId,
+    //         quantity: quantity || 1,
+    //     };
+    // }
+
+    let wgrData = {
+        _wgr_app: true,
+        // _u_id: "546",
+        _w_id: userId,
+        _p_id: itemId
     }
+
+    data = {
+        id: variantId,
+        quantity: quantity || 1,
+        properties: wgrData,
+    };
+
 
     // data = {
     //     id: variantId,
@@ -7523,13 +7624,14 @@ async function addToCartWf(
         if (generalSetting.wishlistRemoveData === "yes") {
             removeItem(productId, variantId, userId, handle, false);
             (currentPlan >= 3 && generalSetting?.trendingLayout) && await renderTrendingGridData();
-            getCartButton && getCartButton.classList.remove("quantity_disabled");
+            // getCartButton && getCartButton.classList.remove("quantity_disabled");
         }
-        // event.target.innerHTML = customLanguage?.addToCart || "Move to Cart";
         event.target.innerHTML = currentHTML;
+        getCartButton && getCartButton.classList.remove("quantity_disabled");
+
     } else {
-        // event.target.innerHTML = customLanguage?.addToCart || "Move to Cart";
         event.target.innerHTML = currentHTML;
+        getCartButton && getCartButton.classList.remove("quantity_disabled");
     }
 
 
@@ -8697,7 +8799,6 @@ const wgReformationCss = (getThemeName.themeName === "Reformation")
             align-items:center;
         }`
     : '';
-
 
 const wgBlockshopCss = (getThemeName.themeName === "Blockshop")
     ? `.wf-wishlist.pdp-img-icon-bottom-right {
@@ -10713,7 +10814,7 @@ function clearNotification() {
 };
 
 
-async function openShareWishlistModal(singleWishlist = "") {
+async function openShareWishlistModal(singleWishlist = "", userId = "") {
     let addLinkContent = document.querySelectorAll(".modal-inside");
     for (let wf = 0; wf < addLinkContent.length; wf++) {
         addLinkContent[wf].innerHTML = `<div>${storeFrontDefLang?.loadingText}</div>`;
@@ -10722,7 +10823,7 @@ async function openShareWishlistModal(singleWishlist = "") {
         modalLink.style.display = "none";
     };
     modalLink.style.display = "block";
-    createShareWishlistLink(singleWishlist);
+    createShareWishlistLink(singleWishlist, userId);
 }
 
 // async function wishlistUrlCreator() {
@@ -11009,7 +11110,7 @@ function openShareWishlistModalLink() {
     copyUrl(`${pageUrl}`);
 }
 
-async function createShareWishlistLink(singleWishlist = "") {
+async function createShareWishlistLink(singleWishlist = "", userId = "") {
     document.querySelectorAll(".sharable-link-heading").forEach((element) => {
         element.innerHTML = customLanguage.sharableLinkModalHeading;
     });
@@ -11026,7 +11127,8 @@ async function createShareWishlistLink(singleWishlist = "") {
             }),
         });
         const result = await response.json();
-        const getID = result.data?.[0]?.id;
+        const getID = userId !== "" ? userId : result.data?.[0]?.id;
+
         if (!getID) throw new Error("User ID not found");
         const encryptedEmail = btoa(getID);
         const encryptedName = btoa('url');
@@ -11835,7 +11937,7 @@ function isIdExist(data, pId, vId) {
     return data.some(obj =>
         Object.keys(obj).some(key =>
             // key !== "id" && obj[key].some(item => {
-            key !== "id" && key !== "description" && key !== "urlType" && key !== "data" && key !== "password" && obj[key].some(item => {
+            key !== "id" && key !== "description" && key !== "urlType" && key !== "data" && key !== "password" && key !== "userId" && obj[key].some(item => {
                 const itemPid = Number(item.product_id);
                 if (isVariantWishlistTrue) {
                     return vid
@@ -11904,9 +12006,7 @@ async function getMultiwishlistData(data) {
     }
 }
 
-// getDataFromSql()
 async function getDataFromSql(data) {
-    console.log("data = ", data)
     let allData = [];
     const getCurrentLogin = await getCurrentLoginFxn();
 
@@ -12941,7 +13041,7 @@ async function copyItem(
         ${wishlists}
         ${newMultiArray.length !== 0
             ? `<p id="mainErrorPara">Please enter name*</p>
-              <button id="copyBtn" class="cartButtonStyle" onclick="copyCheckedItem(${product_id}, ${variant_id}, '${handle}', '${price}', '${image}', '${title}', '${quantity}')">
+              <button id="copyBtn" class="cartButtonStyle" onclick="copyCheckedItem(${product_id}, ${variant_id}, '${handle}', '${price}', '${image}', '${title}', '${quantity}', '${key}')">
                 ${customLanguage.copyBtn || storeFrontDefLang.copyBtn}
               </button>`
             : ""
@@ -12956,7 +13056,8 @@ async function copyCheckedItem(
     price,
     image,
     title,
-    quantity
+    quantity,
+    key = ""
 ) {
     const getCurrentLogin = await getCurrentLoginFxn();
     if (checkedItems.length === 0) {
@@ -12988,7 +13089,10 @@ async function copyCheckedItem(
             renderLoader();
             await showCountAll();
             createFilterOptionInStructure();
-            const arrayList = allWishlistData;
+
+            let hhh = getWishlistByKey(allWishlistData, key);
+            const arrayList = key !== "" ? hhh : allWishlistData;
+            // const arrayList = allWishlistData;
 
             const renderFn = generalSetting.wishlistDisplay === "drawer"
                 ? () => renderDrawerContentFxn()
@@ -13471,3 +13575,27 @@ function wgGetProductOptions() {
 
     return Object.keys(result).length === 0 ? null : result;
 }
+
+
+
+(function addHiddenProperty() {
+    console.log("IM running the addHiddenProperty function")
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("by") === "wgr") {
+        console.log("URL contains by=wgr");
+
+        let hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "properties[_DiscountRR]";
+        hiddenInput.value = "my valueee"
+        hiddenInput.classList.add("wf-preorder-guru-input");
+        const finalFormClass = document.querySelectorAll(".product-form__buttons");
+
+        if (finalFormClass) {
+            finalFormClass[0].appendChild(hiddenInput);
+        }
+
+    }
+
+})()

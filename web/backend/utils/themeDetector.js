@@ -54,18 +54,18 @@ export default function detectThemeName(themeName, filter, customSettings) {
         //     beforeIcon = false
 
         //--------------------------- For Quick Modal--------------
-        // modelMainElement = "button[type='submit'][name='add']";
-        // modalProductElement = "quick-add-modal.quick-add-modal[open='']";
-        // modalbuttonAppend = "button.product-form__submit";
-        // modalButtonAppendOnImg = "slider-component.slider-mobile-gutter";
-        // modalbuttonAppendOnTitle = ".product__title";
-        // modalVariantSelector = ""
-        // modalVariantSubSelector = ""
-        // modalVariantMatchedUndefinedParent = ""
-        // checkModalVariantMatchedUndefinedParent = ""
-        // modalVariantMatchedUndefinedSelector = "";
-        // modalProductIdSelector = "[action='/cart/add'3]";
-        // modalProductIdValueSelector = "[name='id']";
+        modelMainElement = "button[type='submit'][name='add']";
+        modalProductElement = "quick-add-modal.quick-add-modal[open='']";
+        modalbuttonAppend = "button.product-form__submit";
+        modalButtonAppendOnImg = "slider-component.slider-mobile-gutter";
+        modalbuttonAppendOnTitle = ".product__title";
+        modalVariantSelector = ""
+        modalVariantSubSelector = ""
+        modalVariantMatchedUndefinedParent = ""
+        checkModalVariantMatchedUndefinedParent = ""
+        modalVariantMatchedUndefinedSelector = "";
+        modalProductIdSelector = "[action='/cart/add'3]";
+        modalProductIdValueSelector = "[name='id']";
 
         // icon on pdp image
         pdpImageSelector = ".product__media img";

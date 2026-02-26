@@ -163,3 +163,5 @@ routerSql.get("/health", apiHealthChecker);
 
 
 export default routerSql;
+
+

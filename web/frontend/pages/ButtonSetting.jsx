@@ -73,7 +73,27 @@ const ButtonSetting = () => {
         });
         getAllAppDataMetafields();
 
+        // ----------------this is to get the orders data----------------
+        // getOrderdata();
+
     }
+
+    // async function getOrderdata() {
+
+    //     try {
+    //         const response = await fetch(`/api/get-order-list`);
+    //         const result = await response.json();
+    //         console.log("Order data -- ", result)
+
+
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //     }
+
+
+    // }
+
+
 
 
     const convertColor = (color) => {

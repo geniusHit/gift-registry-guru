@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", getCurentPlanSql2);
 // console.log(" ---------------- collection page code render ---------------- ")
 
 const serverURL1 = 'http://localhost:5000'; // -------------- local
-// const serverURL1 = "https://enb-solid-blowing-ranking.trycloudflare.com";
+// const serverURL1 = "https://airplane-manufacture-creativity-tour.trycloudflare.com"; // -------------- local
 // const serverURL1 = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL1 = 'https://wishlist-guru-api.webframez.com';  // -------------- stagging
 
@@ -71,11 +71,6 @@ if (!getDomain.endsWith('/')) {
 //     // handleFilterChange1();
 
 // })()
-
-
-
-
-
 
 
 async function getCurentPlanSql2() {

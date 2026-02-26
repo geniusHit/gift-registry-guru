@@ -1,4 +1,3 @@
-
 const heartButton = document.getElementById("heart");
 heartButton.addEventListener("click", heartButtonHandle);
 let modalWF = document.getElementById("wg-myModal");
@@ -24,6 +23,7 @@ let wfCurrencyType = heartButton.getAttribute("currency-format");
 let currencyType = wfCurrencyType?.substring(0, wfCurrencyType?.indexOf("{{")).trim();
 let wfCurData = heartButton.getAttribute("cur-data");
 
+// let currencyType = wfCurrencyType?.substring(0, wfCurrencyType?.indexOf("{{")).trim();
 const getFontFamily = heartButton.getAttribute("get-font-family")?.replace(/^"(.*)"$/, "$1") ?? null;
 let getFontFamilyFallback = heartButton.getAttribute("get-font-family-fallback");
 let shopDomain = heartButton.getAttribute("shop-domain");
@@ -63,11 +63,6 @@ let currentSelectedKey = "";
 let newArrayAfterSelection = [];
 let tagsArray = [];
 const MAX_TAGS = 5;
-// let eventOption = [
-//     { name: "Wedding", value: "wedding" },
-//     { name: "Birthday", value: "birthday" },
-//     { name: "Winter Sale", value: "winter-sale" },
-// ];
 let eventOption = generalSetting?.eventOption ? JSON.parse(generalSetting?.eventOption) : [];
 
 // let wgLastClickTime = 0;
@@ -98,11 +93,35 @@ function onHeaderActionsRender(element) {
     showCountAll();
 }
 
+// this is for meta conversion
+(function () {
+    if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
+        const pixelScript = document.createElement("script");
+        pixelScript.type = "text/javascript";
+        pixelScript.text = `
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+
+        fbq('init', '${advanceSetting?.metaPixelApiKey.trim()}');
+        fbq('track', 'PageView');
+    `;
+        document.head.appendChild(pixelScript);
+    }
+})();
+
+
+
 let modalDrawerTextColor = generalSetting?.wlTextColor?.color ? generalSetting?.wlTextColor?.color : generalSetting.wlTextColor;
 document.addEventListener("DOMContentLoaded", getCurentPlanSql);
 
 // const serverURL = "http://localhost:5000"; // -------------- local
-const serverURL = "https://inspections-omissions-expenditures-wonder.trycloudflare.com";
+const serverURL = "https://thousand-exemption-organization-sam.trycloudflare.com"; // -------------- local
 // const serverURL = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL = 'https://wishlist-guru-api.webframez.com'; // -------------- stagging
 
@@ -112,11 +131,14 @@ let injectCodeCondition = injectCoderr?.getAttribute("inject-code-automatic") ||
 let varriantId;
 let allWishlistData = JSON.parse(localStorage.getItem("wg-local-list")) || [];
 let wgAllProducts = [];
+let wgWishlistLanguage = "";
+let wgMultiLanguages = [];
+let wgMultiEmailTempDefault = { send_emails: "yes", email_language: "default" };
+
 let publicRegistryList = [];
 const wgrRowsPerPage = 5;
 let wgrCurrentPage = 1;
 const maxVisiblePages = 5;
-
 
 const colIconDefaultColor = collectionBtnSetting?.iconDefaultColor?.filterColor
     ? collectionBtnSetting?.iconDefaultColor?.filterColor
@@ -167,8 +189,8 @@ if (!wfGetDomain.endsWith("/")) {
 
 //  ---------------- here we are trying to get the data and icon fast ----------------
 (async function () {
-    // const isMultiwishlistTrueValue1 = heartButton?.hasAttribute('isMultiwishlistTrue') ? heartButton?.getAttribute('isMultiwishlistTrue') : "no";
-    // isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
+    const isMultiwishlistTrueValue1 = heartButton?.hasAttribute('isMultiwishlistTrue') ? heartButton?.getAttribute('isMultiwishlistTrue') : "no";
+    isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
     console.log(" ---- optimizing WG 2.O ---- ");
     // ------- to show the header icon with custom code -------
     currentPlan > 1 && showCustomHeaderIcon1();
@@ -203,13 +225,13 @@ async function getWgEmail() {
 }
 
 async function getCurentPlanSql() {
-    // const isMultiwishlistTrueValue1 = heartButton.hasAttribute('isMultiwishlistTrue') ? heartButton.getAttribute('isMultiwishlistTrue') : "no";
-    // isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
+    const isMultiwishlistTrueValue1 = heartButton.hasAttribute('isMultiwishlistTrue') ? heartButton.getAttribute('isMultiwishlistTrue') : "no";
+    isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
     //    ---------- this code will show header and floating icon using plan from metafield.. after we are confirming the plan from DB-------- 
     buttonStyleFxn();
-    if (JSON.parse(heartButton.getAttribute("current-plan")) >= 1) {
-        await Promise.all([showWishlistButtonType(), showCountAll()]);
-    }
+    // if (JSON.parse(heartButton.getAttribute("current-plan")) >= 1) {
+    //     await Promise.all([showWishlistButtonType(), showCountAll()]);
+    // }
 
     try {
         const response = await fetch(`${serverURL}/get-current-plan-sql`, {
@@ -227,19 +249,23 @@ async function getCurentPlanSql() {
         });
         const result = await response.json();
 
-        // console.log("result ==== ", result)
-
         if (result?.planData.length > 0) {
             const prevToken = localStorage.getItem("wg-token");
             if (!prevToken || prevToken !== result.token) {
                 localStorage.setItem("wg-token", result.token);
             }
+
+            // let languageVariable = JSON.parse(result?.languageData[0]?.translations);
+            // wgWishlistLanguage = languageVariable?.textMsgLanguage || "";
+
             currentPlan = result?.planData[0]?.active_plan_id;
             const translationData =
                 result?.languageData.length > 0
                     ? result?.languageData[0]?.translations
                     : heartButton.getAttribute("language-setting");
             customLanguage = JSON.parse(translationData.replace(/~/g, "'"));
+
+            wgWishlistLanguage = customLanguage.textMsgLanguage;
             shouldAutoUpdateRender = true;
             updateLanguageFxn();
         }
@@ -306,6 +332,52 @@ async function getCurentPlanSql() {
     showIconOnPdpImage();
     // -------- this function will add data in the modal structure after 0.5 sec --------  
     setTimeout(() => pageTypeFunction(), 0)
+    await Promise.all([showWishlistButtonType(), showCountAll(), getStoreMultiLanguage()]);
+
+}
+
+async function getStoreMultiLanguage() {
+    const getCurrentLogin = await getCurrentLoginFxn();
+    try {
+        const response = await fetch(`${serverURL}/get-multi-languages`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                shopName: permanentDomain,
+            }),
+        });
+        const result = await response.json();
+        wgMultiLanguages = result.language;
+    } catch (error) {
+        console.error("Error fetching current plan:", error);
+    }
+
+    try {
+        const response = await fetch(`${serverURL}/get-email-setting-data`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                shopName: permanentDomain,
+                user: getCurrentLogin
+            }),
+        });
+        const result = await response.json();
+        if (result?.msg === "no user") {
+
+        } else {
+            let resFinal = result?.data || [];
+            if (resFinal.length !== 0) {
+                wgMultiEmailTempDefault = resFinal[0];
+            }
+        }
+
+    } catch (error) {
+        console.error("Error fetching current plan:", error);
+    }
 }
 
 function removeDrawerClasses() {
@@ -330,6 +402,110 @@ function appendBodyOutsideHide() {
     }
 }
 
+
+function wgOpenSettings() {
+    closeMultiWishlist();
+    getMultiWishlistDiv.style.display = "block";
+    let wgParentDiv = document.getElementById("wg-multiWishlistInnerContent");
+    const newLoginDivData = `<span class="wf-preferLang">${storeFrontDefLang?.cpYouNeedToLogin || "You need to login first to edit Customer Preferences"}</span>
+                            <span class="closeByAccountModal" onclick="closeAccountModal()"></span>
+                        <div class="wg-islogin-buttons">
+                            <button onClick="goToRegister()" class="${currentPlan < 3 ? "cartButtonStyle" : "wg-register-btn"}">
+                        ${customLanguage?.createAccountAnchor || storeFrontDefLang.createAccountAnchor}
+                    </button>
+                    <button onClick="goToAccount()" class="${currentPlan < 3 ? "cartButtonStyle" : "wg-login-btn"}">
+                        ${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}
+                    </button>
+                </div>`;
+
+    const isEmailChecked = wgMultiEmailTempDefault?.send_emails === "yes";
+    const selectedLanguage = wgMultiEmailTempDefault?.email_language;
+    const customerPreferencesHtml = `
+    <span class="wf-preferLang">${storeFrontDefLang?.customerPreferenceHeading || "CUSTOMER PREFERENCES"}</span>
+    <br>
+    <div id="receiveEmails">
+      <span>${storeFrontDefLang?.cpEmailNotification || "Enable Email Notifications:"}</span>
+        <label class="wg-toggle"><input 
+            type="checkbox" id="wg-email-toggle" 
+            onchange="wgEmailToggleChange(this)"  
+            ${isEmailChecked ? "checked" : ""}><span class="wg-slider"></span></label>
+    </div>
+    <div id="languagePreferences">
+      <span>${storeFrontDefLang?.cpEmailLanguage || "Email Language Preference:"}</span>
+        <select onChange="emailTempLanguageSelect(event)">
+            <option value="" disabled selected>Choose language</option>
+            ${wgMultiLanguages?.map(value => {
+        const optionValue = value.type === "default" ? value.type : value.language;
+        const isSelected = optionValue === selectedLanguage;
+        return `
+            <option value="${optionValue}" ${isSelected ? "selected" : ""}>
+               ${value.language.charAt(0).toUpperCase() + value.language.slice(1)}            
+            </option>
+            `}).join("")}
+        </select>
+    </div>`
+    if (customerEmail) {
+        wgParentDiv.innerHTML = customerPreferencesHtml;
+    } else {
+        wgParentDiv.innerHTML = newLoginDivData;
+    }
+}
+
+async function wgEmailToggleChange(event) {
+    const getCurrentLogin = await getCurrentLoginFxn();
+    try {
+        const response = await fetch(`${serverURL}/save-email-settings`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                shopName: permanentDomain,
+                user: getCurrentLogin,
+                emailValue: event?.checked === true ? "yes" : "no"
+            }),
+        });
+        const result = await response.json();
+        if (result.msg === "updated") {
+            alertToast(storeFrontDefLang?.cpSettingUpdated || "Setting Updated");
+            wgMultiEmailTempDefault.send_emails = event?.checked === true ? "yes" : "no"
+        } else {
+            alertToast(storeFrontDefLang?.cpAddItemFirst || "Please add any item first to change the preference");
+        }
+    } catch (error) {
+        console.error("Error fetching current plan:", error);
+    }
+}
+
+async function emailTempLanguageSelect(event) {
+    const getCurrentLogin = await getCurrentLoginFxn();
+    try {
+        const response = await fetch(`${serverURL}/save-email-language`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                shopName: permanentDomain,
+                user: getCurrentLogin,
+                emailValue: event.target.value
+            }),
+        });
+        const result = await response.json();
+        if (result.msg === "updated") {
+            alertToast(storeFrontDefLang?.cpSettingUpdated || "Setting Updated");
+            wgMultiEmailTempDefault.email_language = event.target.value
+        } else {
+            alertToast(storeFrontDefLang?.cpAddItemFirst || "Please add any item first to change the preference");
+        }
+    } catch (error) {
+        console.error("Error fetching current plan:", error);
+    }
+}
+
+
+
+
 function updateLanguageFxn() {
     // var h4Element = document.querySelectorAll(".searchData label, .searchData h4");
     // for (var wf = 0; wf < h4Element.length; wf++) {
@@ -349,7 +525,10 @@ function updateLanguageFxn() {
                                             ${customLanguage.clearAllWishlist || storeFrontDefLang.clearAllWishlist}
                                             </div>  
                                         </div>
-                                    </div>
+
+                                    ${currentPlan >= 2 ? `<div class='wg-settings' id='wg-settings' onclick="wgOpenSettings()"><span><span></div>` : ""}
+                                       
+                                        </div>
                                 </div>`
 
 
@@ -364,7 +543,7 @@ function updateLanguageFxn() {
     if (currentPlan === 1) {
         var poweredByUpdate = document.querySelectorAll(".powered-by-text");
         for (var wf = 0; wf < poweredByUpdate.length; wf++) {
-            poweredByUpdate[wf].innerHTML = `${customLanguage.poweredByText || "Powered by"
+            poweredByUpdate[wf].innerHTML = `${storeFrontDefLang.poweredByText || "Powered by"
                 } <span onclick="goToWebframez()">Wishlist Guru</span>`;
         }
     }
@@ -422,7 +601,9 @@ function updateLanguageFxn() {
         }
     } else {
     }
-    let modifiedString = getThemeName?.themeName?.replace(/ /g, "_");
+    // let modifiedString = getThemeName?.themeName?.replace(/ /g, "_");
+    let modifiedString = getThemeName?.themeName?.replace(/[ .:]/g, "_");
+
     modifiedString = modifiedString?.toLowerCase();
     let themeNameClass = `wg-${modifiedString}-custom-css`;
     document.body.classList.add(themeNameClass);
@@ -688,7 +869,18 @@ function renderViewAs() {
         gridHeading.display = "none";
     }
     if (generalSetting?.hideSearch) {
-        searchBox.display = "none";
+        // searchBox.display = "none";
+        const searchBox1 = document.querySelector(".searchData .searchData-main");
+        if (searchBox1) {
+            searchBox1.style.display = "flex"; // required for justify-content to work
+            searchBox1.style.justifyContent = "flex-end";
+        }
+
+        const searchBox2 = document.querySelector(".searchData .searchData-main1");
+        if (searchBox2) {
+            searchBox2.style.display = "none"; // required for justify-content to work
+        }
+
     }
 }
 
@@ -838,14 +1030,20 @@ const wgLocalData = JSON.parse(localStorage.getItem("wg-local-data")) || {};
 let themeCurrentSelectors = wgLocalData?.getThemeSelector || {};
 // detechThemeName()
 //     .then((result) => {
-//         themeCurrentSelectors = result;
+//         // themeCurrentSelectors = result;
 
 if (getThemeName.themeName === "Fabric") {
     document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.display = "flex";
     document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.alignItems = "center";
     document.querySelector(`${themeCurrentSelectors?.headerMenuItem}`).style.gap = "20px";
-    document.querySelector(".wg-fabric-menuItem-desktop").style.fontSize = "16px";
-    document.querySelector(".wg-fabric-menuItem-desktop a").style.color = "#363636";
+    let elm1 = document.querySelector(".wg-fabric-menuItem-desktop");
+    if (elm1) {
+        elm1.style.fontSize = "16px";
+    }
+    let elm2 = document.querySelector(".wg-fabric-menuItem-desktop a");
+    if (elm2) {
+        elm2.style.color = "#363636";
+    }
 }
 // })
 // .catch((error) => {
@@ -989,7 +1187,7 @@ async function injectButtonClick(selectedId, handle, varId) {
         const res = await showLoginPopup(selectedId);
         if (res) return;
         const matchFound = await checkFound(allWishlistData, selectedId, varId)
-        // if (isMultiwishlistTrue) {
+        // if (isMultiwishlistTrue) {  
         renderPopupLoader();
         if (allWishlistData.length > 0 && matchFound) {
             buttonData.isDelete = "yes";
@@ -1380,6 +1578,36 @@ function checkIdIncluded(arr1, arr2) {
     return true;
 }
 
+// async function getSharedWishlistData(userId, selectedID) {
+//     // console.log("userId ---- ", userId)
+//     try {
+//         const userData = await fetch(`${serverURL}/get-shared-wishlist`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 // "wg-api-key": getWgApiKey(),
+//                 "wg-user-id": userId
+//             },
+//             body: JSON.stringify({
+//                 shopName: permanentDomain,
+//                 // customerEmail: userId,
+//                 shopDomain: shopDomain,
+//             }),
+//         });
+//         let result = await userData.json();
+//         // console.log("result ----- = ", result)
+//         if (result.msg === "get_shared_wishlist") {
+//             let allData = result.data;
+//             return allData;
+//         } else {
+//             document.querySelector(".show-shared-wishlist").innerHTML = "There is no item";
+//         }
+//     } catch (error) {
+//         console.log("errr ", error);
+//     }
+// }
+
+
 async function getSharedWishlistData(userId, selectedID) {
     try {
         const userData = await fetch(`${serverURL}/get-shared-wishlist`, {
@@ -1473,6 +1701,7 @@ async function wfCheckPassword() {
     }
 }
 
+
 async function showWishlistButtonType() {
     let mediaQuery;
     if (getThemeName?.themeName === "Berlin") {
@@ -1490,7 +1719,9 @@ async function showWishlistButtonType() {
     // save back to localStorage
     localStorage.setItem("wg-local-data", JSON.stringify(wgLocalData));
     // let modifiedString = getThemeName?.themeName?.replace(/ /g, "_");
-    let modifiedString = getThemeName?.themeName?.replace(/[ .]/g, "_");
+    // let modifiedString = getThemeName?.themeName?.replace(/[ .]/g, "_");
+    let modifiedString = getThemeName?.themeName?.replace(/[ .:]/g, "_");
+
     modifiedString = modifiedString?.toLowerCase();
 
     if (currentPlan >= 1) {
@@ -1844,13 +2075,17 @@ async function showWishlistButtonType() {
 
                             // headerMainIconElement.appendChild(createNewElementDiv);
                             if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cart !== "") {
-                                // let insertRightafterCart = document.querySelector(getThemeSelector?.cart);
-                                // insertRightafterCart?.after(createNewElementDiv);
 
-                                const insertRightafterCartList = document.querySelectorAll(getThemeSelector?.cart);
-                                insertRightafterCartList.forEach((element) => {
-                                    element.after(createNewElementDiv.cloneNode(true));
-                                });
+                                if (getThemeName.themeName === "Prestige") {
+                                    let insertRightafterCart = document.querySelector(getThemeSelector?.cart);
+                                    insertRightafterCart?.after(createNewElementDiv);
+                                } else {
+                                    const insertRightafterCartList = document.querySelectorAll(getThemeSelector?.cart);
+                                    insertRightafterCartList.forEach((element) => {
+                                        element.after(createNewElementDiv.cloneNode(true));
+                                    });
+                                }
+
 
                             } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cart !== "") {
 
@@ -1935,8 +2170,6 @@ async function showWishlistButtonType() {
                             } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cartMobile !== "") {
                                 let insertBeforeCart = document.querySelector(getThemeSelector?.cartMobile);
                                 insertBeforeCart?.before(createNewElementDiv);
-
-
                             } else {
                                 getSelector?.appendChild(createNewElementDiv);
                             }
@@ -2084,6 +2317,38 @@ function showCustomHeaderIcon1() {
     }
 }
 
+// async function handleSearchData(event) {
+//     const searchValue = event.target.value.trim().toLowerCase();
+//     const wishlistItems = document.querySelectorAll(".wishlist-grid1");
+//     let matchCount = 0;
+//     wishlistItems.forEach((item) => {
+//         const title = item.querySelector(".title11 a")?.textContent.toLowerCase() || "";
+//         const price = item.querySelector(".product-option-price")?.textContent.toLowerCase() || "";
+//         const variant = item.querySelector(".product-selected-variants")?.textContent.toLowerCase() || "";
+//         const isMatch = title.includes(searchValue) || price.includes(searchValue) || variant.includes(searchValue);
+//         if (isMatch || searchValue === "") {
+//             // item.style.display = "block";
+//             item.style.display = "flex";
+//             matchCount++;
+//         } else {
+//             item.style.display = "none";
+//         }
+//     });
+//     if (matchCount === 0) {
+//         document.querySelector(".wishlist-modal-all").style.display = "none";
+//         document.querySelector(".modal-button-div").style.display = "none";
+//         document.querySelector(".wg-no-match-found").style.display = "block";
+//         document.querySelector(".wg-no-match-found").innerHTML = `<h4 class="drawer-cart-empty">${customLanguage.noFoundSearchText}</h4>`;
+//         document.querySelector(".grid-option").style.pointerEvents = "none";
+//     } else {
+//         document.querySelector(".wishlist-modal-all").style.display = "grid";
+//         document.querySelector(".modal-button-div").style.display = "block";
+//         document.querySelector(".wg-no-match-found").style.display = "none";
+//         document.querySelector(".wg-no-match-found").innerHTML = "";
+//         document.querySelector(".grid-option").style.pointerEvents = "auto";
+//     }
+// }
+
 async function handleSearchData(event) {
     const searchValue = event.target.value.trim().toLowerCase();
     if (!searchValue) {
@@ -2123,8 +2388,6 @@ async function wgrHandleSearch(event) {
 
 
 }
-
-
 
 
 async function gridFxn(count) {
@@ -2412,15 +2675,16 @@ async function heartButtonHandle() {
                 loaderr[wf].innerHTML = `<div class="loader-css" ><span></span></div>`;
             }
         }
-        if (generalSetting.wishlistDisplay === "drawer") {
-            document.querySelector(".drawer-main").innerHTML = `<div class="loader-css" ><span></span></div>`;
-        }
+        // if (generalSetting.wishlistDisplay === "drawer") {
+        //     document.querySelector(".drawer-main").innerHTML = `<div class="loader-css" ><span></span></div>`;
+        // }
         if (currentPlan > 1) {
             let poweredByText = document.querySelectorAll(".powered-by-text");
             for (let wf = 0; wf < poweredByText.length; wf++) {
                 poweredByText[wf].innerHTML = "";
             }
         }
+
         // if (generalSetting.wishlistDisplay === "modal") {
         //     document.body.style.overflow = "hidden";
         //     document.body.classList.add('wf-hide-scroll');
@@ -2444,14 +2708,14 @@ async function heartButtonHandle() {
         //     };
         //     pageTypeFunction();
         // } else if (generalSetting.wishlistDisplay === "page") {
-        //     wishlistStyleFxn();
-        //     window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
+        wishlistStyleFxn();
+        window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
         // } else if (generalSetting.wishlistDisplay === "drawer") {
         //     if (currentPlan > 1) {
         //         document.body.style.overflow = "hidden";
         //         document.querySelector(".sidenav").style.transform = "translateX(0%)";
         //         document.querySelector(".overlayy").style.height = "100vh";
-        //         document.querySelector(".swlb-div").style.display = "block";
+        //         document.querySelector(".swlb-div").style.display = "flex";
         //         document.querySelector(".drawer-main").style.display = "block";
         //         document.querySelector(".drawer-button-div").style.display = "block";
         //         document.getElementById("wg-isLogin-drawer").style.display = "none";
@@ -2460,9 +2724,7 @@ async function heartButtonHandle() {
         //         alertContent(`Your plan subscription is out of service, Please Contact site administrator`);
         //     }
         // } else {
-
-        wishlistStyleFxn();
-        window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
+        //     window.location = `${wfGetDomain}apps/wg-wishlist`;
         // }
     }
 }
@@ -2505,9 +2767,6 @@ async function updateQuantity(event, product_id, user_id) {
         if (result.msg === "item_quantity_updated") {
             inputField.value = quantity;
             inputField.dataset.quant = quantity;
-
-
-
         }
     } catch (error) {
         console.error("Error:", error);
@@ -2624,9 +2883,11 @@ async function shareWishlistFXN() {
                 } </a> ${customLanguage?.createAccountEndingText || ""}</div>` : "";
 
         if (generalSetting.wishlistDisplay === "drawer") {
-            document.querySelector(".swlb-div").innerHTML = `${getLoginnDiv}<div class="${generalSetting.wishlistDisplay === "drawer"
-                ? "drawerShareTextStyle"
-                : "shareButtonStyle"
+            document.querySelector(".swlb-div").innerHTML = `${getLoginnDiv} 
+            ${currentPlan >= 2 ? `<div class='wg-settings' id='wg-settings' onclick="wgOpenSettings()"><span><span></div>` : ""}
+            <div class="${generalSetting.wishlistDisplay === "drawer"
+                    ? "drawerShareTextStyle"
+                    : "shareButtonStyle"
                 }" onclick="openShareWishlistModal()"><div class="img_test"><span></span></div><div class="shareButtonTextStyle">${customLanguage.shareWishlistByEmailButton}</div></div>`;
         }
 
@@ -2690,9 +2951,11 @@ async function shareWishlistFXN() {
 
 
         if (generalSetting.wishlistDisplay === "drawer") {
-            document.querySelector(".swlb-div").innerHTML = `${getLoginnDiv} <div class="${generalSetting.wishlistDisplay === "drawer"
-                ? "drawerShareTextStyle"
-                : "shareButtonStyle"
+            document.querySelector(".swlb-div").innerHTML = `${getLoginnDiv} 
+            ${currentPlan >= 2 ? `<div class='wg-settings' id='wg-settings' onclick="wgOpenSettings()"><span><span></div>` : ""}
+            <div class="${generalSetting.wishlistDisplay === "drawer"
+                    ? "drawerShareTextStyle"
+                    : "shareButtonStyle"
                 }"  onclick="openShareModal()"><div class="img_test"><span></span></div><div class="shareButtonTextStyle">${customLanguage.shareWishlistByEmailButton}</div></div>`;
         }
     }
@@ -2954,20 +3217,19 @@ function changeMoney(cents) {
 
 }
 
+
 // function changeMoney(cents) {
-//     const moneySymbol = wfCurrencyType;
-
-//     console.log("moneySymbol --- ", moneySymbol)
-
-
+//     // const money_format = heartButton.getAttribute("currency-type");
+//     const money_format = wfCurrencyType;
 //     if (typeof cents === "string") {
 //         cents = parseFloat(cents.replace(",", ""));
 //     }
-
+//     var value = "";
+//     var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+//     var formatString = money_format;
 //     function defaultOption(opt, def) {
 //         return typeof opt === "undefined" ? def : opt;
 //     }
-
 //     function formatWithDelimiters(number, precision, thousands, decimal) {
 //         precision = defaultOption(precision, 2);
 //         thousands = defaultOption(thousands, ",");
@@ -2976,19 +3238,30 @@ function changeMoney(cents) {
 //             return "0";
 //         }
 //         number = (number / 100.0).toFixed(precision);
-//         var parts = number.split(".");
-//         var dollars = parts[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1" + thousands);
-//         var centsPart = parts[1] ? decimal + parts[1] : "";
-//         return dollars + centsPart;
+//         var parts = number.split("."),
+//             dollars = parts[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1" + thousands),
+//             cents = parts[1] ? decimal + parts[1] : "";
+//         return dollars + cents;
 //     }
-
-//     const value = formatWithDelimiters(cents, 2);
-
-//     // ✅ Now simply prepend or append the symbol
-//     return `${moneySymbol}${value}`;
+//     let match = formatString.match(placeholderRegex);
+//     if (match) {
+//         switch (match[1]) {
+//             case "amount":
+//                 value = formatWithDelimiters(cents, 2);
+//                 break;
+//             case "amount_no_decimals":
+//                 value = formatWithDelimiters(cents, 0);
+//                 break;
+//             case "amount_with_comma_separator":
+//                 value = formatWithDelimiters(cents, 2, ".", ",");
+//                 break;
+//             case "amount_no_decimals_with_comma_separator":
+//                 value = formatWithDelimiters(cents, 0, ".", ",");
+//                 break;
+//         }
+//     }
+//     return formatString.replace(placeholderRegex, value);
 // }
-
-
 
 // ---------------filter option function---------------
 function createFilterOptionInStructure() {
@@ -3006,6 +3279,226 @@ function createFilterOptionInStructure() {
     //     }
     // }
 };
+
+// async function wfFilterChange() {
+//     const selectElement = document.getElementById("wf-filter-for-modal");
+//     const selectedValue = selectElement.value;
+//     let arrayList = await getDataFromSql();
+//     let myArray = [];
+
+//     if (isMultiwishlistTrue === false) {
+//         arrayList.map((data, index) => {
+//             let keyData = Object.keys(data)[0];
+//             let valueData = Object.values(data)[0];
+//             if (keyData === "favourites") {
+//                 if (selectedValue === "a_to_z") {
+//                     valueData.sort((a, b) => a.title.localeCompare(b.title));
+//                 } else if (selectedValue === "z_to_a") {
+//                     valueData.sort((a, b) => b.title.localeCompare(a.title));
+//                 } else if (selectedValue === "n_to_o") {
+//                     valueData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+//                 } else if (selectedValue === "o_to_n") {
+//                     valueData.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+//                 } else if (selectedValue === "l_to_h") {
+//                     valueData.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+//                 } else if (selectedValue === "h_to_l") {
+//                     valueData.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+//                 }
+//                 myArray.push({ [keyData]: valueData });
+//             }
+//         })
+//     } else {
+//         arrayList.map((data, index) => {
+//             let keyData = Object.keys(data)[0];
+//             let valueData = Object.values(data)[0];
+//             if (selectedValue === "a_to_z") {
+//                 valueData.sort((a, b) => a.title.localeCompare(b.title));
+//             } else if (selectedValue === "z_to_a") {
+//                 valueData.sort((a, b) => b.title.localeCompare(a.title));
+//             } else if (selectedValue === "n_to_o") {
+//                 valueData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+//             } else if (selectedValue === "o_to_n") {
+//                 valueData.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+//             } else if (selectedValue === "l_to_h") {
+//                 valueData.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+//             } else if (selectedValue === "h_to_l") {
+//                 valueData.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+//             }
+//             myArray.push({ [keyData]: valueData });
+//         })
+//     }
+//     renderMultiModalContentFxn(myArray);
+// }
+// // ---------------filter option function---------------
+
+// async function pageTypeFunction() {
+//     const defaultLang = await getDefLanguage();
+//     storeFrontDefLang = defaultLang;
+//     await getStoreLanguage().then(async () => {
+//         if (currentPlan > 1) {
+//             let poweredByText = document.querySelectorAll(".powered-by-text");
+//             for (let wf = 0; wf < poweredByText.length; wf++) {
+//                 poweredByText[wf].innerHTML = "";
+//             }
+//         }
+//         let addModalHeading = document.querySelectorAll(".modal-heading");
+//         if (addModalHeading.length > 0) {
+//             for (let wf = 0; wf < addModalHeading.length; wf++) {
+//                 addModalHeading[wf].innerHTML = `${customLanguage.modalHeadingText}`;
+//             }
+//         }
+//         // --------- add wishlist description-------
+//         addWishlistDescription();
+//         let viewTextDiv = document.querySelectorAll(".gridText");
+//         if (viewTextDiv.length > 0) {
+//             for (let wf = 0; wf < viewTextDiv.length; wf++) {
+//                 viewTextDiv[wf].innerHTML = `${customLanguage.textForGridIcon}`;
+//             }
+//         }
+//         const getLocalId = localStorage.getItem("isLoginProductId") !== null
+//             ? localStorage.getItem("isLoginProductId")
+//             : null;
+
+//         if (!customerEmail && getLocalId) {
+//             document.querySelector(".modal-page-auth").style.display = "none";
+//             document.querySelector(".grid-outer-main").style.display = "none";
+//             document.querySelector(".show-title").style.display = "none";
+//             document.querySelector(".modal-button-div").style.display = "none";
+//             document.querySelector(".searchData").style.display = "none";
+
+//             // const newDivData = `
+//             // <h3>${customLanguage?.isLoginParaText || storeFrontDefLang.isLoginParaText}</h3>
+//             // <div class="wg-islogin-buttons">
+//             //     <button onClick="goToRegister()" class="wg-register-btn">${customLanguage?.createAccountAnchor || storeFrontDefLang.createAccountAnchor}</button>
+//             //     <button onClick="goToAccount()" class="wg-login-btn">${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}</button>
+//             // </div>`;
+//             // const newDiv = document.createElement("div");
+//             // newDiv.id = "wg-isLogin-modal";
+//             // newDiv.innerHTML = newDivData;
+//             // document.querySelector(".modal-button-div").insertAdjacentElement("afterend", newDiv);
+
+//             const existingModal = document.getElementById("wg-isLogin-modal");
+//             if (existingModal) {
+//                 existingModal.remove();
+//             }
+//             // Create new modal
+//             const newDivData = `
+//                 <h3>${customLanguage?.isLoginParaText || storeFrontDefLang.isLoginParaText}</h3>
+//                 <div class="wg-islogin-buttons">
+//                     <button onClick="goToRegister()" class="wg-register-btn">
+//                         ${customLanguage?.createAccountAnchor || storeFrontDefLang.createAccountAnchor}
+//                     </button>
+//                     <button onClick="goToAccount()" class="wg-login-btn">
+//                         ${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}
+//                     </button>
+//                 </div>`;
+
+//             const newDiv = document.createElement("div");
+//             newDiv.id = "wg-isLogin-modal";
+//             newDiv.innerHTML = newDivData;
+
+//             // Insert new modal after the reference element
+//             const referenceEl = document.querySelector(".modal-button-div");
+//             if (referenceEl) {
+//                 referenceEl.insertAdjacentElement("afterend", newDiv);
+//             }
+
+//             setTimeout(() => {
+//                 localStorage.clear("isLoginProductId");
+//             }, 15000);
+//         }
+
+//         document.querySelector(".modal-heading-parent").style.textAlign = generalSetting.wlTextAlign;
+
+//         if (!customerEmail) {
+
+//             if ((generalSetting?.hideLoginText === false || generalSetting?.hideLoginText === undefined || generalSetting?.hideLoginText === "")) {
+//                 document.querySelector(".modal-page-auth").innerHTML = `
+//                 ${customLanguage?.loginTextForWishlist || storeFrontDefLang.loginTextForWishlist} <a href ="/account">${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}</a> ${customLanguage?.orText || storeFrontDefLang.orText} <a href="/account/register"> ${customLanguage?.createAccountAnchor || storeFrontDefLang.createAccountAnchor}</a> ${customLanguage?.createAccountEndingText || ""}`;
+//             }
+
+//             document.querySelector(".modal-page-auth").style.textAlign = generalSetting.wlTextAlign;
+//             document.querySelector(".modal-heading-parent").style.textAlign = generalSetting.wlTextAlign;
+//         }
+//         renderViewAs();
+//         shareWishlistFXN();
+//         modalButtonFxn();
+//         const getSearchBar = document.querySelector(".searchbar_Input");
+//         getSearchBar && (getSearchBar.value = "");
+//         if (window.location.href.includes("/apps/wg-wishlist")) {
+//             const arrayList = isMultiwishlistTrue
+//                 ? await getDataFromSql()
+//                 : getWishlistByKey(await getDataFromSql(), "favourites");
+//             await renderMultiModalContentFxn(arrayList)
+//         } else {
+//             checkPlanForMulti("multi")
+//         }
+//         shareModalContent.innerHTML = `<h3>${customLanguage.shareWishlistByEmailHeading}</h3>
+//     <div class="closeByShareModal" aria-hidden="true"  onclick="closeShareModal()"></div>
+//     <label for="wgSenderName">${customLanguage.shareWishlistSenderName}<span class="redAstrik">*</span></label>
+//     <input type="text" id="wgSenderName" name="wgSenderName" placeholder="${customLanguage.shareWishlistSenderName}" onfocus="removeError()">
+
+//     <label for="textEmailRecieverName">${customLanguage?.shareWishlistRecieverName || storeFrontDefLang?.shareWishlistRecieverName}<span class="redAstrik">*</span></label>
+//     <input type="text" id="textEmailRecieverName" name="textEmailRecieverName" placeholder="${customLanguage?.shareWishlistRecieverName || storeFrontDefLang?.shareWishlistRecieverName}" onfocus="removeError()">
+
+//     <label for="textEmail">${customLanguage.shareWishlistRecipientsEmail}<span class="redAstrik">*</span></label>
+//     <input type="email" id="textEmail" name="textEmail" placeholder="${customLanguage.shareWishlistRecipientsEmail}" onfocus="removeError()">
+//     <div id="emailError" class="error-message" style="display: none;"></div>
+
+//     <label for="textEmailMessage">${customLanguage.shareWishlistMessage}<span class="redAstrik">*</span></label>
+//     <textarea id="textEmailMessage" name="textEmailMessage" placeholder="${customLanguage?.shareWishlistMessagePlaceholder || ""}" onfocus="removeError()"></textarea>
+//     <div id="error-message" style="color: red;"></div>
+
+//     <div class="modalContainer">
+//         <button id="shareListBtn" class="cartButtonStyle" type="button" onclick="submitForm()">${customLanguage.shareWishlistByEmailFormButton}</button> 
+//     </div>
+
+//     <div class="other-sharing-options">
+//       <h4>${customLanguage.iconHeading}</h4>
+
+//       <div class="socialMediaIcon">      
+//         <div onclick="openShareWishlistModal()" class="wg-icon-parent"><span class="copy-link-img share-icons"></span><span class="iconText">Copy</span></div>
+//       ${checkShareIcons().facebookIcon
+//                 ? `<div onclick="shareOnFacebook()" class="wg-icon-parent"><span class="facebook-img share-icons"></span><span class="iconText">Facebook</span></div>`
+//                 : ""
+//             }
+//       ${checkShareIcons().whatsappIcon
+//                 ? `<div onclick="shareViaWhatsApp()" class="wg-icon-parent"><span class="whatsapp-img share-icons"></span><span class="iconText">WhatsApp</span></div>`
+//                 : ""
+//             }
+//       ${checkShareIcons().linkedinIcon
+//                 ? `<div onclick="shareViaLinkedIn()" class="wg-icon-parent"><span class="linkedin-img share-icons"></span><span class="iconText">Linkedin</span></div>`
+//                 : ""
+//             }
+//       ${checkShareIcons().fbMessengerIcon
+//                 ? `<div onclick="shareOnFbMessenger()" class="wg-icon-parent"><span class="fb-messenger-img share-icons"></span><span class="iconText">Messenger</span></div>`
+//                 : ""
+//             }
+//       ${checkShareIcons().telegramIcon
+//                 ? `<div onclick="shareViaTelegram()" class="wg-icon-parent"><span class="telegram-img share-icons"></span><span class="iconText">Telegram</span></div>`
+//                 : ""
+//             }
+//       ${checkShareIcons().twitterIcon
+//                 ? `<div onclick="shareOnTwitter()" class="wg-icon-parent"><span class="twitter-img share-icons"></span><span class="iconText">X</span></div>`
+//                 : ""
+//             }
+//       ${checkShareIcons().instagramIcon
+//                 ? `<div onclick="shareOnInstagram()" class="wg-icon-parent"><span class="instagram-img share-icons"></span><span class="iconText">Instagram</span></div>`
+//                 : ""
+//             }
+//     </div></div>`;
+//         successInnerDiv.innerHTML = `<h3>${customLanguage.shareWishlistByEmailSuccessMsg}</h3></div>`;
+//     })
+
+//     // const modalBoxes = document.querySelectorAll('.wishlist-modal-box div');
+//     // modalBoxes.forEach(modalBox => {
+//     //     modalBox.style.backgroundColor = generalSetting?.gridBgColor ? generalSetting?.gridBgColor : "center";     // Example style
+//     //     modalBox.style.textAlign = generalSetting?.gridAlignment ? generalSetting.gridAlignment : "center";
+//     //     // Add more styles as needed
+//     // });
+// }
+
+
 
 async function wfFilterChange() {
     const selectElement = document.getElementById("wf-filter-for-modal");
@@ -3099,7 +3592,7 @@ function wgrAddLoginSection() {
 async function wgrListingPageTypeFunction() {
     // showing loader 
 
-    console.log("allWishlistData ---- ", allWishlistData)
+    // console.log("allWishlistData ---- ", allWishlistData)
 
     wgrAddNavigationSection();
 
@@ -3127,24 +3620,24 @@ async function wgrListingPageTypeFunction() {
                                 <div class="wgr-listing-row">
                                                 <div class="wishlist-modal-all"> 
                                                 <div class="wf-multi-Wish-heading">
-                                                        <div class="wf-multi-Wish-content" onclick="redirectToSingleWishlist('${data.id}')">
+                                                        <div class="wf-multi-Wish-content" onclick="redirectToSingleWishlist22('${listName}')">
                                                                 <b>Registry:</b><span data-key="${listName}">${listName}</span> 
                                                         </div>
                                                         <div class="single-wishist">
-                                                            <span class="delete-main-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(data))}'))">
+                                                            <span class="delete-main-icon wf-edit-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(data))}'))">
                                                                 <span class="editWish"></span>
                                                             </span>
-                                                            <span class="delete-main-icon" onclick="deleteWishlist(event, '${listName.replace(/'/g, "\\'")}')">
+                                                            <span class="delete-main-icon wf-delete-icon" onclick="deleteWishlist(event, '${listName.replace(/'/g, "\\'")}')">
                                                                 <span class="deleteWish"></span>
                                                             </span>
-                                                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${data.id}')">
+                                                            <span class="delete-main-icon wf-share-icon" onclick="shareSingleWishlist(event, '${data.id}')">
                                                                 <div class="img_test"><span></span></div>
                                                             </span>
                                                         </div>
                                                 </div>
                                             </div>
 
-                                            <div class="wgr-description" onclick="redirectToSingleWishlist('${data.id}')">
+                                            <div class="wgr-description" onclick="redirectToSingleWishlist22('${listName}')">
                                                 <b>Description:</b><span>${data.description}</span>
                                             </div>
                                 </div>
@@ -3152,10 +3645,43 @@ async function wgrListingPageTypeFunction() {
         }).join("")}`;
     }
 
+
+    const elm = document.querySelector('.show-title');
+    if (elm) {
+        elm.style.display = 'none';
+    }
+
 }
 
+function redirectToSingleWishlist22(key) {
+    // console.log("key --- ", key);
+    // console.log("REDIRECTING TO THE LIST ITEMSSSSSSSSSSSSSSSSSSS");
+    // console.log("allWishlistData ------- ", allWishlistData)
+    document.querySelector(".wgr-heading").innerHTML = `Items in registry -- ${key} <button class="wf-back-btn" onclick="wfBackToList()">Back</button>`;
+    document.querySelector(".show-title").innerHTML = `<div class="loader-css" ><span> </span></div>`
+    const elm1 = document.querySelector('.wgr-listing');
+    if (elm1) {
+        elm1.style.display = 'none';
+    }
+    const elm2 = document.querySelector('.show-title');
+    if (elm2) {
+        elm2.style.display = 'block';
+    }
+    let hhh = getWishlistByKey(allWishlistData, key);
+    renderMultiModalContentFxn(hhh);
+}
 
-
+function wfBackToList() {
+    const elm1 = document.querySelector('.wgr-listing');
+    if (elm1) {
+        elm1.style.display = 'block';
+    }
+    const elm2 = document.querySelector('.show-title');
+    if (elm2) {
+        elm2.style.display = 'none';
+    }
+    wgrListingPageTypeFunction();
+}
 
 async function wgrCreateRegistryForm() {
 
@@ -3258,32 +3784,54 @@ function removeTag(el) {
     el.parentElement.remove();
 }
 
-async function redirectToSingleWishlist(singleWishlist, singleUser = "") {
-    const sendID = await getCurrentLoginFxn() || getAccessTokenFromCookie();
-    try {
-        const response = await fetch(`${serverURL}/get-id-from-email`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                shopName: permanentDomain,
-                email: sendID,
-                shopDomain: shopDomain,
-            }),
-        });
-        const result = await response.json();
-        const getID = singleUser === "" ? result.data?.[0]?.id : Number(singleUser);
+async function redirectToSingleWishlist(singleWishlist, singleUser = "", wishlistName = "") {
+    // console.log("allllll ", allWishlistData)
+    // console.log("singleUser --- ", singleUser)
 
-        if (!getID) throw new Error("User ID not found");
-        const encryptedEmail = btoa(getID);
-        const encryptedName = btoa('url');
-        window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
+    if (allWishlistData[0].userId === Number(singleUser)) {
+        // const elm2 = document.querySelector('.show-title');
+        // if (elm2) {
+        //     elm2.style.display = 'block';
+        // }
+        document.querySelector(".wgr-search-result").innerHTML = `
+                        <div class="wgr-back-button">
+                            <h3>Result of "${wishlistName}"</h3>
+                            <span onclick="wgrResetPublicListing()">Back</span>
+                        </div> 
+                        <div class="show-title"></div>`;
 
-    } catch (error) {
-        console.error("Error: ", error);
-        const fallbackMessage = "Firstly add items to your wishlist to share";
-        document.querySelectorAll(".modal-inside").forEach((element) => {
-            element.innerHTML = fallbackMessage;
-        });
+        document.querySelector(".show-title").innerHTML = `<div class="loader-css" ><span> </span></div>`
+
+        let hhh = getWishlistByKey(allWishlistData, wishlistName);
+        renderMultiModalContentFxn(hhh);
+    } else {
+        const sendID = await getCurrentLoginFxn() || getAccessTokenFromCookie();
+        try {
+            const response = await fetch(`${serverURL}/get-id-from-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    shopName: permanentDomain,
+                    email: sendID,
+                    shopDomain: shopDomain,
+                }),
+            });
+            const result = await response.json();
+            const getID = singleUser === "" ? result.data?.[0]?.id : Number(singleUser);
+            if (!getID) throw new Error("User ID not found");
+            const encryptedEmail = btoa(getID);
+            const encryptedName = btoa('url');
+            // window.location = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
+
+            window.open(`${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`, "_blank");
+
+        } catch (error) {
+            console.error("Error: ", error);
+            const fallbackMessage = "Firstly add items to your wishlist to share";
+            document.querySelectorAll(".modal-inside").forEach((element) => {
+                element.innerHTML = fallbackMessage;
+            });
+        }
     }
 }
 
@@ -3383,16 +3931,23 @@ function wgrShowFilteredData(dataArray, inputValue) {
     if (dataArray.length !== 0) {
         document.querySelector(".wgr-search-result").innerHTML = `
                         <div class="wgr-back-button">
-                            <h3>Search result of "<i>${inputValue}</i>"</h3>
+                            <h3>Showing results for "<i>${inputValue}</i>"</h3>
                             <span onclick="wgrResetPublicListing()">Back</span>
                         </div>
                 ${dataArray.map(data => {
-            return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
+            return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
                                             <div class="wishlist-modal-all"> 
                                                 <div class="wf-multi-Wish-heading">
                                                         <div class="wf-multi-Wish-content" >
                                                                 <b>Registry:</b><span data-key="${data.wishlist_name}">${data.wishlist_name}</span> 
                                                         </div>
+
+                        <div class="single-wishist">
+                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${data.wishlist_id}', '${data.wishlist_user_id}')">
+                                <div class="img_test"><span></span></div>
+                            </span>
+                        </div>
+
                                                 </div>
                                             </div>
                                             <div class="wgr-description">
@@ -3474,17 +4029,24 @@ function renderPublicRegistries(publicData, page = 1) {
                 <div class="wishlist-modal-all"> 
                     <div class="wf-multi-Wish-heading">
                         <div class="wf-multi-Wish-content"
-                            onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
+                            onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
                             <b>Registry:</b>
                             <span data-key="${data.wishlist_name}">
                                 ${data.wishlist_name}
                             </span>
                         </div>
+
+                        <div class="single-wishist">
+                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${data.wishlist_id}', '${data.wishlist_user_id}')">
+                                <div class="img_test"><span></span></div>
+                            </span>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="wgr-description"
-                    onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}')">
+                    onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
                     <b>Description:</b>
                     <span>${data.wishlist_description || ''}</span>
                 </div>
@@ -3638,12 +4200,15 @@ async function pageTypeFunction() {
         modalButtonFxn();
         const getSearchBar = document.querySelector(".searchbar_Input");
         getSearchBar && (getSearchBar.value = "");
-        if (window.location.href.includes("/apps/wf-gift-registry")) {
+        // if (window.location.href.includes("/apps/wf-gift-registry")) {
+        if (window.location.pathname === "/apps/wf-gift-registry") {
             const arrayList = await getDataFromSql();
             // : getWishlistByKey(await getDataFromSql(), "favourites");
+            // console.log("1111111111111----------")
             await renderMultiModalContentFxn(arrayList)
         } else {
-            checkPlanForMulti("multi")
+            // commenting for stopping the auto rendering
+            // checkPlanForMulti("multi")
         }
         shareModalContent.innerHTML = `<h3>${customLanguage.shareWishlistByEmailHeading}</h3>
     <div class="closeByShareModal" aria-hidden="true"  onclick="closeShareModal()"></div>
@@ -3710,6 +4275,9 @@ async function pageTypeFunction() {
     // });
 }
 
+
+
+
 function checkImage(rawUrl) {
     const defaultImg = "";
     return new Promise((resolve) => {
@@ -3724,22 +4292,30 @@ function checkImage(rawUrl) {
     });
 }
 
-
-// function updateCustomerData() {
-
-//     let customerName = heartButton.getAttribute("customer-name");
-
-//     if (customerName) {
-//         document.querySelectorAll(".wg-customer-data").forEach((el) => (el.innerHTML = `<span>Name: ${customerName}</span>`));
-//     }
-
-// }
-
+async function wfGetMetaObjectData(handle) {
+    try {
+        const metaData = await fetch(`${serverURL}/wf-get-meta-object`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                shopName: permanentDomain,
+                handle: handle
+            }),
+        });
+        let result = await metaData.json();
+        return result?.data?.productByHandle?.metafields?.edges;
+    } catch (error) {
+        console.log("errr ", error);
+    }
+}
 
 // ----------recreated with promises.all----------
+
 async function renderMultiModalContentFxn(arrayList) {
 
-    // console.log("arrayList --- ", arrayList)
+    console.log("arrayList --- ", arrayList)
     shareWishlistFXN();
     // updateCustomerData();
     if (arrayList.length === 0) {
@@ -3772,19 +4348,21 @@ async function renderMultiModalContentFxn(arrayList) {
         wishlistBody += `<div class="wf-multi-Wish-heading">
                                                     <div class="wf-multi-Wish-content">
                                                             <span class="wg-arrow-up" onclick="toggleWishlistBox('${key.replace(/'/g, "\\'")}')"></span>
-                                                            <b>Registry:</b><span data-key="${key}">${key}</span> 
-                                                            <b>Description:</b><span>${item.description}</span>
-                                                            <b>Url:</b><span>${item?.urlType?.replace(/-/g, " ")?.replace(/\b\w/g, (c) => c.toUpperCase())}</span>
+                                                            <div>
+                                                                <div class="wg-leftalign"><b>Registry:</b><span data-key="${key}">${key}</span></div> 
+                                                                <div class="wg-leftalign"><b>Description:</b><span>${item.description}</span></div>
+                                                                <div class="wg-leftalign"><b>Url:</b><span>${item?.urlType?.replace(/-/g, " ")?.replace(/\b\w/g, (c) => c.toUpperCase())}</span></div>
+                                                            </div>
                                                     </div>
 
                                                     <div class="single-wishist">
-                                                        <span class="delete-main-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(item))}'))">
+                                                        <span class="delete-main-icon wf-edit-icon" onclick="editWishlist(event, decodeURIComponent('${encodeURIComponent(JSON.stringify(item))}'))">
                                                             <span class="editWish"></span>
                                                         </span>
-                                                        <span class="delete-main-icon" onclick="deleteWishlist(event, '${key.replace(/'/g, "\\'")}')">
+                                                        <span class="delete-main-icon wf-delete-icon" onclick="deleteWishlist(event, '${key.replace(/'/g, "\\'")}')">
                                                             <span class="deleteWish"></span>
                                                         </span>
-                                                        <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${keyId}')">
+                                                        <span class="delete-main-icon wf-share-icon" onclick="shareSingleWishlist(event, '${keyId}')">
                                                             <div class="img_test"><span></span></div>
                                                         </span>
                                                     </div>
@@ -3851,7 +4429,6 @@ async function renderMultiModalContentFxn(arrayList) {
                 return `${imageUrl}${separator}width=600`;
             }
 
-
             if (responseStatus.ok) {
                 const variantArray = [
                     foundVariant?.option1,
@@ -3873,6 +4450,8 @@ async function renderMultiModalContentFxn(arrayList) {
                 const modifiedString = data.title
                     .replace(/'/g, "/wg-sgl")
                     .replace(/"/g, "/wg-dbl");
+
+                console.log("key 0000 ---- ", key)
 
                 const variantNAME = currentPlan >= 4 ? foundVariant?.name ? foundVariant?.name : data.title : data.title;
                 const variantData = variantArray.length > 0 ? variantArray.join(" / ") : "";
@@ -3901,7 +4480,7 @@ async function renderMultiModalContentFxn(arrayList) {
                                 <div class="copy-multiwishlist-icon"></div>
                             </div>
                        
-                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}')">
+                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}', ${true}, '${key}')">
                         <div class="deleteIcon"></div>
                     </div>
                     <div class="modal-product-image ${wfGetImage() === null ? "for-default" : ""}"><a href="${wfGetDomain}products/${data.handle
@@ -3995,7 +4574,7 @@ async function renderMultiModalContentFxn(arrayList) {
                 let imgg = "";
 
                 wishlistBody += `<div class="wishlist-grid1">
-                                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}')">
+                                    <div class="delete-icon-main" onClick="removeItem(${data.product_id}, ${data.variant_id}, ${data.wishlist_id}, '${data.handle}', ${true}, '${key}')">
                                         <div class="deleteIcon"></div>
                                     </div>
 
@@ -4035,27 +4614,6 @@ async function renderMultiModalContentFxn(arrayList) {
 }
 
 
-// remove -- move to cart buttton 
-
-//    ${isMoveToCart
-//                         ? `<div class="movecart-button">
-//                             ${foundVariant?.available
-//                             ? hasTag
-//                                 ? `<div id="viewItem${data.variant_id}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
-//                                         View Item
-//                                       </div>`
-//                                 : `<div id="addItemToCart${data.variant_id}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex}', ${productOptionString} )">
-//                                         ${customLanguage.addToCart}
-//                                       </div>`
-//                             : `<div class="cartButtonStyle wg-out-of-stock" style="cursor: not-allowed; opacity: 0.8">
-//                                     ${customLanguage.outofStock}
-//                                   </div>`
-//                         }
-//                           </div>`
-//                         : ""
-//                     }
-
-
 async function editWishlist(event, item) {
     let editData = JSON.parse(item);
     let editWishlistName = Object.keys(JSON.parse(item))[0];
@@ -4066,14 +4624,8 @@ async function editWishlist(event, item) {
         { name: "Password protected", value: "password-protected" },
     ];
     tagsArray = JSON.parse(editData.data.tags);
-
-    document.querySelector(".wgr-heading").innerHTML = "Update registry";
+    document.querySelector(".wgr-heading").innerHTML = `Edit registry info <button class="wf-back-btn" onclick="wgrListingPageTypeFunction()()">Back</button>`;
     const autoFillRegistryData = `<div class="multiWishCreate wgr-registry-form">
-
-                                    <div class="wgr-edit-cross">
-                                        <h3>Edit registry data</h3>
-                                        <h3 onclick="wgrListingPageTypeFunction()">X</h3>
-                                    </div>
                                             <input type="text" id="wf-editWishlistName" name="wishlistName" placeholder="Enter registry name" value="${editWishlistName || ""}" />
 
                                         <div style="display:flex;gap: 10px;">
@@ -4176,15 +4728,10 @@ async function wfGetEditFormData(oldWishlistName) {
             // modalButtonFxn();
             // renderMultiModalContentFxn(allWishlistData);
         } else {
-
-
         }
-
-
     } catch (error) {
         console.error("Error updating wishlist name:", error);
     }
-
 }
 
 
@@ -4362,11 +4909,52 @@ async function wfqChangeSelect(event, index, handle, value, prevValue, gridIndex
     }
 }
 
-function shareSingleWishlist(event, key) {
+function shareSingleWishlist(event, key, userId = "") {
     // key = key.trim().replaceAll(" ", "%20");/
     event.stopPropagation();
-    openShareWishlistModal(key);
+    openShareWishlistModal(key, userId);
 }
+
+function downloadSingleWishlist(event, key) {
+    if (currentPlan >= 4) {
+        const data1 = allWishlistData;
+        const data = data1.filter(obj => obj[key]);
+        let allItems = [];
+        data.forEach(obj => {
+            Object.entries(obj).forEach(([key, val]) => {
+                if (Array.isArray(val)) {
+                    val.forEach(item => {
+                        allItems.push({
+                            wishlist_name: key,
+                            title: item.title,
+                            product_id: item.product_id,
+                            variant_id: item.variant_id,
+                            handle: item.handle,
+                            price: item.price,
+                            quantity: item.quantity,
+                            image: item.image,
+                            product_option: item.product_option,
+                            created_at: item.created_at,
+                        });
+                    });
+                }
+            });
+        });
+        // Create custom event
+        const wfDownloadCsvEvent = new CustomEvent("WgWishlistCsvDownload", {
+            detail: { data: allItems },
+            cancelable: true
+        });
+        // Dispatch the event
+        window.dispatchEvent(wfDownloadCsvEvent);
+        // Fallback only if listener did not call preventDefault()
+        if (!wfDownloadCsvEvent.defaultPrevented) {
+            const csvContent = arrayToCSV(allItems);
+            downloadCSV(csvContent, `Wishlist-Guru(${key}).csv`);
+        }
+    }
+}
+
 
 function viewItem(handle) {
     window.top.location = `${wfGetDomain}products/${handle}`
@@ -4410,7 +4998,9 @@ async function renderDrawerContentFxn() {
         await disableShare(arrayList, ".drawerShareTextStyle")
         return (document.querySelector(".drawer-main").innerHTML = `<h4 class="drawer-cart-empty"> ${customLanguage.noMoreItem} </h4> <a class="a-main" href="${`${wfGetDomain}${generalSetting?.continueShoppingLink}` || `${wfGetDomain}collections/all`}"> <div class="cartButtonStyle"> ${customLanguage.continueShopping || storeFrontDefLang.continueShopping} </div> </a>`);
     }
-    await disableShare(arrayList, ".drawerShareTextStyle")
+    await disableShare(arrayList, ".drawerShareTextStyle");
+
+    await getStoreMultiLanguage();
 
     const drawerMain = document.querySelector(".drawer-main");
     drawerMain.innerHTML = `<table class="drawer-table"><tbody></tbody></table>`;
@@ -4453,7 +5043,7 @@ async function renderDrawerContentFxn() {
                                     <div class="img_test"><span></span></div>
                                 </span>
                             </td>
-                        </tr>`
+                        </tr>` ;
 
         tableBody.insertAdjacentHTML("beforeend", tableData1);
 
@@ -4550,7 +5140,7 @@ async function renderDrawerContentFxn() {
                         .replace(/'/g, "/wg-sgl")
                         .replace(/"/g, "/wg-dbl");
 
-                    const variantNAME = currentPlan >= 4 ? foundVariant?.name : data.title;
+                    const variantNAME = generalSetting.showProductMetafield === "yes" ? data.title : currentPlan >= 4 ? foundVariant?.name : data.title;
                     const variantData =
                         variantArray.length > 0 ? variantArray.join(" / ") : "";
                     const priceToDb =
@@ -4674,6 +5264,11 @@ async function renderDrawerContentFxn() {
                                 }
                           </div>`
                                 : ""
+                        }
+
+                    ${isMultiwishlistTrue
+                            ? `<div class="main-drawer-copy-icon copy-drawer-multi-icon" onClick="copyItem(${data.product_id}, ${data.variant_id}, '${data.handle}', '${data.price}', '${data.image}', '${data.title}', '${data.quantity}', '${key.replace(/'/g, "\\'")}')"></div>`
+                            : ""
                         }
 
                     <div onClick="removeItem(${data.product_id
@@ -4808,8 +5403,11 @@ async function modalButtonFxn() {
             `<button id="downloadAllProductsButton" class="wg-download-csv"> <span class="download-csv-icon"></span> Download Complete Masterdata</button>` : ""}
 
         </div>`;
-
     document.querySelectorAll(".modal-button-div").forEach(div => div.innerHTML = buttonContent);
+
+    if (!isMoveToCart && generalSetting.shareWishlistToAdmin !== "yes") {
+        document.querySelector(".modal-button-div").style.display = "none";
+    }
 }
 
 function wgDownloadCsv() {
@@ -4949,6 +5547,11 @@ async function getFormData() {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
+    const submitBtn = form.querySelector('button');
+    submitBtn.disabled = true;
+    submitBtn.style.cursor = 'not-allowed';
+
+
     // Check for empty fields
     // const emptyFields = Object.entries(data).filter(([key, value]) => !value.trim());
     // const requiredFields = Array.from(form.elements).filter(el => el.hasAttribute('required'));
@@ -4974,6 +5577,8 @@ async function getFormData() {
     }
 
     if (hasEmptyFields) {
+        submitBtn.disabled = false;
+        submitBtn.style.cursor = 'pointer';
         document.getElementById("error-message").innerText = storeFrontDefLang?.allFieldsRequired || "All required fields must be filled!";
         return;
     }
@@ -5039,6 +5644,83 @@ async function getFormData() {
 }
 
 /** SHARED WISHLIST FUNCTIONS **/
+// async function sharedPageFunction() {
+//     wgrAddNavigationSection();
+//     let params = (new URL(document.location)).searchParams;
+//     let sharedId = params.get("id");
+//     const sharedName = params.get("name");
+//     // let selectedWishlist = params.get("list");
+//     let selectedID = params.get("wid");
+
+//     if (selectedID === "") {
+//         document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or id is missing from the url. No item is available to show";
+//         return;
+//     }
+
+//     // if (selectedWishlist) {
+//     //     selectedWishlist = selectedWishlist.replaceAll("%20", " ");
+//     //     hideArrow = selectedWishlist;
+//     // }
+
+//     // const sharedIdProp = atob(sharedId);
+//     let sharedIdProp = "";
+//     try {
+//         sharedIdProp = atob(sharedId);
+//     } catch (error) {
+//         document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong id in the url";
+//         return;
+//     }
+
+//     // const dcryptedSharedName = atob(sharedName);
+//     let dcryptedSharedName = "";
+//     try {
+//         dcryptedSharedName = atob(sharedName);
+//     } catch (error) {
+//         document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong id in the url.";
+//         return;
+//     }
+
+//     await Conversion(dcryptedSharedName, sharedIdProp, "reload");
+//     let allData = await getSharedWishlistData(sharedId);
+
+//     // --------add the heading of page---------
+//     document.querySelector(".modal-heading").innerHTML = customLanguage?.modalHeadingText || storeFrontDefLang?.modalHeadingText;
+
+//     // --------- add wishlist description-------
+//     addWishlistDescription();
+
+//     // const arrayList = isMultiwishlistTrue
+//     //     ? allData
+//     //     : getWishlistByKey(allData, "favourites");
+
+//     // const arrayList = isMultiwishlistTrue
+//     //     ? selectedWishlist === null ? allData :
+//     //         getWishlistByKey(allData, selectedWishlist)
+//     //     : getWishlistByKey(allData, "favourites");
+
+//     const arrayList = isMultiwishlistTrue ?
+//         selectedID ? getFirstKeyArrayById(allData, selectedID) :
+//             selectedWishlist ? getWishlistByKey(allData, selectedWishlist) :
+//                 allData :
+//         getWishlistByKey(allData, "favourites")
+
+//     if (arrayList.length === 0) {
+//         document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong or mismatched id in the url.";
+//         return;
+//     }
+//     await renderMultiSharedModalContent(arrayList, sharedIdProp)
+// };
+
+
+
+// function getFirstKeyArrayById(array, id) {
+//     id = Number(id);
+//     const item = array.find(obj => obj.id === id);
+//     if (!item) return null;
+//     const keys = Object.keys(item).filter(key => key !== 'id');
+//     return item[keys[0]] || null;
+// }
+
 async function sharedPageFunction() {
     wgrAddNavigationSection();
     let params = (new URL(document.location)).searchParams;
@@ -5069,6 +5751,8 @@ async function sharedPageFunction() {
     await Conversion(dcryptedSharedName, sharedIdProp, "reload");
     let allData = await getSharedWishlistData(sharedId, selectedID);
 
+    console.log("allData --- ", allData)
+
     // --------add the heading of page---------
     document.querySelector(".modal-heading").innerHTML = customLanguage?.modalHeadingText || storeFrontDefLang?.modalHeadingText;
 
@@ -5083,22 +5767,475 @@ async function sharedPageFunction() {
     await renderMultiSharedModalContent(arrayList, sharedIdProp)
 };
 
-
-
-// function getFirstKeyArrayById(array, id) {
-//     id = Number(id);
-//     const item = array.find(obj => obj.id === id);
-//     if (!item) return null;
-//     const keys = Object.keys(item).filter(key => key !== 'id');
-//     return item[keys[0]] || null;
-// }
-
 function getFirstKeyArrayById(array, id) {
+
     id = Number(id);
     const found = array.find(obj => obj.id === id);
+    console.log("found ---- ", found)
     return found ? [found] : [];
 }
 
+
+
+// async function renderMultiSharedModalContent(arrayList, sharedId) {
+//     if (currentPlan > 1) {
+//         let poweredByText = document.querySelectorAll(".powered-by-text");
+//         for (let wf = 0; wf < poweredByText.length; wf++) {
+//             poweredByText[wf].innerHTML = "";
+//         }
+//     }
+//     renderViewAs();
+//     const { isPrice, isQuantity, isMoveToCart } = await showButtons();
+
+//     document.querySelector(".show-shared-wishlist").innerHTML = `<div class="loader-css" ><span></span></div>`;
+
+//     document.querySelector(".wishlist-page-main.page-width").style.color = modalDrawerTextColor;
+//     // document.querySelector(".wishlist-page-main.page-width").style.textAlign = generalSetting.wlTextAlign;
+
+//     const headingElement = document.querySelector(".shared-page-heading");
+//     if (headingElement) {
+//         headingElement.innerHTML = `${customLanguage.sharedPageHeading}`;
+//         headingElement.style.textAlign = generalSetting.wlTextAlign;
+//         headingElement.style.color = modalDrawerTextColor;
+//     }
+
+//     if (!customerEmail) {
+//         if ((generalSetting?.hideLoginText === false || generalSetting?.hideLoginText === undefined || generalSetting?.hideLoginText === "")) {
+//             document.querySelector(".shared-page-auth").innerHTML = `${customLanguage?.loginTextForWishlist || storeFrontDefLang.loginTextForWishlist} <a href ="/account">${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}</a> ${customLanguage?.orText || storeFrontDefLang?.loginTextAnchor} <a href="/account/register"> ${customLanguage?.createAccountAnchor || customLanguage?.createAccountAnchor}</a> ${customLanguage?.createAccountEndingText || ""}`;
+//         }
+//         document.querySelector(".shared-page-auth").style.textAlign = generalSetting.wlTextAlign;
+//         document.querySelector(".shared-page-auth").style.color = modalDrawerTextColor;
+//     }
+
+//     document.querySelectorAll(`.gridText`).forEach((el) => el.innerHTML = `${customLanguage.textForGridIcon}`);
+
+//     let gridCount = localStorage.getItem("grid-count") || "4";
+//     localStorage.setItem("grid-count", gridCount);
+//     document.querySelectorAll(`.grid${gridCount}`).forEach((el) => el.classList.add("wf-active-grid-focus"));
+
+//     // buttonStyleFxn();
+//     const wishlistData = await getDataFromSql()
+//     const addNewClass = `wishlist-modal-${gridCount}`;
+
+//     // if (arrayList.length === 0) {
+//     //     document.querySelector(".show-shared-wishlist").innerHTML = "There is item or the wrong url";
+//     //     return;
+//     // }
+
+
+//     let wishlistBody = `<div class="wishlist-modal-all">`;
+
+//     for (let itemIndex = 0; itemIndex < arrayList.length; itemIndex++) {
+//         let item = arrayList[itemIndex];
+//         let key = Object.keys(item)[0];
+//         let items = item[key];
+
+//         wishlistBody += isMultiwishlistTrue ? `<div class="wf-multi-Wish-heading">
+//                           <div class="wf-multi-Wish-content">
+//                          ${hideArrow === "" ? `<span class="wg-arrow-up" onclick="toggleWishlistBox('${key.replace(/'/g, "\\'")}')"></span>` : ``}
+//                             <span data-key="${key}">${key}</span> 
+//                           </div>
+//                       </div>` : "";
+
+//         if (items.length === 0) {
+//             wishlistBody += `<div class="wishlist-modal-box wf-empty-multiwishlist" data-key="${key}">
+//                               <h4 class="drawer-cart-empty">${customLanguage.noMoreItem}</h4>
+//                               <a class="a-main" href="${`${wfGetDomain}${generalSetting?.continueShoppingLink}` || `${wfGetDomain}collections/all`}">
+//                                   <div class="cartButtonStyle">${customLanguage?.addProductButtonText || storeFrontDefLang?.addProductButtonText}</div>
+//                               </a>
+//                           </div>`;
+//             continue;
+//         }
+
+//         wishlistBody += `<div class="wishlist-modal-box ${addNewClass}" data-key="${key}">`
+
+
+//         let promises = items.map(async (data, itemIndex) => {
+//             let response;
+//             let jsonData;
+//             let foundVariant;
+//             let hasTag = false;
+
+//             if (permanentDomain === 'l-a-girl-cosmetics.myshopify.com') {
+//                 response = await fetch(`${wfGetDomain}pages/${data.variant_id}786.js`);
+//             }
+//             // else if (permanentDomain !== '00b979.myshopify.com') {
+//             //     response = await fetch(`${wfGetDomain}variants/${data.variant_id}.js`);
+//             //     if (response.status !== 404) {
+//             //         foundVariant = await response?.json();
+//             //     }
+//             // } 
+//             else {
+//                 response = await fetch(`${wfGetDomain}products/${data.handle}.js`);
+//                 if (response.status !== 404) {
+//                     jsonData = await response.json();
+//                     foundVariant = jsonData.variants.find(v => Number(v.id) === Number(data.variant_id));
+//                     hasTag = jsonData?.tags?.includes("wg_pdp") || false;
+//                 }
+//             }
+
+//             if (response.ok) {
+//                 const variantArray = [
+//                     foundVariant?.option1,
+//                     foundVariant?.option2,
+//                     foundVariant?.option3,
+//                 ]?.filter((option) => option && option !== "Default Title");
+
+//                 let actualPrice = foundVariant?.compare_at_price
+//                     ? changeMoney(foundVariant?.compare_at_price)
+//                     : null;
+//                 const salePrice = changeMoney(foundVariant?.price);
+
+//                 function wfGetImage() {
+//                     let imageUrl = isVariantWishlistTrue === true && currentPlan >= 4 ? foundVariant?.featured_image !== null ? foundVariant?.featured_image?.src : jsonData?.featured_image : jsonData?.featured_image
+
+//                     if (!imageUrl) return "";
+
+//                     const separator = imageUrl?.includes("?") ? "&" : "?";
+//                     return `${imageUrl}${separator}width=600`;
+
+//                 }
+
+//                 let currentNewPrice = foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
+//                     ? ` <div class="wf-sale-price">${actualPrice}</div> 
+//               <div class="wf-discount-price">${salePrice}</div>
+//               <span style="${collectionBtnSetting.iconPosition === "icon-top-left" ? "margin-left: 70%" : ""
+//                     }" class="Polaris-Sale-Text--root Polaris-Text--bodySm">
+//                   ${customLanguage.saleText || storeFrontDefLang.saleText}
+//               </span>`
+//                     : salePrice;
+
+//                 const modifiedString = data.title
+//                     ?.replace(/'/g, "/wg-sgl")
+//                     ?.replace(/"/g, "/wg-dbl");
+
+//                 const variantNAME = permanentDomain === 'l-a-girl-cosmetics.myshopify.com' ? data.title : currentPlan >= 4 ? foundVariant?.name : data.title;
+//                 const variantData = variantArray.length > 0 ? variantArray.join(" / ") : "";
+//                 const priceToDb = foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
+//                     ? foundVariant?.price
+//                     : foundVariant?.compare_at_price || foundVariant?.price;
+
+//                 wishlistBody += `
+//               <div class="wishlist-grid1">
+//                 <div class="modal-product-image ${wfGetImage() === null ? "for-default" : ""}">
+//                   <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+//                    ${wfGetImage() === null ? `<div class="default-image"><span></span></div>` : `<img src="${wfGetImage()?.startsWith('//') ? `https:${wfGetImage()}` : wfGetImage()}" alt="${variantNAME}" height="auto" width="100%" />`}
+//                   </a>
+//                 </div>
+
+//                 <div class="product-content-sec">
+//                   <h3 class="title11">
+//                     <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+//                       ${(variantNAME && variantNAME.includes("(")) ? variantNAME.replace(/\((.*?)\)/, `</span><br><span class="wg-2">$1</span>`).replace(/^/, '<span class="wg-1">') : `<span>${variantNAME}</span>`}
+//                     </a>
+//                   </h3>
+//                 <p class="product-selected-variants" style="color: ${modalDrawerTextColor};">${variantData}</p>
+
+//             ${(data.price === null || data.price === "" || data.price === "null") ? "" :
+//                         isPrice
+//                             ? `<div class="product-option-price">${currentNewPrice}</div>`
+//                             : ""
+//                     }
+
+//                     ${(data.price === null || data.price === "" || data.price === "null") ? "" : isQuantity
+//                         ? `<div class='quantity-div'>
+//                     ${foundVariant?.available
+//                             ? `<div class="quantity-minus-plus">
+//                       <div class="quant-minus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">-</div>
+//                       <input 
+//                                         type="text" 
+//                                         class="quant-update" 
+//                                         value="${data.quantity}" 
+//                                         data-quant="${data.quantity}" 
+//                                         min="1"
+//                                         name="quantity_${data.product_id}_${data.wishlist_id}"
+//                                         id="quantity_${data.product_id}_${data.wishlist_id}"
+//                                         onChange="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})"
+//                                     />
+//                       <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
+//                     </div>`
+//                             : `<div class="quantity-minus-plus drawerDisableClass">
+//                       <div class="drawerDisableClass">-</div>
+//                       <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
+//                       <div class="drawerDisableClass">+</div>
+//                     </div>`
+//                         }
+//               </div>`
+//                         : ""
+//                     }
+
+//             ${(data.price === null || data.price === "" || data.price === "null") ? "" :
+//                         isMoveToCart
+//                             ? `<div class="movecart-button">
+//                             ${foundVariant?.available
+//                                 ? hasTag
+//                                     ? `<div id="viewItem${itemIndex}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
+//                                         View Item
+//                                       </div>`
+//                                     : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}')">
+//                                         ${customLanguage.addToMyCart}
+//                                       </div>`
+//                                 : `<div class="cartButtonStyle wg-out-of-stock" style="cursor: not-allowed; opacity: 0.8">
+//                                     ${customLanguage.outofStock}
+//                                   </div>`
+//                             }
+//                           </div>`
+//                             : ""
+//                     }
+
+//             ${generalSetting.buttonTypeShareWishlist === "asIcon"
+//                         ? `<div class="sharedIconDiv" data-sql_data = ${data.product_id} onClick="addToMyWishlist(event, ${data.product_id}, ${data.variant_id}, '${data.handle}', ${priceToDb}, '${data.image}', '${modifiedString}', '${data.quantity}', ${sharedId})"></div>`
+//                         : `<div class='cartButtonStyle deleteButtonDown' data-sql_data = ${data.product_id} onClick="addToMyWishlist(event, ${data.product_id}, ${data.variant_id}, '${data.handle}', ${priceToDb}, '${data.image}', '${modifiedString}', '${data.quantity}', ${sharedId})">
+//                 <div class='inside-button-div'>${customLanguage.addToMyWishlist}</div>
+//               </div>`
+//                     }
+//             </div>
+//         </div>`
+//             } else {
+//                 let imgg = await checkImage(data.image) || "";
+
+//                 // console.log("imgg --- ", imgg)
+//                 //              <div class="modal-product-image">
+//                 //     <a><img src="${data.image.startsWith('//') ? `https:${data.image}` : data.image}" alt="${data.title
+//                 //         }" height="auto" width="100%" /></a>
+//                 // </div>
+
+
+//                 wishlistBody += `<div class="wishlist-grid1 wg-product-not-available">
+
+//                 ${imgg === "" ? `<div class="modal-product-image default-image"><span></span></div>` :
+//                         `<div class="modal-product-image"><img src="${data.image}"  alt="${data.title}" height="auto" width="100%" /></div>`}
+
+//             <div class="product-content-sec">
+//                 <h3 class="title11">
+//                 ${(permanentDomain === 'l-a-girl-cosmetics.myshopify.com') ?
+//                         ` ${data?.title?.split("~")[0]} <br> <span>${data?.title?.split("~")[1]}</span>` :
+//                         `${data?.title}`
+//                     }
+//                 </h3>
+//                 <div class="movecart-button">
+//                     <div class="cartButtonStyle" style="cursor: not-allowed; opacity: 0.8">${customLanguage.productNotAvailableText ||
+//                     "Product not available"
+//                     }</div></div></div>
+//                      </div>`
+//             }
+//         })
+
+//         // ✅ Use Promise.all to execute all fetch calls concurrently
+//         await Promise.all(promises);
+
+
+
+
+//         // for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+//         //     let data = items[itemIndex];
+
+//         //     let response;
+//         //     let jsonData;
+//         //     let foundVariant;
+//         //     let hasTag = false;
+
+
+//         //     if (permanentDomain === 'l-a-girl-cosmetics.myshopify.com') {
+//         //         response = await fetch(`${wfGetDomain}pages/${data.variant_id}786.js`);
+//         //         // foundVariant = await response.json();
+//         //     } else if (permanentDomain !== '00b979.myshopify.com') {
+//         //         response = await fetch(`${wfGetDomain}variants/${data.variant_id}.js`);
+//         //         if (response.status !== 404) {
+//         //             foundVariant = await response?.json();
+//         //         }
+//         //         // foundVariant = await response.json();
+//         //     } else {
+//         //         response = await fetch(`${wfGetDomain}products/${data.handle}.js`);
+//         //         if (response.status !== 404) {
+//         //             jsonData = await response.json();
+//         //             foundVariant = jsonData.variants.find(v => Number(v.id) === Number(data.variant_id));
+//         //             hasTag = jsonData?.tags?.includes("wg_pdp") || false;
+//         //         }
+//         //     }
+
+//         //     // const response = await fetch(`${wfGetDomain}variants/${data.variant_id}.js`);
+//         //     // const response = await fetch(`${wfGetDomain}products/${data.handle}.js`);
+//         //     if (response.ok) {
+//         //         // const jsonData = await response.json();
+//         //         // const foundVariant = jsonData.variants.find(v => Number(v.id) === Number(data.variant_id));
+//         //         // const hasTag = jsonData.tags?.includes("wg_pdp") || false;
+//         //         // const foundVariant = await response.json();
+//         //         const variantArray = [
+//         //             foundVariant?.option1,
+//         //             foundVariant?.option2,
+//         //             foundVariant?.option3,
+//         //         ]?.filter((option) => option && option !== "Default Title");
+
+//         //         let actualPrice = foundVariant?.compare_at_price
+//         //             ? changeMoney(foundVariant?.compare_at_price)
+//         //             : null;
+//         //         const salePrice = changeMoney(foundVariant?.price);
+
+//         //         let currentNewPrice = foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
+//         //             ? ` <div class="wf-sale-price">${actualPrice}</div> 
+//         //       <div class="wf-discount-price">${salePrice}</div>
+//         //       <span style="${collectionBtnSetting.iconPosition === "icon-top-left" ? "margin-left: 70%" : ""
+//         //             }" class="Polaris-Sale-Text--root Polaris-Text--bodySm">
+//         //           ${customLanguage.saleText || storeFrontDefLang.saleText}
+//         //       </span>`
+//         //             : salePrice;
+
+//         //         const modifiedString = data.title
+//         //             ?.replace(/'/g, "/wg-sgl")
+//         //             ?.replace(/"/g, "/wg-dbl");
+
+
+//         //         const variantNAME = permanentDomain === 'l-a-girl-cosmetics.myshopify.com' ? data.title : currentPlan >= 4 ? foundVariant?.name : data.title;
+//         //         const variantData = variantArray.length > 0 ? variantArray.join(" / ") : "";
+//         //         const priceToDb = foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
+//         //             ? foundVariant?.price
+//         //             : foundVariant?.compare_at_price || foundVariant?.price;
+
+//         //         wishlistBody += `
+//         //       <div class="wishlist-grid1">
+//         //         <div class="modal-product-image">
+//         //           <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+//         //             <img src="${data.image}" alt="${variantNAME}" height="auto" width="100%" />
+//         //           </a>
+//         //         </div>
+
+//         //         <div class="product-content-sec">
+//         //           <h3 class="title11">
+//         //             <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+//         //               <b></b> ${variantNAME}
+//         //             </a>
+//         //           </h3>
+//         //         <p class="product-selected-variants" style="color: ${modalDrawerTextColor}; text-align: ${generalSetting.wlTextAlign}">${variantData}</p>
+
+//         //     ${(data.price === null || data.price === "" || data.price === "null") ? "" :
+//         //                 isPrice
+//         //                     ? `<div class="product-option-price">${currentNewPrice}</div>`
+//         //                     : ""
+//         //             }
+
+//         //             ${(data.price === null || data.price === "" || data.price === "null") ? "" : isQuantity
+//         //                 ? `<div class='quantity-div'>
+//         //             ${customLanguage.quantityText || "Quantity"}
+//         //             ${foundVariant?.available
+//         //                     ? `<div class="quantity-minus-plus">
+//         //               <div class="quant-minus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">-</div>
+//         //               <span class="quant-update" data-quant="${data.quantity}">${data.quantity}</span>
+//         //               <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
+//         //             </div>`
+//         //                     : `<div class="quantity-minus-plus drawerDisableClass">
+//         //               <div class="drawerDisableClass">-</div>
+//         //               <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
+//         //               <div class="drawerDisableClass">+</div>
+//         //             </div>`
+//         //                 }
+//         //       </div>`
+//         //                 : ""
+//         //             }
+
+//         //     ${(data.price === null || data.price === "" || data.price === "null") ? "" :
+//         //                 isMoveToCart
+//         //                     ? `<div class="movecart-button">
+//         //                     ${foundVariant?.available
+//         //                         ? hasTag
+//         //                             ? `<div id="viewItem${itemIndex}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
+//         //                                 View Item
+//         //                               </div>`
+//         //                             : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}')">
+//         //                                 ${customLanguage.addToMyCart}
+//         //                               </div>`
+//         //                         : `<div class="cartButtonStyle" style="cursor: not-allowed; opacity: 0.8">
+//         //                             ${customLanguage.outofStock}
+//         //                           </div>`
+//         //                     }
+//         //                   </div>`
+//         //                     : ""
+//         //             }
+
+//         //     ${generalSetting.buttonTypeShareWishlist === "asIcon"
+//         //                 ? `<div class="sharedIconDiv" data-sql_data = ${data.product_id} onClick="addToMyWishlist(event, ${data.product_id}, ${data.variant_id}, '${data.handle}', ${priceToDb}, '${data.image}', '${modifiedString}', '${data.quantity}', ${sharedId})"></div>`
+//         //                 : `<div class='cartButtonStyle deleteButtonDown' data-sql_data = ${data.product_id} onClick="addToMyWishlist(event, ${data.product_id}, ${data.variant_id}, '${data.handle}', ${priceToDb}, '${data.image}', '${modifiedString}', '${data.quantity}', ${sharedId})">
+//         //         <div class='inside-button-div'>${customLanguage.addToMyWishlist}</div>
+//         //       </div>`
+//         //             }
+//         //     </div>
+//         // </div>`
+//         //     } else {
+//         //         wishlistBody += `<div class="wishlist-grid1">
+//         //     <div class="modal-product-image">
+//         //         <a><img src="${data.image}" alt="${data.title
+//         //             }" height="auto" width="100%" /></a>
+//         //     </div>
+//         //     <div class="product-content-sec">
+//         //         <h3 class="title11">
+//         //         ${(permanentDomain === 'l-a-girl-cosmetics.myshopify.com') ?
+//         //                 ` ${data?.title?.split("~")[0]} <br> <span>${data?.title?.split("~")[1]}</span>` :
+//         //                 `${data?.title}`
+//         //             }
+//         //         </h3>
+
+
+
+//         //         <div class="movecart-button">
+//         //             <div class="cartButtonStyle" style="cursor: not-allowed; opacity: 0.8">${customLanguage.productNotAvailableText ||
+//         //             "Product not available"
+//         //             }</div></div></div>
+//         // </div>`
+//         //     }
+//         // }
+
+
+//         wishlistBody += `</div>`
+//     }
+
+//     // -----------la girl quantity---------
+//     // ${(permanentDomain === 'l-a-girl-cosmetics.myshopify.com') ?
+//     //     `<div class="quantity-minus-plus drawerDisableClass">
+//     //   <div class="drawerDisableClass">-</div>
+//     //   <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
+//     //   <div class="drawerDisableClass">+</div>
+//     // </div>` : ""}
+
+
+//     wishlistBody += "</div>";
+//     document.querySelector(".show-shared-wishlist").innerHTML = wishlistBody;
+//     currentPlan >= 2 && fxnAfterItemsLoadedOfWishlist();
+
+//     const iconPosition = await checkIconPostion();
+
+//     let imgHeight = 10;
+//     if (iconPosition.checkClassExist === true) {
+//         const getImage = document.querySelectorAll(".modal-product-image");
+//         getImage.forEach((element) => {
+//             let imgElement = element.parentNode.querySelector("img");
+//             if (imgElement) {
+//                 imgHeight = imgElement.height - Number(iconPosition.iconHeight) - 5;
+//             }
+//         });
+//     }
+//     const sharedIconDiv = document.querySelectorAll(".sharedIconDiv");
+
+//     sharedIconDiv.forEach(async function (div) {
+//         const sqlData = div.getAttribute('data-sql_data');
+//         const matchingItem = await checkFound(wishlistData, parseInt(sqlData))
+//         div.classList.add(iconPosition.iconPosition)
+
+//         if (matchingItem) {
+//             const updateWishlistIconCollection = `<div class="collection_icon_new_selected" style="${iconPosition.checkClassExist === true ? `top: ${imgHeight}px;` : ''}"><div style="filter: ${colIconSelectedColor}; ${collectionIconSize()}" class="${iconPosition.iconStyle}"><span class="span-hearticon"></span></div></div>`
+
+//             div.innerHTML = updateWishlistIconCollection;
+//         } else {
+//             const updateWishlistIconCollection = `<div class="collection_icon_new" style="${iconPosition.checkClassExist === true ? `top: ${imgHeight}px;` : ''}"><div style="filter: ${colIconDefaultColor}; ${collectionIconSize()}" class="${iconPosition.iconStyle}"><span class="span-hearticon"></span></div></div>`
+//             div.innerHTML = updateWishlistIconCollection;
+//         }
+//     });
+
+//     styleFxnForApp(".wishlist-page-main h3.title11", "aligncolor");
+//     styleFxnForApp(".wishlist-page-main p.product-selected-variants", "aligncolor");
+//     styleFxnForApp(".wishlist-page-main .product-option-price", "aligncolor");
+//     styleFxnForApp(".wishlist-page-main.quantity-div", "aligncolor");
+
+// }
 
 
 async function renderMultiSharedModalContent(arrayList, sharedId) {
@@ -5141,6 +6278,8 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
     const wishlistData = await getDataFromSql()
     const addNewClass = `wishlist-modal-${gridCount}`;
 
+    console.log("wishlistData --- ", wishlistData)
+
     // if (arrayList.length === 0) {
     //     document.querySelector(".show-shared-wishlist").innerHTML = "There is item or the wrong url";
     //     return;
@@ -5148,6 +6287,8 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
 
     let wishlistBody = `<div class="wishlist-modal-all">`;
+
+    // console.log("arrayList --- ", arrayList)
 
     for (let itemIndex = 0; itemIndex < arrayList.length; itemIndex++) {
         let item = arrayList[itemIndex];
@@ -5160,6 +6301,13 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                             <b>Registry: </b><span data-key="${key}">${key}</span> 
                             <b>Description: </b><span>${item?.description}</span>
                           </div>
+
+                        <div class="single-wishist">
+                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${item.id}', '${item.userId}')">
+                                <div class="img_test"><span></span></div>
+                            </span>
+                        </div>
+
                       </div>`;
 
         if (items.length === 0) {
@@ -5174,8 +6322,12 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
         wishlistBody += `<div class="wishlist-modal-box ${addNewClass}" data-key="${key}">`
 
+        // console.log("items --- ", items)
 
         let promises = items.map(async (data, itemIndex) => {
+
+            console.log("data --- ", data)
+
             let response;
             let jsonData;
             let foundVariant;
@@ -5243,16 +6395,16 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                 wishlistBody += `
               <div class="wishlist-grid1">
                 <div class="modal-product-image ${wfGetImage() === null ? "for-default" : ""}">
-                  <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+                  
                    ${wfGetImage() === null ? `<div class="default-image"><span></span></div>` : `<img src="${wfGetImage()?.startsWith('//') ? `https:${wfGetImage()}` : wfGetImage()}" alt="${variantNAME}" height="auto" width="100%" />`}
-                  </a>
+                  
                 </div>
 
                 <div class="product-content-sec">
                   <h3 class="title11">
-                    <a href="${wfGetDomain}products/${data.handle}?variant=${data.variant_id}">
+                    
                       ${(variantNAME && variantNAME.includes("(")) ? variantNAME.replace(/\((.*?)\)/, `</span><br><span class="wg-2">$1</span>`).replace(/^/, '<span class="wg-1">') : `<span>${variantNAME}</span>`}
-                    </a>
+                    
                   </h3>
                 <p class="product-selected-variants" style="color: ${modalDrawerTextColor};">${variantData}</p>
 
@@ -5264,7 +6416,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
                     <div>
                         Wants: <span class="wg-item-wants">${data.quantity}</span>
-                        Has: <span class="wg-item-has"> 0 </span>
+                        Has: <span class="wg-item-has">${data.items_purchased}</span>
                     </div>
 
 
@@ -5276,7 +6428,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                                     ? `<div id="viewItem${itemIndex}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
                                         View Item
                                       </div>`
-                                    : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}')">
+                                    : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex}', ${data.id} )">
                                         ${customLanguage.addToCart}
                                       </div>`
                                 : `<div class="cartButtonStyle wg-out-of-stock" style="cursor: not-allowed; opacity: 0.8">
@@ -5361,39 +6513,6 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 
 }
 
-
-// code removed -- update quantity in the grid
-
-//  ${(data.price === null || data.price === "" || data.price === "null") ? "" : isQuantity
-//                         ? `<div class='quantity-div'>
-//                     ${foundVariant?.available
-//                             ? `<div class="quantity-minus-plus">
-//                       <div class="quant-minus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">-</div>
-//                       <input 
-//                                         type="text" 
-//                                         class="quant-update" 
-//                                         value="${data.quantity}" 
-//                                         data-quant="${data.quantity}" 
-//                                         min="1"
-//                                         name="quantity_${data.product_id}_${data.wishlist_id}"
-//                                         id="quantity_${data.product_id}_${data.wishlist_id}"
-//                                         onChange="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})"
-//                                     />
-//                       <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
-//                     </div>`
-//                             : `<div class="quantity-minus-plus drawerDisableClass">
-//                       <div class="drawerDisableClass">-</div>
-//                       <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
-//                       <div class="drawerDisableClass">+</div>
-//                     </div>`
-//                         }
-//               </div>`
-//                         : ""
-//                     }
-
-
-
-
 // async function addToMyWishlist(
 //     event,
 //     product_id,
@@ -5436,29 +6555,29 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
 //         referral_id: sharedId
 //     };
 
-//     // if (isMultiwishlistTrue && !matchFound) {
-//     renderPopupLoader()
-//     if (wishlistDataInSql.length === 0 || !matchFound) {
-//         openMultiWishlist(bodyData, product_id, "shared");
-//         event.target.innerHTML = customLanguage.sharedPageItemAdded;
-//         event.target.classList.add("added");
+//     if (isMultiwishlistTrue && !matchFound) {
+//         renderPopupLoader()
+//         if (wishlistDataInSql.length === 0 || !matchFound) {
+//             openMultiWishlist(bodyData, product_id, "shared");
+//             event.target.innerHTML = customLanguage.sharedPageItemAdded;
+//             event.target.classList.add("added");
+//         } else {
+//             alertToast(`${customLanguage.sharedPageAlreadyAdded}`);
+//             event.target.innerHTML = customLanguage.sharedPageAlreadyAdded;
+//             event.target.classList.add("already-added");
+//         }
 //     } else {
-//         alertToast(`${customLanguage.sharedPageAlreadyAdded}`);
-//         event.target.innerHTML = customLanguage.sharedPageAlreadyAdded;
-//         event.target.classList.add("already-added");
+//         if (!matchFound) {
+//             bodyData.wishlistName = ["favourites"];
+//             saveSharedWishlist(bodyData);
+//             event.target.innerHTML = customLanguage.sharedPageItemAdded;
+//             event.target.classList.add("added");
+//         } else {
+//             alertToast(`${customLanguage.sharedPageAlreadyAdded}`);
+//             event.target.innerHTML = customLanguage.sharedPageAlreadyAdded;
+//             event.target.classList.add("already-added");
+//         }
 //     }
-//     // } else {
-//     //     if (!matchFound) {
-//     //         bodyData.wishlistName = ["favourites"];
-//     //         saveSharedWishlist(bodyData);
-//     //         event.target.innerHTML = customLanguage.sharedPageItemAdded;
-//     //         event.target.classList.add("added");
-//     //     } else {
-//     //         alertToast(`${customLanguage.sharedPageAlreadyAdded}`);
-//     //         event.target.innerHTML = customLanguage.sharedPageAlreadyAdded;
-//     //         event.target.classList.add("already-added");
-//     //     }
-//     // }
 // }
 
 async function saveSharedWishlist(data) {
@@ -5485,7 +6604,10 @@ async function saveSharedWishlist(data) {
                 wishlistName: data.wishlistName,
                 permission: data.permission,
                 referral_id: data.referral_id,
-                wfGetDomain: wfGetDomain
+                wfGetDomain: wfGetDomain,
+                // wgLanguage: wgWishlistLanguage
+                wgLanguage: wgMultiEmailTempDefault?.email_language === "default" ? wgWishlistLanguage : wgMultiEmailTempDefault?.email_language,
+                wgReceiveEmail: wgMultiEmailTempDefault?.send_emails
             }),
         })
 
@@ -5554,7 +6676,8 @@ async function removeItem(
     variant_id,
     user_id,
     handle,
-    showAlert = true
+    showAlert = true,
+    key = ""
 ) {
     let selectedWf = document.querySelectorAll(".wf-wishlist-collection-icon");
     let data = null;
@@ -5606,7 +6729,11 @@ async function removeItem(
 
             showAlert === true && alertToast(`${customLanguage.alertForRemoveButton}`);
 
-            const arrayList = allWishlistData
+
+            let hhh = getWishlistByKey(allWishlistData, key);
+            // renderMultiModalContentFxn(hhh);
+
+            const arrayList = key !== "" ? hhh : allWishlistData;
 
             let renderFn;
             if (window.location.href === 'https://wishlist-guru.myshopify.com/') {
@@ -6109,6 +7236,86 @@ async function refreshCart() {
                 console.error('Fetch error:', error);
             });
     }
+    else if (getThemeName.themeName == 'Shella') {
+        const oldDrawer = document.querySelector('[data-js-popup-ajax]');
+        const countDiv = document.querySelector('.header__btn-cart');
+        const countDesktop = countDiv?.querySelector('[data-js-cart-count-desktop]');
+        const countMobile = countDiv?.querySelector('[data-js-cart-count-mobile]');
+        try {
+            const response = await fetch(window.Shopify.routes.root, {
+                method: "GET",
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const htmlText = await response.text();
+            const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+            const newDrawer = doc.querySelector('[data-js-popup-ajax]');
+            const newCountDiv = doc.querySelector('.header__btn-cart');
+            const newCountDesktop = newCountDiv?.querySelector('[data-js-cart-count-desktop]');
+            const newCountMobile = newCountDiv?.querySelector('[data-js-cart-count-mobile]');
+            if (oldDrawer && newDrawer) {
+                oldDrawer.innerHTML = newDrawer.innerHTML;
+            }
+            if (countDesktop && newCountDesktop) {
+                countDesktop.innerText = newCountDesktop.innerText;
+            }
+            if (countMobile && newCountMobile) {
+                countMobile.innerText = newCountMobile.innerText;
+            }
+            document.body.classList.add(
+                'offset-scrollHOLD',
+                'offset-scroll-padding',
+                'fixed-elem',
+                'overflow-hiddenHOLD',
+                'position-fixed',
+                'left-0',
+                'w-100',
+                'popup-opened'
+            );
+            document.body.style.top = '0px';
+            const popup = document.querySelector('.js-popup');
+            if (popup) popup.classList.add('active', 'show');
+            const popupBg = document.querySelector('[data-js-popup-bg]');
+            if (popupBg) popupBg.classList.add('show', 'visible');
+            const cartPopup = document.querySelector('[data-js-popup-name="cart"]');
+            if (cartPopup) cartPopup.classList.add('show', 'visible');
+        } catch (error) {
+            console.error('❌ Error updating cart drawer:', error);
+        }
+    }
+    else if (getThemeName.themeName == 'Sunrise') {
+        const drawer = document.querySelector('cart-drawer');
+        if (!drawer) return;
+        const drawerInner = drawer.querySelector(".drawer__inner");
+        const drawerHeader = drawer.querySelector(".drawer__header");
+        const drawerCartItems = drawer.querySelector("cart-drawer-items");
+        const drawerFooter = drawer.querySelector(".drawer__footer");
+        const emptyState = drawer.querySelector(".drawer__inner-empty");
+        if (emptyState) emptyState.remove();
+        const response = await fetch(`${window.Shopify.routes.root}?section=cart-drawer`);
+        const html = await response.text();
+        const parser = new DOMParser().parseFromString(html, "text/html");
+        const newDrawerInner = parser.querySelector(".drawer__inner");
+        const newDrawerHeader = parser.querySelector(".drawer__header");
+        const newDrawerCartItems = parser.querySelector("cart-drawer-items");
+        const newDrawerFooter = parser.querySelector(".drawer__footer");
+        if (drawerInner && newDrawerInner) drawerInner.innerHTML = newDrawerInner.innerHTML;
+        if (drawerHeader && newDrawerHeader) drawerHeader.innerHTML = newDrawerHeader.innerHTML;
+        if (drawerCartItems && newDrawerCartItems) drawerCartItems.innerHTML = newDrawerCartItems.innerHTML;
+        if (drawerFooter && newDrawerFooter) drawerFooter.innerHTML = newDrawerFooter.innerHTML;
+        document.dispatchEvent(new Event("dispatch:cart-drawer:open", { detail: { opener: true } }));
+        drawer.classList.remove("is-empty");
+        drawer.classList.add("active");
+    }
+    else if (getThemeName.themeName == 'Motion') {
+        new theme.CartDrawer();        // initializes cart drawer logic
+        setTimeout(() => {
+            const drawer = new theme.Drawers('CartDrawer'); // creates drawer instance
+            drawer.open();                                  // opens it
+        }, 400);
+    }
 
     else {
         try {
@@ -6140,9 +7347,9 @@ async function refreshCart() {
             const countDrawerCount = document.querySelector('.cart__title cart-count');
 
             // Check if required elements exist before updating them
-            if (!newCartDrawer || !newCountBubble) {
+            if (!newCartDrawer) {
                 // console.log('❌ Required elements not found in fetched HTML. Some updates might be missing.');
-                return
+                // return
             }
 
             // Update cart drawer content
@@ -6231,11 +7438,37 @@ async function addToCartWf(
     image,
     handle,
     index,
-    productOption = null
+    // productOption = null
+    itemId = null
+
 ) {
 
 
+    console.log("vvv --- ", event,
+        variantId,
+        userId,
+        productId,
+        title,
+        price,
+        image,
+        handle,
+        index,
+        productOption = null)
 
+
+
+
+
+    // --------to track meta adds on the add-to-cart button-------- 
+    if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
+        fbq('trackCustom', 'WG-addToCart', {
+            content_ids: [productId],
+            content_name: title,
+            content_type: 'product',
+            // value: price,
+            // currency: wfCurData
+        });
+    }
 
     const currentHTML = event.target.innerHTML;
     // console.log("currentHTML ", currentHTML);
@@ -6260,18 +7493,32 @@ async function addToCartWf(
     if (newVariantId !== null) {
         variantId = newVariantId
     }
-    if (currentPlan >= 4 && productOption && typeof productOption === 'object' && Object.keys(productOption).length > 0) {
-        data = {
-            id: variantId,
-            quantity: quantity || 1,
-            properties: productOption,
-        };
-    } else {
-        data = {
-            id: variantId,
-            quantity: quantity || 1,
-        };
+    // if (currentPlan >= 4 && productOption && typeof productOption === 'object' && Object.keys(productOption).length > 0) {
+    //     data = {
+    //         id: variantId,
+    //         quantity: quantity || 1,
+    //         properties: productOption,
+    //     };
+    // } else {
+    //     data = {
+    //         id: variantId,
+    //         quantity: quantity || 1,
+    //     };
+    // }
+
+    let wgrData = {
+        _wgr_app: true,
+        // _u_id: "546",
+        _w_id: userId,
+        _p_id: itemId
     }
+
+    data = {
+        id: variantId,
+        quantity: quantity || 1,
+        properties: wgrData,
+    };
+
 
     // data = {
     //     id: variantId,
@@ -6305,22 +7552,25 @@ async function addToCartWf(
         if (generalSetting.wishlistRemoveData === "yes") {
             removeItem(productId, variantId, userId, handle, false);
             (currentPlan >= 3 && generalSetting?.trendingLayout) && await renderTrendingGridData();
-            getCartButton && getCartButton.classList.remove("quantity_disabled");
+            // getCartButton && getCartButton.classList.remove("quantity_disabled");
         }
-        // event.target.innerHTML = customLanguage?.addToCart || "Move to Cart";
         event.target.innerHTML = currentHTML;
+        getCartButton && getCartButton.classList.remove("quantity_disabled");
+
     } else {
-        // event.target.innerHTML = customLanguage?.addToCart || "Move to Cart";
         event.target.innerHTML = currentHTML;
+        getCartButton && getCartButton.classList.remove("quantity_disabled");
     }
+
+
+
+
+
+
 }
 
 
 async function addToCartRecord(data) {
-
-    console.log("/cart-item-record, data", data)
-
-
     try {
         const cartItems = await fetch(`${serverURL}/cart-item-record`, {
             method: "POST",
@@ -6354,6 +7604,7 @@ async function addAllToCart() {
     }
 
     await renderAllToCart(tempArray);
+
     renderMultiModalContentFxn(tempArray);
 
     document.querySelectorAll('.wg-addalltocart .addAllToCartButton').forEach((el) => {
@@ -6903,11 +8154,17 @@ async function customCodeButtonClick(event, selectedId, getHandle, selectedVaria
         let variantArr = buttonClickproductData?.variants;
 
         let saveVariantId = buttonClickproductData.variants[0].id;
+        let productTitle = null;
+        let productSize = null;
+        let productOffer = null;
+
         let saveImage = buttonClickproductData?.images[0];
         if (isVariantWishlistTrue === true) {
 
             const clickedElement = event.target;
             const wishlistDiv = clickedElement.closest('.wf-wishlist')?.getAttribute("variant-id");
+            productTitle = clickedElement.closest('.wf-wishlist')?.getAttribute("product-title");
+
 
             saveVariantId = wishlistDiv ? wishlistDiv : selectedVariantId === "null" ? buttonClickproductData?.variants[0].id : selectedVariantId || buttonClickproductData?.variants[0].id;
             const resultFind = variantArr.find(data => data.id === parseInt(selectedVariantId));
@@ -6916,7 +8173,6 @@ async function customCodeButtonClick(event, selectedId, getHandle, selectedVaria
             saveVariantId = buttonClickproductData.variants[0].id;
             saveImage = buttonClickproductData?.images[0];
         }
-
         // console.log("Final variant -- ", saveVariantId)
 
 
@@ -6926,11 +8182,12 @@ async function customCodeButtonClick(event, selectedId, getHandle, selectedVaria
             variantId: saveVariantId,
             price: Number(buttonClickproductData.variants[0].price) / 100,
             handle: buttonClickproductData.handle,
-            title: buttonClickproductData.title,
+            title: productTitle ? productTitle : buttonClickproductData.title,
             // image: buttonClickproductData.images[0] ? buttonClickproductData.images[0] : "",
             image: saveImage || "",
             quantity: 1,
             language: wfGetDomain,
+            productOption: null,
         };
 
         const res = await showLoginPopup(selectedId);
@@ -7046,7 +8303,7 @@ async function wishlistButtonForCollection() {
             let addWishlistButton = document.createElement("div");
             addWishlistButton.style.zIndex = "10";
             addWishlistButton.style.position = "relative";
-            // wishlistButtonDiv.style.display = "none";
+            wishlistButtonDiv.style.display = "none";
             // Fetch data with throttling and caching
             const addToWishlistData = await throttleApiCall(renderButtonAddToWishlist, addToWishlistCache, selectedId, isCollectionCount, "load");
             const alreadyAddedToWishlistData = await throttleApiCall(renderButtonAddedToWishlist, addedToWishlistCache, selectedId, isCollectionCount, "load");
@@ -7209,31 +8466,14 @@ async function buttonAddedRemoveWishlist(selectedId, matchingOrNot, load = "") {
 
 /**AUTO INJECT COLLECTION ICON AND BUTTON **/
 async function collectionIconClick(event, selectedId, handle) {
-    // if (typeof settingCurrentFilter !== "undefined" && settingCurrentFilter === "boost") {
-    //     event.preventDefault();
-    //     let el = event.target;
-    //     var parentElement = el.closest(".boost-sd__product-item");
-    //     if (parentElement) {
-    //         event.stopPropagation();
-    //     }
-    // }
-
-
-    const isRealEvent = event && typeof event === "object" && typeof event.preventDefault === "function";
-
-    if (isRealEvent) {
-        if (typeof settingCurrentFilter !== "undefined" && settingCurrentFilter === "boost") {
-            event.preventDefault();
-            let el = event.target;
-            var parentElement = el.closest(".boost-sd__product-item");
-            if (parentElement) {
-                event.stopPropagation();
-            }
+    if (typeof settingCurrentFilter !== "undefined" && settingCurrentFilter === "boost") {
+        event.preventDefault();
+        let el = event.target;
+        var parentElement = el.closest(".boost-sd__product-item");
+        if (parentElement) {
+            event.stopPropagation();
         }
-
-        event.stopPropagation();
     }
-
 
     const matchedElement = findMatchingItemSelected(encodeURIComponent(handle));
     let matchedProductId;
@@ -7241,7 +8481,7 @@ async function collectionIconClick(event, selectedId, handle) {
         matchedProductId = matchedElement.getAttribute('data-variant-id')
         // console.log('Found matching item-selected element:', matchedElement.getAttribute('data-variant-id'));
     }
-    // event.stopPropagation();
+    event.stopPropagation();
     try {
         const collectionIconResponse = await fetch(`${wfGetDomain}products/${handle}.js`);
         const collectionIconJsonData = await collectionIconResponse.json();
@@ -7488,7 +8728,6 @@ const wgReformationCss = (getThemeName.themeName === "Reformation")
         }`
     : '';
 
-
 const wgBlockshopCss = (getThemeName.themeName === "Blockshop")
     ? `.wf-wishlist.pdp-img-icon-bottom-right {
             bottom:22px;
@@ -7586,8 +8825,13 @@ const wgCapitalCss = (getThemeName.themeName === "Capital")
 const wgPrestigeCss = (getThemeName.themeName === "Prestige")
     ? `.wf-wishlist-collection-icon {
        z-index: 2 !important;
+    }
+       .product-image-container-template--25363297173827__product_grid_quickbuy_mLgax4 .wf-wishlist-collection-icon {
+       z-index: 6 !important;
+    }
+        #shopify-section-template--26287112913195__product_grid_quickbuy_mLgax4 .collection_icon_new_selected, #shopify-section-template--26287112913195__product_grid_quickbuy_mLgax4 .collection_icon_new {
+        z-index: 7 !important;
     }` : '';
-
 
 const wgBroadcastCss = (getThemeName.themeName === "Broadcast")
     ? `.wf-wishlist.pdp-img-icon-bottom-left {
@@ -7629,6 +8873,70 @@ const wgStarliteCss = (getThemeName.themeName === "Starlite")
         }
         `
     : '';
+
+const wgPitchCss = (getThemeName.themeName === "Pitch")
+    ? `
+        .header__column--right header-actions{
+            align-items:center;
+        }
+    `
+    : '';
+
+const wgVeenaCss = (getThemeName.themeName === "Veena")
+    ? `
+        .collection_icon_new_selected, .collection_icon_new{
+            z-index:3 !important;
+        }
+    `
+    : '';
+
+const wgDistrictCss = (getThemeName.themeName === "District")
+    ? `#page .wrapper .right-wrapper{
+            display:flex !important;
+    }` : '';
+
+
+const wgExpanseCss = (getThemeName.themeName === "Expanse")
+    ? `.wf-wishlist-collection-icon {
+            z-index: 1;
+    }
+    `: ';'
+
+const wgFabricCss = (getThemeName.themeName === "Fabric")
+    ? `
+       nav overflow-list li:nth-last-child(2) {
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+}
+    `
+    : '';
+
+
+const wgResponsiveCss = (getThemeName.themeName === "Responsive")
+    ? `
+
+@media screen and (min-width: 1210px) {
+    .top_bar .one-fourth {
+        width: calc(30% - 20px) !important;
+    }
+    .top_bar .one-half {
+        width: calc(40% - 20px) !important;
+    }
+}
+@media screen and (min-width: 800px) {
+        .top_bar .one-half {
+            width: calc(30% - 20px) !important;
+        }
+        .top_bar .one-fourth {
+            width: calc(34% - 20px) !important;
+        }
+}
+    `
+    : '';
+
+
+
 
 
 
@@ -7724,22 +9032,61 @@ const wgGridCss = `
     width: 100%;
     height: 100%;
 } 
-.modal-button-div .cartButtonStyle,
-.searchData-main2 .cartButtonStyle,
-.modalContainer .cartButtonStyle,
-#wg-multiWishlist_div .cartButtonStyle {
-    background-color: ${customButton.cartButtonStyle.hover.bgColor};
-    color: ${customButton.cartButtonStyle.hover.textColor};
-    border: ${customButton.cartButtonStyle.hover.border.value}${customButton.cartButtonStyle.hover.border.unit} ${customButton.cartButtonStyle.hover.border.type} ${customButton.cartButtonStyle.hover.border.color};
-}
-.modal-button-div .cartButtonStyle:hover,
-.searchData-main2 .cartButtonStyle:hover,
-.modalContainer .cartButtonStyle:hover,
-#wg-multiWishlist_div .cartButtonStyle:hover {
-    background-color: ${customButton.cartButtonStyle.bgColor};
-    color: ${customButton.cartButtonStyle.textColor};
-    border: ${customButton.cartButtonStyle.border.value}${customButton.cartButtonStyle.border.unit} ${customButton.cartButtonStyle.border.type} ${customButton.cartButtonStyle.border.color};
-}
+
+${(generalSetting?.clearBtnStyleActive === "yes") ?
+        `.modal-button-div .cartButtonStyle,
+        .searchData-main2 .cartButtonStyle,
+        .modalContainer .cartButtonStyle,
+        #wg-multiWishlist_div .cartButtonStyle,
+        .a-main .cartButtonStyle {
+            background-color: ${customButton.clearButtonStyle.bgColor};
+            color: ${customButton.clearButtonStyle.textColor};
+            max-width: 100%;
+            border: ${customButton.clearButtonStyle.border.value}${customButton.clearButtonStyle.border.unit} ${customButton.clearButtonStyle.border.type} ${customButton.clearButtonStyle.border.color};
+            border-radius: ${customButton.clearButtonStyle.borderRadius.value}${customButton.clearButtonStyle.borderRadius.unit};
+            font-size: ${customButton.clearButtonStyle.fontSize.value}${customButton.clearButtonStyle.fontSize.unit} !important;
+            padding: ${customButton.clearButtonStyle.paddingTopBottom.value}${customButton.clearButtonStyle.paddingTopBottom.unit} ${customButton.clearButtonStyle.paddingLeftRight.value}${customButton.clearButtonStyle.paddingLeftRight.unit};
+            margin: ${customButton.clearButtonStyle.marginTopBottom.value}${customButton.clearButtonStyle.marginTopBottom.unit} ${customButton.clearButtonStyle.marginLeftRight.value}${customButton.clearButtonStyle.marginLeftRight.unit};
+            text-align: ${customButton.clearButtonStyle.textAlign};
+            cursor: pointer;
+            box-sizing: border-box;
+            font-weight: ${getFontWt(customButton.clearButtonStyle.fontWeight, customButton.clearButtonStyle.fontWeight).textFw};
+            font-family: ${customButton.clearButtonStyle.fontFamily};
+        }
+
+        .modal-button-div .cartButtonStyle:hover,
+        .searchData-main2 .cartButtonStyle:hover,
+        .modalContainer .cartButtonStyle:hover,
+        #wg-multiWishlist_div .cartButtonStyle:hover,
+        .a-main .cartButtonStyle:hover {
+            background-color: ${customButton.clearButtonStyle.hover.bgColor};
+            color: ${customButton.clearButtonStyle.hover.textColor};
+            border: ${customButton.clearButtonStyle.hover.border.value}${customButton.clearButtonStyle.hover.border.unit} ${customButton.clearButtonStyle.hover.border.type} ${customButton.clearButtonStyle.hover.border.color};
+        }`
+        :
+        `
+        .wg-islogin-buttons .cartButtonStyle,
+        .modal-button-div .cartButtonStyle,
+        .searchData-main2 .cartButtonStyle,
+        .modalContainer .cartButtonStyle,
+        #wg-multiWishlist_div .cartButtonStyle,
+        .a-main .cartButtonStyle {
+            background-color: ${customButton.cartButtonStyle.hover.bgColor};
+            color: ${customButton.cartButtonStyle.hover.textColor};
+            border: ${customButton.cartButtonStyle.hover.border.value}${customButton.cartButtonStyle.hover.border.unit} ${customButton.cartButtonStyle.hover.border.type} ${customButton.cartButtonStyle.hover.border.color};
+        }
+        .wg-islogin-buttons .cartButtonStyle:hover,
+        .modal-button-div .cartButtonStyle:hover,
+        .searchData-main2 .cartButtonStyle:hover,
+        .modalContainer .cartButtonStyle:hover,
+        #wg-multiWishlist_div .cartButtonStyle:hover,
+        .a-main .cartButtonStyle:hover {
+            background-color: ${customButton.cartButtonStyle.bgColor};
+            color: ${customButton.cartButtonStyle.textColor};
+            border: ${customButton.cartButtonStyle.border.value}${customButton.cartButtonStyle.border.unit} ${customButton.cartButtonStyle.border.type} ${customButton.cartButtonStyle.border.color};
+        }`
+    }
+
 .wishlist-modal-box {
     margin-bottom: ${generalSetting.gridGap}px;
 }
@@ -7989,18 +9336,11 @@ function buttonStyleFxn() {
             background-color: ${cartButtonStyle.bgColor};
             color: ${cartButtonStyle.textColor};
             max-width: 100%;
-            border: ${cartButtonStyle.border.value}${cartButtonStyle.border.unit
-        } ${cartButtonStyle.border.type} ${cartButtonStyle.border.color};
-            border-radius: ${cartButtonStyle.borderRadius.value}${cartButtonStyle.borderRadius.unit
-        };
-            font-size: ${cartButtonStyle.fontSize.value}${cartButtonStyle.fontSize.unit
-        } !important;
-            padding: ${cartButtonStyle.paddingTopBottom.value}${cartButtonStyle.paddingTopBottom.unit
-        } ${cartButtonStyle.paddingLeftRight.value}${cartButtonStyle.paddingLeftRight.unit
-        };
-            margin: ${cartButtonStyle.marginTopBottom.value}${cartButtonStyle.marginTopBottom.unit
-        } ${cartButtonStyle.marginLeftRight.value}${cartButtonStyle.marginLeftRight.unit
-        };
+            border: ${cartButtonStyle.border.value}${cartButtonStyle.border.unit} ${cartButtonStyle.border.type} ${cartButtonStyle.border.color};
+            border-radius: ${cartButtonStyle.borderRadius.value}${cartButtonStyle.borderRadius.unit};
+            font-size: ${cartButtonStyle.fontSize.value}${cartButtonStyle.fontSize.unit} !important;
+            padding: ${cartButtonStyle.paddingTopBottom.value}${cartButtonStyle.paddingTopBottom.unit} ${cartButtonStyle.paddingLeftRight.value}${cartButtonStyle.paddingLeftRight.unit};
+            margin: ${cartButtonStyle.marginTopBottom.value}${cartButtonStyle.marginTopBottom.unit} ${cartButtonStyle.marginLeftRight.value}${cartButtonStyle.marginLeftRight.unit};
             text-align: ${cartButtonStyle.textAlign};
             cursor: pointer;
             box-sizing: border-box;
@@ -8531,9 +9871,7 @@ function buttonStyleFxn() {
             .cartButtonStyle:hover {
                 background-color: ${customButton.cartButtonStyle.hover.bgColor};
                 color: ${customButton.cartButtonStyle.hover.textColor};
-                border: ${customButton.cartButtonStyle.hover.border.value}${customButton.cartButtonStyle.hover.border.unit
-        } ${customButton.cartButtonStyle.hover.border.type} ${customButton.cartButtonStyle.hover.border.color
-        };
+                border: ${customButton.cartButtonStyle.hover.border.value}${customButton.cartButtonStyle.hover.border.unit} ${customButton.cartButtonStyle.hover.border.type} ${customButton.cartButtonStyle.hover.border.color};
             }
 
             .shareButtonTextStyle:hover {
@@ -8720,6 +10058,17 @@ function buttonStyleFxn() {
             }` : ``}
 
 
+   ${getThemeName?.themeName === "Empire" ? `
+        @media screen and (max-width:1024px) {
+            .wg-empire-headerIcon-desktop {
+                 display: none !important;
+            }
+            .wg-empire-headerIcon-mobile {
+                position: absolute !important;
+                right: 36px !important;
+            }
+        }
+            ` : ``}
 
 
     @media screen and (max-width:1024px) {
@@ -8819,6 +10168,26 @@ function buttonStyleFxn() {
 
         ${wgStarliteCss}
 
+        ${wgPitchCss}
+
+        ${wgVeenaCss}
+
+        ${wgDistrictCss}
+
+        ${wgExpanseCss}
+
+       ${permanentDomain === "anikrriti-com.myshopify.com" ? wgFabricCss : ""}
+
+       ${wgResponsiveCss}
+
+        .wg-heart-icon-blank.selected,
+        .wg-heart-icon-solid.selected {
+            background-color: transparent !important;
+            border: none !important;
+            background-size: cover !important;
+        }
+
+
     `;
 
     localStorage.setItem("wg-button-style", buttonStyleHead.innerHTML);
@@ -8859,11 +10228,27 @@ async function SqlFunction(product) {
                 wfGetDomain: wfGetDomain,
                 specificVariant: isVariantWishlistTrue || null,
                 productOption: product?.productOption || null,
+                // wgLanguage: wgWishlistLanguage
+                wgLanguage: wgMultiEmailTempDefault?.email_language === "default" ? wgWishlistLanguage : wgMultiEmailTempDefault?.email_language,
+                wgReceiveEmail: wgMultiEmailTempDefault?.send_emails
             }),
         });
         let result = await userData.json();
 
         // console.log("create user ---- ", result)
+
+        // // --------to track meta adds on the add-to-cart button-------- 
+        if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
+            if (result?.isAdded === "yes") {
+                fbq('trackCustom', 'WG-addToWishlist', {
+                    content_ids: [product.productId],
+                    content_name: product.title,
+                    content_type: 'product',
+                    // value: product.price,
+                    // currency: wfCurData
+                });
+            }
+        }
 
         const prevToken = localStorage.getItem("wg-token");
         const newToken = result?.token;
@@ -8871,11 +10256,8 @@ async function SqlFunction(product) {
         // console.log("prevToken --- ", prevToken);
         // console.log("newToken --- ", newToken);
 
-
         if ((!prevToken || prevToken !== newToken) && newToken !== "" && newToken !== null && newToken !== undefined) {
-
             // console.log("-----UPDATING TOKEN-----");
-
             localStorage.setItem("wg-token", newToken);
         }
 
@@ -9360,7 +10742,7 @@ function clearNotification() {
 };
 
 
-async function openShareWishlistModal(singleWishlist = "") {
+async function openShareWishlistModal(singleWishlist = "", userId = "") {
     let addLinkContent = document.querySelectorAll(".modal-inside");
     for (let wf = 0; wf < addLinkContent.length; wf++) {
         addLinkContent[wf].innerHTML = `<div>${storeFrontDefLang?.loadingText}</div>`;
@@ -9369,7 +10751,7 @@ async function openShareWishlistModal(singleWishlist = "") {
         modalLink.style.display = "none";
     };
     modalLink.style.display = "block";
-    createShareWishlistLink(singleWishlist);
+    createShareWishlistLink(singleWishlist, userId);
 }
 
 // async function wishlistUrlCreator() {
@@ -9656,7 +11038,7 @@ function openShareWishlistModalLink() {
     copyUrl(`${pageUrl}`);
 }
 
-async function createShareWishlistLink(singleWishlist = "") {
+async function createShareWishlistLink(singleWishlist = "", userId = "") {
     document.querySelectorAll(".sharable-link-heading").forEach((element) => {
         element.innerHTML = customLanguage.sharableLinkModalHeading;
     });
@@ -9673,7 +11055,8 @@ async function createShareWishlistLink(singleWishlist = "") {
             }),
         });
         const result = await response.json();
-        const getID = result.data?.[0]?.id;
+        const getID = userId !== "" ? userId : result.data?.[0]?.id;
+
         if (!getID) throw new Error("User ID not found");
         const encryptedEmail = btoa(getID);
         const encryptedName = btoa('url');
@@ -9842,18 +11225,18 @@ function drawerModal() {
     createShareWishlistLink();
 }
 
-var btn = document.querySelector("button.shareModalById");
-var spans = document.getElementsByClassName("closeByShareModal")[0];
+var wgBtn = document.querySelector("button.shareModalById");
+var wgSpans = document.getElementsByClassName("closeByShareModal")[0];
 
 function showShareModal() {
     shareModal.style.display = "flex";
 }
 
-if (btn != null) {
-    btn.addEventListener("click", showShareModal);
+if (wgBtn != null) {
+    wgBtn.addEventListener("click", showShareModal);
 }
 
-spans.onclick = function () {
+wgSpans.onclick = function () {
     closeShareModal();
 };
 
@@ -9942,6 +11325,7 @@ async function extractIdAndGetDataForTable(pageUrl) {
 };
 
 async function replaceTokens(str, data, newObj = null) {
+
     const sharedName = btoa('email');
     var pageUrl = await wishlistUrlCreator(sharedName);
     var tableData = await extractIdAndGetDataForTable(pageUrl);
@@ -9984,6 +11368,7 @@ async function replaceTokens(str, data, newObj = null) {
             `{wishlist_share_email_sender_name}`
         );
     }
+
     str = str.replace(/##wishlist_share_email_wishlist_url##/g, pageUrl);
     str = str.replace(/##wishlist_share_email_customer_message##/g, message);
     str = str.replace(/{wishlist_share_email_wishlist_url}/g, pageUrl);
@@ -10479,7 +11864,8 @@ function isIdExist(data, pId, vId) {
 
     return data.some(obj =>
         Object.keys(obj).some(key =>
-            key !== "id" && key !== "description" && key !== "urlType" && key !== "data" && key !== "password" && obj[key].some(item => {
+            // key !== "id" && obj[key].some(item => {
+            key !== "id" && key !== "description" && key !== "urlType" && key !== "data" && key !== "password" && key !== "userId" && obj[key].some(item => {
                 const itemPid = Number(item.product_id);
                 if (isVariantWishlistTrue) {
                     return vid
@@ -10711,8 +12097,7 @@ function collectionIconSize() {
         }
 
         .wg-collectionIcon.selected{
-            filter:${isComboIcon ? colIconDefaultColor : colIconSelectedColor
-        } !important;
+            filter:${colIconSelectedColor} !important;
         }    
         
         .wg-collectionIcon{
@@ -10767,7 +12152,6 @@ collectionIconSize()
 async function checkPlanForMulti(data) {
     createFilterOptionInStructure();
     const arrayList = allWishlistData;
-
     const renderFn = data === "multi"
         ? () => renderMultiModalContentFxn(arrayList)
         : () => renderDrawerContentFxn();
@@ -10793,6 +12177,29 @@ function closeMultiWishlist() {
         nonCheckedItems = [];
     };
 }
+
+// async function executeMe2(wishName, fromWhere) {
+//     let { accessToken, accessEmail } = getAccessToken();
+//     let params = (new URL(document.location)).searchParams;
+//     let sharedId = params.get("id");
+//     const sharedIdProp = atob(sharedId);
+//     const userData = await fetch(`${serverURL}/create-new-wihlist`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//             wishlistName: [wishName],
+//             shopName: permanentDomain,
+//             customerEmail: accessEmail,
+//             currentToken: accessToken,
+//             storeName: wf_shopName,
+//             language: wfGetDomain,
+//             referral_id: fromWhere === "shared" ? sharedIdProp : ""
+//         }),
+//     });
+//     let result = await userData.json();
+// }
 
 async function executeMe2(wishName, wishDescrp, wishUrlType, wishUrlPassword = "", wishDate, wishEventType, wishFirstName, wishLastName, wishStreetAddress, wishZipCode, wishCity, wishState, wishCountry, wishPhone, wishTags) {
     let { accessToken, accessEmail } = getAccessToken();
@@ -10848,6 +12255,107 @@ async function openMultiWishlist(data, productId, fromWhere, variantId = null) {
     const multiArrayData = await getMultiwishlistData(dataToSend)
     await renderData(multiArrayData, data, productId, fromWhere, variantId);
 }
+
+// async function renderData(multiArray, data, productId, fromWhere, variantId = null) {
+//     const newDataArray = allWishlistData;
+//     const isDeleteMode = data.isDelete === "yes";
+//     const checkedArr = [];
+//     const nonCheckedArr = [];
+//     const encodedData = JSON.stringify(data).replace("'", "");
+//     if (isDeleteMode) {
+//         checkedItems = []
+//         nonCheckedItems = []
+//     }
+//     const wishlistItems = multiArray.map((item, index) => {
+//         const arrItem = newDataArray.find((obj) => obj[item]);
+//         let isChecked = arrItem
+//             ? arrItem[item].some(
+//                 (obj) => {
+//                     if (isVariantWishlistTrue === true) {
+//                         if (variantId) {
+//                             if ((parseInt(obj.product_id) === parseInt(productId)) && parseInt(obj.variant_id) === parseInt(variantId)) {
+//                                 return true;
+//                             }
+//                         } else {
+//                             if (parseInt(obj.product_id) === parseInt(productId)) {
+//                                 return true;
+//                             }
+//                         }
+//                     } else {
+//                         if (parseInt(obj.product_id) === parseInt(productId)) {
+//                             return true;
+//                         }
+//                     }
+
+//                 }
+//             )
+//             : false;
+//         if (!isChecked) {
+//             isChecked = checkedItems.some(
+//                 (value) => value.toLowerCase() === item.toLowerCase()
+//             );
+//         }
+//         (isChecked ? checkedArr : nonCheckedArr).push(item);
+//         if (isDeleteMode) {
+//             (isChecked ? checkedItems : nonCheckedItems).push(item)
+//         }
+//         return `
+//             <li>
+//                 <label for="item-${index}" class="item-${index}">
+//                     <input 
+//                         type="checkbox" 
+//                         id="item-${index}" 
+//                         onclick="${isDeleteMode ? "handleDeleteCheckboxClick" : "handleCheckboxClick"}(event)"
+//                         ${isChecked ? "checked" : ""}
+//                     >
+//                     <p style="margin:0;">${item}</p>
+//                 </label>
+//             </li>`;
+//     }).join("");
+//     const wishlists = `
+//         <div class="multiCheckbox">
+//             <ul id="dataList">
+//                 ${wishlistItems}
+//             </ul>
+//         </div>`;
+//     const saveButton = multiArray.length > 0
+//         ? `<button class="saveBtn cartButtonStyle" id="${isDeleteMode ? "saveDelWishlistBtn" : "saveWishlistBtn"}"
+//               onclick="${isDeleteMode ? "saveDelteWishlists" : "saveWishlists"}(event, ${productId}, '${fromWhere}')">
+//               ${isDeleteMode
+//             ? customLanguage.editBtn || storeFrontDefLang.editBtn
+//             : customLanguage.saveWishlistBtn || storeFrontDefLang.saveWishlistBtn}
+//            </button>`
+//         : "";
+
+//     const multiWishlistData = `
+//         <div>
+//             <h3>${isDeleteMode
+//             ? customLanguage.editWishlistHeading || storeFrontDefLang.editWishlistHeading
+//             : customLanguage.createWishlistHeading || storeFrontDefLang.createWishlistHeading}
+//             </h3>
+//             <div class="multiWishCreate">
+//                 <div class="multiInputDiv">
+//                     <input type="text" id="wishlistName" name="wishlistName" placeholder="${storeFrontDefLang.inputPlaceholder}" />
+//                 </div>
+//                 <div id="hiddenDiv" data-prodata='${encodedData}' data-checkedArr='${JSON.stringify(checkedArr)}' data-nonCheckedArr='${JSON.stringify(nonCheckedArr)}'></div>
+//                 <button id="createWishlist" class="cartButtonStyle" type="button" 
+//                     onclick="submitWishlistForm(event, ${productId}, '${fromWhere}')">
+//                     ${customLanguage.createBtn || storeFrontDefLang.createBtn}
+//                 </button>
+//             </div>
+//             <p id="mainErrorPara"></p>
+//             ${wishlists}
+//             ${saveButton}
+//         </div>`;
+//     const container = document.getElementById("wg-multiWishlistInnerContent");
+//     if (container) {
+//         container.innerHTML = multiWishlistData;
+//     }
+//     const saveButtonElement = document.getElementById("saveDelWishlistBtn");
+//     if (saveButtonElement) {
+//         saveButtonElement.disabled = true;
+//     }
+// }
 
 async function renderData(multiArray, data, productId, fromWhere, variantId = null) {
     const newDataArray = allWishlistData;
@@ -10944,6 +12452,9 @@ async function renderData(multiArray, data, productId, fromWhere, variantId = nu
         saveButtonElement.disabled = true;
     }
 }
+
+
+
 
 function handleUrlTypeChange() {
     const selectVal = document.getElementById("wishlistUrlType").value;
@@ -11107,6 +12618,14 @@ async function saveWishlists(event, productId, fromWhere) {
     getMultiWishlistDiv.style.display = "none"
 }
 
+// async function showErrorPara(msg) {
+//     const mainErrorPara = document.getElementById('wg-multiWishlistInnerContent').querySelector('#mainErrorPara')
+//     if (mainErrorPara) {
+//         mainErrorPara.style.display = "block";
+//         mainErrorPara.innerHTML = msg;
+//     }
+// }
+
 async function showErrorPara(msg) {
     // const mainErrorPara = document.getElementById('wg-multiWishlistInnerContent').querySelector('#mainErrorPara')
     const mainErrorPara = document.querySelector('#mainErrorPara')
@@ -11129,6 +12648,8 @@ async function saveDelteWishlists(event, productId, fromWhere) {
     nonCheckedItems = [];
     getMultiWishlistDiv.style.display = "none";
 }
+
+
 
 async function saveMainData(data, productId, fromWhere) {
     let result = await SqlFunction(data);
@@ -11214,6 +12735,8 @@ async function saveMainData(data, productId, fromWhere) {
         alertContent(customLanguage?.quotaLimitAlert || storeFrontDefLang.quotaLimitAlert);
     }
 }
+
+
 
 function getWishlistByKey(arrayData, key) {
     const wishlist = arrayData.find((obj) => obj[key]);
@@ -11315,12 +12838,12 @@ async function yesDelete(key) {
     }
 }
 
+
 async function noDelete() {
     getMultiWishlistDiv.style.display = "none";
 }
 
 async function editWishlistName(event, key) {
-
     event.stopPropagation();
     closeMultiWishlist();
     const nearestEditWishDiv = event.target.closest(".wf-multi-Wish-content").querySelector(".editWishDiv");
@@ -11375,56 +12898,6 @@ async function saveEditWishlistName(event, key) {
         console.error("Error updating wishlist name:", error);
     }
 }
-
-// async function saveEditWishlistDescription(event, key) {
-//     const newWishName = event.target.closest(".editWishDivInner").querySelector(".editInput").value;
-//     const errorPara = event.target.closest(".editWishDiv").querySelector(".errorPara");
-//     const getCurrentLogin = await getCurrentLoginFxn();
-//     if (!newWishName) {
-//         errorPara.style.display = "block";
-//         errorPara.innerHTML = `${storeFrontDefLang.emptyInput}`;
-//         return;
-//     }
-//     if (multiArray.some((item) => item.toLowerCase() === newWishName.toLowerCase())) {
-//         errorPara.style.display = "block";
-//         errorPara.innerHTML = `${newWishName} ${storeFrontDefLang.sameWishName}`;
-//         return;
-//     }
-//     const nearestEditWishDiv = event.target.closest(".wf-multi-Wish-content").querySelector(".editWishDiv");
-//     const nearestH3 = event.target.closest(".wf-multi-Wish-content").querySelector(".wf-description");
-//     const nearestEditWishIconDiv = event.target.closest(".wf-multi-Wish-content").querySelector(".edit-main-icon")
-//     const nearestH3Content = event.target.closest(".wf-multi-Wish-content").querySelector(".wf-description");
-//     nearestEditWishDiv && (nearestEditWishDiv.style.display = "none");
-//     nearestEditWishIconDiv && (nearestEditWishIconDiv.style.display = "flex");
-//     nearestH3 && (nearestH3.style.display = "block");
-//     nearestH3Content && (nearestH3.textContent = newWishName);
-//     errorPara.style.display = "none";
-
-
-//     console.log("newWishName ---- ", newWishName);
-//     console.log("key ---- ", key);
-
-
-//     try {
-//         const response = await fetch(`${serverURL}/edit-wishlist-description`, {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify({
-//                 oldWishlistDescription: key,
-//                 newWishlistDescription: newWishName,
-//                 shopName: permanentDomain,
-//                 customerEmail: getCurrentLogin,
-//                 shopDomain,
-//                 currentToken: getAccessTokenFromCookie(),
-//                 // currentToken: localStorage.getItem("access-token"),
-//             }),
-//         });
-//         const result = await response.json();
-//         showCountAll()
-//     } catch (error) {
-//         console.error("Error updating wishlist name:", error);
-//     }
-// }
 
 function closeEditWishlistName(event, key) {
     const nearestEditWishDiv = event.target.closest(".wf-multi-Wish-content").querySelector(".editWishDiv");
@@ -11496,7 +12969,7 @@ async function copyItem(
         ${wishlists}
         ${newMultiArray.length !== 0
             ? `<p id="mainErrorPara">Please enter name*</p>
-              <button id="copyBtn" class="cartButtonStyle" onclick="copyCheckedItem(${product_id}, ${variant_id}, '${handle}', '${price}', '${image}', '${title}', '${quantity}')">
+              <button id="copyBtn" class="cartButtonStyle" onclick="copyCheckedItem(${product_id}, ${variant_id}, '${handle}', '${price}', '${image}', '${title}', '${quantity}', '${key}')">
                 ${customLanguage.copyBtn || storeFrontDefLang.copyBtn}
               </button>`
             : ""
@@ -11511,7 +12984,8 @@ async function copyCheckedItem(
     price,
     image,
     title,
-    quantity
+    quantity,
+    key = ""
 ) {
     const getCurrentLogin = await getCurrentLoginFxn();
     if (checkedItems.length === 0) {
@@ -11543,8 +13017,10 @@ async function copyCheckedItem(
             renderLoader();
             await showCountAll();
             createFilterOptionInStructure();
-            const arrayList = allWishlistData
 
+            let hhh = getWishlistByKey(allWishlistData, key);
+            const arrayList = key !== "" ? hhh : allWishlistData;
+            // const arrayList = allWishlistData;
 
             const renderFn = generalSetting.wishlistDisplay === "drawer"
                 ? () => renderDrawerContentFxn()
@@ -11605,7 +13081,7 @@ async function renderClearWishlistNames() {
 
 async function clearAllYesBtn(event) {
     const errorPara = event.target.closest("#wg-multiWishlistInnerContent").querySelector("#mainErrorPara");
-    const arrayList = allWishlistData
+    const arrayList = allWishlistData;
 
     let wishlistIds = [];
     let productIds = []
@@ -11694,7 +13170,7 @@ async function clearDefaultWishlist(idArray, proIdArray) {
 }
 
 function checkFound(wishlistData, selectedId, selectedVariantId = null) {
-    const found = isIdExist(wishlistData, parseInt(selectedId), parseInt(selectedVariantId))
+    const found = isIdExist(wishlistData, parseInt(selectedId), parseInt(selectedVariantId));
     return found;
 }
 
@@ -11819,6 +13295,8 @@ async function disableShare(data, className) {
 function runWishlistVariantUpdateLogic() {
     if (!location.pathname.includes("/products/")) return; // Exit if not product page
 
+    // if (currentPlan >= 4) {
+    // if (permanentDomain !== "specsmakerspartner.myshopify.com") {
     const wishlistButtons = document.querySelectorAll(".wf-wishlist-button, .wf-wishlist, .wishlist-guru-bb, .inject-button-pp");
 
     function updateVariantId(newVariantId) {
@@ -11851,6 +13329,9 @@ function runWishlistVariantUpdateLogic() {
         }
         updateVariantId(variantSelect.value);
     }
+
+    // }
+    // }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -12022,3 +13503,27 @@ function wgGetProductOptions() {
 
     return Object.keys(result).length === 0 ? null : result;
 }
+
+
+
+(function addHiddenProperty() {
+    console.log("IM running the addHiddenProperty function")
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("by") === "wgr") {
+        console.log("URL contains by=wgr");
+
+        let hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "properties[_DiscountRR]";
+        hiddenInput.value = "my valueee"
+        hiddenInput.classList.add("wf-preorder-guru-input");
+        const finalFormClass = document.querySelectorAll(".product-form__buttons");
+
+        if (finalFormClass) {
+            finalFormClass[0].appendChild(hiddenInput);
+        }
+
+    }
+
+})()

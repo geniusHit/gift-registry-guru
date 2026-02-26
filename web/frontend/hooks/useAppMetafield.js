@@ -124,7 +124,6 @@ const useAppMetafield = () => {
         try {
             const response = await fetch(`/api/app-metafield/get-all?limit=${15}`);
             const result = await response.json();
-            console.log("result = ", result)
             let allData = result.data.data.app.installation.metafields.edges;
             return allData;
         } catch (error) {
@@ -142,8 +141,8 @@ const useAppMetafield = () => {
                 }),
             });
             const result = await response.json();
-            console.log("result = ", result)
             return result.currentPlanData[0].plan_id
+
         } catch (err) {
             console.log("err")
         }

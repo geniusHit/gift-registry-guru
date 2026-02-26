@@ -230,8 +230,6 @@ const useUtilityFunction = () => {
         });
     };
 
-
-
     const goToSectionFxn = () => {
         setTimeout(() => {
             const queryString = window.location.search;
@@ -249,7 +247,6 @@ const useUtilityFunction = () => {
         for (let i = 0; i < dataArray.length; i++) {
             if (dataArray[i].node.key === "language-setting") {
                 let dData = JSON.parse(dataArray[i].node.value);
-
                 if (dData.languageSetting === "arabic") {
                     return arabic;
                 } else if (dData.languageSetting === "english") {

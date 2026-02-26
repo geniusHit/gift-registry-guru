@@ -74,7 +74,7 @@ export async function appDeletion(payload, shop) {
         subject: "Thanks for using Wishlist Guru App",
         html: mailHtml,
     };
-    sendEmail(emailContent);
+    // sendEmail(emailContent);
 
     // -----------------------------
     // 6️⃣ UPDATE BREVO STATUS
@@ -690,6 +690,85 @@ export async function updateShopDomain(payload, shop) {
     }
 }
 
+export async function createOrderFunction(payload, shop) {
+
+    console.log("createOrderFunction -------------------- ", payload)
+
+
+    let webhookQuantity = payload?.line_items[0]?.quantity || 1;
+    let getproperties = payload?.line_items[0]?.properties || [];
+
+    let productData = payload?.line_items[0];
+    // console.log("getproperties ----- ", getproperties)
+
+    const hasWgrAppTrue = getproperties.some(item => item?.name === '_wgr_app' && item?.value === true) || false;
+
+    // console.log("hasWgrAppTrue 000 ---- ", hasWgrAppTrue);
+
+    if (hasWgrAppTrue) {
+        // console.log("hasWgrAppTrue ---- ", hasWgrAppTrue);
+
+        const pId = getproperties.find(item => item.name === '_p_id')?.value;
+        const wId = getproperties.find(item => item.name === '_w_id')?.value;
+
+
+        if (pId) {
+            const [result] = await database.query(
+                `SELECT items_purchased, image, handle FROM ${product_table} WHERE id = ?`,
+                [Number(pId)]
+            );
+
+            // console.log("result ------- result", result)
+
+            if (result.length > 0) {
+                let previousPurchased = result[0]?.items_purchased || 0;
+                let newPurchasedCount = Number(previousPurchased) + Number(webhookQuantity);
+
+                await database.query(
+                    `UPDATE ${product_table} SET items_purchased = ? WHERE id = ?`,
+                    [newPurchasedCount, Number(pId)]);
+
+
+                // console.log("productData ---- ", productData);
+                // console.log("date ---", payload?.processed_at);
+
+                // console.log("eeee", productData.product_id)
+                // console.log("eeee", productData.variant_id)
+                // console.log("eeee", productData.title)
+                // console.log("eeee", productData.price)
+                // console.log("eeee", productData.quantity)
+                // console.log("eeee", productData.product_id)
+
+                // console.log("wwww", result[0]?.handle)
+                // console.log("wwww", result[0]?.image)
+
+                await database.query(
+                    `INSERT INTO cart_record 
+                      (order_id, wishlist_id, item_id, title, product_id, variant_id, price, quantity, image, handle) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+                    payload.id,
+                    wId,
+                    pId,
+                    productData.title,
+                    productData.product_id,
+                    productData.variant_id,
+                    productData.price,
+                    productData.quantity,
+                    result[0]?.image,
+                    result[0]?.handle
+                ]
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+
+
 export async function shopifyPlanUpdate(payload) {
     try {
         const now = new Date();
@@ -779,13 +858,13 @@ export async function shopifyPlanUpdate(payload) {
 
         // 9️⃣ Send emails
         for (const data of recipients) {
-            await sendEmail({
-                from: supportEmail,
-                to: data.email,
-                replyTo: supportEmail,
-                subject: `Wishlist Guru - Shopify plan changed for shop ${payload.myshopify_domain}`,
-                html: data.html,
-            });
+            // await sendEmail({
+            //     from: supportEmail,
+            //     to: data.email,
+            //     replyTo: supportEmail,
+            //     subject: `Wishlist Guru - Shopify plan changed for shop ${payload.myshopify_domain}`,
+            //     html: data.html,
+            // });
         }
     } catch (error) {
         console.error("Error in shopifyPlanUpdate:", error);
@@ -1192,7 +1271,7 @@ async function handleEmailQuotaExceeded(emailQuota, shopName) {
         subject: "Wishlist GURU - Monthly email limit reached",
         html: mailHtml,
     };
-    sendEmail(emailContent);
+    // sendEmail(emailContent);
     console.log("Email limit reached. Exiting process.");
 }
 

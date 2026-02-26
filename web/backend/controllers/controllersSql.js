@@ -1,3 +1,5 @@
+
+
 import fs from "fs";
 import multer from "multer";
 import axios from "axios";
@@ -1300,6 +1302,7 @@ export const getAllItems = async (req, res) => {
                 wt.wishlist_name AS name,
                 u.id AS userId,
                 wt.wishlist_description AS description,
+                wt.wishlist_user_id as userId,
                 wt.url_type,
                 wt.password,
                 wt.event_date,
@@ -1328,6 +1331,7 @@ export const getAllItems = async (req, res) => {
                     wt.wishlist_id AS id,
                     wt.wishlist_name AS name,
                     wt.wishlist_description AS description,
+                    wt.wishlist_user_id as userId,
                     wt.url_type,
                     wt.password,
                     wt.event_date,
@@ -1364,6 +1368,7 @@ export const getAllItems = async (req, res) => {
                     [wish.name]: items,
                     id: wish.id,
                     description: wish.description,
+                    userId: wish.userId,
                     urlType: wish.url_type,
                     password: wish.password,
                     data: {
@@ -1405,6 +1410,7 @@ export const getAllItems = async (req, res) => {
                     [item.name]: items,
                     id: item.id,
                     description: item.description,
+                    userId: item.userId,
                     urlType: item.url_type,
                     password: item.password,
                     data: {
@@ -1448,6 +1454,7 @@ export const getAllItems = async (req, res) => {
                     [item.name]: items,
                     id: item.id,
                     description: item.description,
+                    userId: item.userId,
                     urlType: item.url_type,
                     password: item.password,
                     data: {
@@ -1516,6 +1523,7 @@ export const getAllItems = async (req, res) => {
                 wt.wishlist_id AS id,
                 wt.wishlist_name AS name,
                 wt.wishlist_description AS description,
+                wt.wishlist_user_id as userId,
                 wt.url_type,
                 wt.password,
                 wt.event_date,
@@ -1546,6 +1554,7 @@ export const getAllItems = async (req, res) => {
                 [w.name]: items,
                 id: w.id,
                 description: w.description,
+                userId: w.userId,
                 urlType: w.url_type,
                 password: w.password,
                 data: {
@@ -2365,6 +2374,10 @@ export const getSharedWishlist = async (req, res) => {
     }
     const fixedInput = fixBase64Padding1(getId);
     let extractedId = atob(fixedInput);
+
+    // console.log("extractedId -- ", extractedId)
+    // console.log("extractedId -- ", req.body.listId)
+
     try {
         // Fetch wishlist info
         const [getAllItems] = await database.query(
@@ -2387,7 +2400,8 @@ export const getSharedWishlist = async (req, res) => {
                 [getAllItems[0].name]: [],
                 id: getAllItems[0].id,
                 description: getAllItems[0].wishlist_description,
-                url_type: getAllItems[0].url_type
+                url_type: getAllItems[0].url_type,
+                userId: extractedId
             });
             return res.json({ data: getAllItemArr, msg: "password_protected_url" });
         } else if (getAllItems[0].url_type === "private") {
@@ -2395,7 +2409,8 @@ export const getSharedWishlist = async (req, res) => {
                 [getAllItems[0].name]: [],
                 id: getAllItems[0].id,
                 description: getAllItems[0].wishlist_description,
-                url_type: getAllItems[0].url_type
+                url_type: getAllItems[0].url_type,
+                userId: extractedId
             });
             return res.json({ data: getAllItemArr, msg: "private_url" });
         } else if (getAllItems[0].url_type === "public") {
@@ -2403,7 +2418,8 @@ export const getSharedWishlist = async (req, res) => {
                 [getAllItems[0].name]: getAllWishlistItems,
                 id: getAllItems[0].id,
                 description: getAllItems[0].wishlist_description,
-                url_type: getAllItems[0].url_type
+                url_type: getAllItems[0].url_type,
+                userId: extractedId
             });
             return res.json({ data: getAllItemArr, msg: "public_url" });
         }
@@ -2884,7 +2900,7 @@ export const requestFormMain = async (req, res) => {
     <p>Message : ${emailData.message} </p>
     `,
     };
-    const emailMsg = await sendEmail(emailContent);
+    // const emailMsg = await sendEmail(emailContent);
     res.send({ msg: "Email sent successfully" });
 };
 
@@ -3549,7 +3565,7 @@ export const sendWishlistQuotaLimitMails = async (req, res) => {
                         Best regards
                     `,
                 };
-                sendEmail(notifyContent);
+                // sendEmail(notifyContent);
             }
             if (sendMail) {
                 const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -3560,7 +3576,7 @@ export const sendWishlistQuotaLimitMails = async (req, res) => {
                         subject: "Your Wishlist Quota limit crossed.. Update Plan NOW!!!",
                         html: mailHtml,
                     };
-                    sendEmail(emailContent);
+                    // sendEmail(emailContent);
                 }
             }
         }
@@ -3759,7 +3775,7 @@ export const sendMonthlyWishlistToAdmin = async (req, res) => {
                     subject: "Monthly Wishlist Activity Report",
                     html: mailHtml,
                 };
-                sendEmail(emailContent);
+                // sendEmail(emailContent);
             });
         }
     );
@@ -3905,7 +3921,7 @@ export const sendMonthlyWishlistToUser = async (req, res) => {
                                 }
                             }
                             // -------- SEND EMAIL (fallback SMTP) ----------
-                            await sendEmail22(emailContent, shopName, getSmtpDetail);
+                            // await sendEmail22(emailContent, shopName, getSmtpDetail);
                         } catch (err) {
                             console.error(`[Email Failed] ${email}:`, err.message);
                         }
@@ -4145,12 +4161,12 @@ export const shareWishlistByMail = async (req, res) => {
                 const checkSmtp = await sendSmtpEmail(getSmtpDetail, emailContent, "", "");
                 if (checkSmtp === false) {
                     sendErrorMail = true;
-                    await sendEmail(emailContent);
+                    // await sendEmail(emailContent);
                     sendSmtpErrorMail(req.body.shopName);
                 }
                 return res.status(200).json("Email sent successfully");
             }
-            await sendEmail(emailContent);
+            // await sendEmail(emailContent);
             return res.status(200).json("Email sent successfully");
         }
 
@@ -4915,7 +4931,7 @@ export const appInstallation = async (req, res) => {
                         Customer Email: ${req.body.customerEmail}<br><br>
                         Thank you. Best regards`,
                 };
-                sendEmail(emailContent);
+                // sendEmail(emailContent);
             }
             return res.json({ msg: "Plan updated in our database" });
         }
@@ -4935,7 +4951,7 @@ export const appInstallation = async (req, res) => {
                 9. Plan Name: ${currentPlanName} <br>
                 10. Customer Email: ${req.body.customerEmail} <br>`,
         };
-        sendEmail(emailContent);
+        // sendEmail(emailContent);
         const storeCountrySafe = req.body.country.replace(/'/g, "~");
         const storeOwnerSafe = req.body.shopOwner.replace(/'/g, "~");
         const [result2] = await database.query(
@@ -5073,13 +5089,13 @@ export const sendTestEmail = async (req, res) => {
             );
             if (checkSmtp === false) {
                 sendErrorMail = true;
-                sendEmail(emailContent);
+                // sendEmail(emailContent);
                 sendSmtpErrorMail(shopName);
             }
             return res.status(200).json({ message: "Email sent Successfully!" });
         } else {
             // console.log("FROM OUR SERVER")
-            sendEmail(emailContent);
+            // sendEmail(emailContent);
             return res.status(200).json({ message: "email sent Successfully!" });
         }
     } catch (err) {
@@ -5413,9 +5429,6 @@ export const getWishlistUsersData = async (req, res) => {
         let query = "";
         let cartQuery = "";
         let itemQuery = "";
-        let startDate = "", endDate = "";
-        startDate = req.body?.startDate || ""
-        endDate = req.body?.endDate || ""
 
         if (req.body.checkStatusInItem === true) {
             query += `AND created_at >= "${req.body.startDate}" AND CAST(created_at as DATE) <= "${req.body.endDate}"`;
@@ -5451,32 +5464,6 @@ export const getWishlistUsersData = async (req, res) => {
              ORDER BY w.id DESC`
         );
 
-        console.log("startDate = ", startDate)
-        console.log("endDate = ", endDate)
-        if (startDate === "" || endDate === "") {
-            var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
-            JOIN ${Wishlist_table}
-            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id;
-            `)
-        }
-        else if (startDate !== "" && endDate !== "" && startDate === endDate) {
-            var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
-            JOIN ${Wishlist_table}
-            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
-            AND ${Wishlist_table}.created_at LIKE '%${startDate}%'
-            `)
-        }
-        else {
-            var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
-            JOIN ${Wishlist_table}
-            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
-            AND ${Wishlist_table}.created_at BETWEEN '${startDate}' AND '${endDate}'
-            `)
-        }
-
         let results = [];
         for (let abItem of userData) {
             let count = 0;
@@ -5499,7 +5486,6 @@ export const getWishlistUsersData = async (req, res) => {
             cartData,
             wishlistItemData,
             results,
-            allRegistries
         });
     } catch (err) {
         console.error(err);
@@ -5662,7 +5648,6 @@ export const getWishlistCartData = async (req, res) => {
 
 export const getCurrentUserWishlistData = async (req, res) => {
     try {
-        console.log("req.body = ", req.body)
         let lastQuery = "";
         let query = "";
         const { startDate, endDate, wishlistId, shopName, checkStatusInItem } =
@@ -5749,9 +5734,8 @@ export const getCurrentUserWishlistData = async (req, res) => {
         // ------------------------------------
         // 6️⃣ Get product count
         // ------------------------------------
-        if (startDate === "" || endDate === "") {
-            var [productCount] = await database.query(
-                `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+        const [productCount] = await database.query(
+            `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
              WHERE u.id = wt.wishlist_user_id
                AND w.wishlist_id = wt.wishlist_id
@@ -5759,44 +5743,7 @@ export const getCurrentUserWishlistData = async (req, res) => {
                AND wt.wishlist_user_id = ${wishlistId}
              GROUP BY w.variant_id, wt.wishlist_name
              ORDER BY w.id DESC`
-            );
-        }
-        else if (startDate !== "" && endDate !== "" && startDate===endDate) {
-            var [productCount] = await database.query(
-                `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
-             FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
-             WHERE u.id = wt.wishlist_user_id
-               AND w.wishlist_id = wt.wishlist_id
-               AND u.shop_name='${shopName}'
-               AND wt.wishlist_user_id = ${wishlistId}
-               AND w.created_at='${startDate}'
-             GROUP BY w.variant_id, wt.wishlist_name
-             ORDER BY w.id DESC`
-            );
-        }
-        else{
-            var [productCount] = await database.query(
-                `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
-             FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
-             WHERE u.id = wt.wishlist_user_id
-               AND w.wishlist_id = wt.wishlist_id
-               AND u.shop_name='${shopName}'
-               AND wt.wishlist_user_id = ${wishlistId}
-               AND w.created_at BETWEEN '${startDate}' AND '${endDate}'
-             GROUP BY w.variant_id, wt.wishlist_name
-             ORDER BY w.id DESC`
-            );
-        }
-        // const [productCount] = await database.query(
-        //     `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
-        //      FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
-        //      WHERE u.id = wt.wishlist_user_id
-        //        AND w.wishlist_id = wt.wishlist_id
-        //        AND u.shop_name='${shopName}'
-        //        AND wt.wishlist_user_id = ${wishlistId}
-        //      GROUP BY w.variant_id, wt.wishlist_name
-        //      ORDER BY w.id DESC`
-        // );
+        );
 
         // ------------------------------------
         // 7️⃣ Send Final Response
