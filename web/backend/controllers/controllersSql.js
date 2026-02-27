@@ -5665,8 +5665,9 @@ export const getCurrentUserWishlistData = async (req, res) => {
         console.log("req.body = ", req.body)
         let lastQuery = "";
         let query = "";
-        const { startDate, endDate, wishlistId, shopName, checkStatusInItem } =
+        const { startDate, endDate, wishlistId, shopName, checkStatusInItem, registryId } =
             req.body;
+        console.log("wishlistId = ", wishlistId)
 
         if (checkStatusInItem === true) {
             query += `AND w.created_at >= "${startDate}" AND CAST(w.created_at as DATE) <= "${endDate}"`;
@@ -5761,7 +5762,7 @@ export const getCurrentUserWishlistData = async (req, res) => {
              ORDER BY w.id DESC`
             );
         }
-        else if (startDate !== "" && endDate !== "" && startDate===endDate) {
+        else if (startDate !== "" && endDate !== "" && startDate === endDate) {
             var [productCount] = await database.query(
                 `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
@@ -5774,7 +5775,7 @@ export const getCurrentUserWishlistData = async (req, res) => {
              ORDER BY w.id DESC`
             );
         }
-        else{
+        else {
             var [productCount] = await database.query(
                 `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
@@ -5787,6 +5788,12 @@ export const getCurrentUserWishlistData = async (req, res) => {
              ORDER BY w.id DESC`
             );
         }
+
+        let [orderedItems] = await database.query(`
+            SELECT * FROM cart_record
+            WHERE wishlist_id=${registryId}
+        `)
+
         // const [productCount] = await database.query(
         //     `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
         //      FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
@@ -5809,6 +5816,7 @@ export const getCurrentUserWishlistData = async (req, res) => {
             cartData,
             wishlistData,
             cartResultCount: cartCount,
+            orderedItems,
         });
 
     } catch (error) {

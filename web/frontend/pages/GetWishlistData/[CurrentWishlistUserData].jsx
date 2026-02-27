@@ -5,7 +5,6 @@ import {
     Page, LegacyCard, IndexTable, Button, Modal, Text, Icon, AlphaCard, Grid, Select, Toast,
     DatePicker, Frame,
     TextField,
-
 } from '@shopify/polaris';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
@@ -20,6 +19,7 @@ import Swal from 'sweetalert2';
 import loaderGif from "../loaderGreen.gif"
 import Footer from '../Footer';
 import collectionCopyIcon from '../../assets/copy-icon.svg'
+import OrderedItems from './OrderedItems';
 
 
 const GetWishlistData = () => {
@@ -45,6 +45,7 @@ const GetWishlistData = () => {
     const cartSearch = searchParams.get('cartsearch')
     const itemSearch = searchParams.get('itemsearch')
     const cartRecord = searchParams.get('cartdata');
+    const registry_id = searchParams.get("wishlist_id")
     const currentWishlist = searchParams.get('wishlistname');
     const [active, setActive] = useState(false);
     const [selectedItemOption, setSelectedItemOption] = useState([])
@@ -100,6 +101,7 @@ const GetWishlistData = () => {
     const [currentShopData, setCurrentShopData] = useState({})
     const [copyActive, setCopyActive] = useState(false)
     const getCurrentPlan = useRef()
+    const [orderedItems, setOrderedItems] = useState([])
 
     // const fetch2 = useAuthenticatedFetch();
 
@@ -225,6 +227,7 @@ const GetWishlistData = () => {
         let requestBody = {
             shopName: shopApi.shopName,
             wishlistId: Number(id.CurrentWishlistUserData),
+            registryId: registry_id,
         };
         if (itemCustomRecord !== "all") {
             const result = await checkCurrentSelectedValue(itemCustomRecord, res)
@@ -266,6 +269,7 @@ const GetWishlistData = () => {
             const items = result?.productResult.filter((item) => item.wishlist_id === parseInt(wishlist_id))
             console.log("items = ", items)
             setRegistryItems(items)
+            setOrderedItems(result?.orderedItems)
 
             if (selectedWishlistItem !== "all") {
                 setAllWishlistData(result.productResult)
@@ -823,6 +827,23 @@ const GetWishlistData = () => {
         },
     );
 
+
+    const orderedItemsTable = orderedItems.map(
+        ({ title, price, image, quantity, order_id }, index) => {
+            return (
+                <IndexTable.Row id={index} key={index} position={index}>
+                    <IndexTable.Cell>{index+1}</IndexTable.Cell>
+                    <IndexTable.Cell>{order_id}</IndexTable.Cell>
+                    <IndexTable.Cell>{title}</IndexTable.Cell>
+                    <IndexTable.Cell><img src={image} alt='image' height="40px" width="40px" /></IndexTable.Cell>
+                    <IndexTable.Cell>{price}</IndexTable.Cell>
+                    <IndexTable.Cell>{quantity}</IndexTable.Cell>
+                    <IndexTable.Cell>{price * quantity}</IndexTable.Cell>
+                </IndexTable.Row>
+            )
+        },
+    );
+
     console.log("startIndex = ", startIndex)
     console.log("endIndex = ", endIndex)
     const hasNext = endIndex < registryItems.length
@@ -892,6 +913,7 @@ const GetWishlistData = () => {
         let requestBody = {
             shopName: shopApi.shopName,
             wishlistId: Number(id.CurrentWishlistUserData),
+            registryId: registry_id
         };
         if (checkSelectedLabel !== "all") {
             requestBody.startDate = checkSelectedData.startDate;
@@ -916,6 +938,7 @@ const GetWishlistData = () => {
             setRegistryItems(items)
             setSharedWishlistArr(result.wishlistData)
             setCheckCurrentItemData(result.productResult)
+            setOrderedItems(result?.orderedItems)
             if (selectedWishlistItem !== "all") {
                 setAllWishlistData(result.productResult)
                 const { startIndex, endIndex } = calculateIndexes(currentPage, listingPerPage, "");
@@ -1379,10 +1402,12 @@ const GetWishlistData = () => {
                                     allowRange
                                 />
                             </Modal.Section>
-
                         </Modal>
 
                         <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} />
+
+                        {/* Items which are ordered */}
+                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} />
 
                         <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} />
 

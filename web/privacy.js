@@ -1,5 +1,5 @@
 import { DeliveryMethod } from "@shopify/shopify-api";
-import { appDeletion, variantsInStock, subscriptionUpdation, productUpdate, inventoryUpdate, shopUpdate, updateShopDomain, shopifyPlanUpdate } from "./backend/webhooks/webhookFxn.js";
+import { appDeletion, variantsInStock, subscriptionUpdation, productUpdate, inventoryUpdate, shopUpdate, updateShopDomain, shopifyPlanUpdate, createOrderFunction } from "./backend/webhooks/webhookFxn.js";
 
 /**
  * @type {{[key: string]: import("@shopify/shopify-api").WebhookHandler}}
@@ -161,6 +161,14 @@ export default {
   },
 
 
+  ORDERS_CREATE: {
+    deliveryMethod: DeliveryMethod.Http,
+    callbackUrl: "/api/webhooks",
+    callback: async (topic, shop, body, session, webhookId) => {
+      const payload = JSON.parse(body);
+      createOrderFunction(payload, shop)
+    },
+  },
 
 
 
