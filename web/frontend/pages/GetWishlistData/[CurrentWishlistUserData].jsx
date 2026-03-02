@@ -47,12 +47,14 @@ const GetWishlistData = () => {
     const cartRecord = searchParams.get('cartdata');
     const registry_id = searchParams.get("wishlist_id")
     const currentWishlist = searchParams.get('wishlistname');
+    const ordersPageNo = searchParams.get("orderspageno")
     const [active, setActive] = useState(false);
     const [selectedItemOption, setSelectedItemOption] = useState([])
     const [sharedWishlistArr, setSharedWishlistArr] = useState([]);
     const [checkDatePicker, setCheckDatePicker] = useState(false)
     const [allItems, setAllItems] = useState([])
     const [registryItems, setRegistryItems] = useState([])
+    const getOrdersPageNo = searchParams.get('orderspageno');
     let id = useParams();
     const startIndex = (parseInt(getItemPageNo) - 1) * parseInt(getItemRecordPerPage)
     const endIndex = startIndex + parseInt(getItemRecordPerPage)
@@ -201,10 +203,9 @@ const GetWishlistData = () => {
         if (getItemPageNo === null || getCartPageNo === null || getItemRecordPerPage === null || cartRecord === null) {
             Navigate({
                 pathname: `/GetWishlistData/${Number(id.CurrentWishlistUserData)}`,
-                search: `?wishlistitempageno=${getCustomItemPageNo}&cartitempageno=${getCustomCartPageNo}&rpr=${getCustomItemRecordPerPage}&wishlistdata=${itemCustomRecord}&wishlistname=${selectedWishlistItem}`
+                search: `?wishlistitempageno=${getCustomItemPageNo}&cartitempageno=${getCustomCartPageNo}&rpr=${getCustomItemRecordPerPage}&wishlistdata=${itemCustomRecord}&wishlistname=${selectedWishlistItem}&orderspageno=1`
             });
         }
-
     }
 
     function checkSearchData() {
@@ -636,25 +637,28 @@ const GetWishlistData = () => {
         setSortSelected(value)
         setIsClicked(!isClicked)
         setQueryCheckValue({ data: "" })
-
     }, []);
 
     const handleFiltersQueryChange = useCallback((value, data) => {
         if (data === "cart") {
             if (value === "") {
                 searchParams.delete("cartsearch")
+                searchParams.set("orderspageno", 1)
                 Navigate({ search: `?${searchParams.toString()}` });
             } else {
                 searchParams.set("cartsearch", value)
+                searchParams.set("orderspageno", 1)
                 Navigate({ search: `?${searchParams.toString()}` });
             }
             setQueryCartValue(value)
         } else {
             if (value === "") {
                 searchParams.delete("itemsearch")
+                searchParams.set("orderspageno", 1)
                 Navigate({ search: `?${searchParams.toString()}` });
             } else {
                 searchParams.set("itemsearch", value)
+                searchParams.set("orderspageno", 1)
                 Navigate({ search: `?${searchParams.toString()}` })
             }
             setQueryValue(value)
@@ -675,10 +679,12 @@ const GetWishlistData = () => {
         if (data === "cart") {
             setQueryCartValue('')
             searchParams.delete("cartsearch")
+            searchParams.set("orderspageno", 1)
             Navigate({ search: `?${searchParams.toString()}` });
         } else {
             setQueryValue('')
             searchParams.set("itemsearch", value)
+            searchParams.set("orderspageno", 1)
             Navigate({ search: `?${searchParams.toString()}` })
         }
     }, []);
@@ -828,7 +834,15 @@ const GetWishlistData = () => {
     );
 
 
-    const orderedItemsTable = orderedItems.map(
+    let ordersStartIndex = (parseInt(ordersPageNo)-1) * parseInt(getItemRecordPerPage);
+    let ordersEndIndex = ordersStartIndex + parseInt(getItemRecordPerPage);
+    console.log("ordersPageNo = ", ordersPageNo)
+    console.log("getItemRecordPerPage = ", getItemRecordPerPage)
+    console.log("ordersStartIndex = ", ordersStartIndex)
+    console.log("ordersEndIndex = ", ordersEndIndex)
+    let hasOrdersNext = ordersEndIndex<orderedItems.length;
+    let hasOrdersPrevious = parseInt(ordersPageNo)>1
+    const orderedItemsTable = orderedItems.slice(ordersStartIndex, ordersEndIndex).map(
         ({ title, price, image, quantity, order_id }, index) => {
             return (
                 <IndexTable.Row id={index} key={index} position={index}>
@@ -870,8 +884,17 @@ const GetWishlistData = () => {
         setIsClicked(!isClicked)
         setQueryCheckValue({ data: "" })
         searchParams.set("wishlistitempageno", newPage, currentPage)
+        searchParams.set("orderspageno", 1)
         Navigate({ search: `?${searchParams.toString()}` });
     };
+
+    const handleOrdersPagination = async (newPage) => {
+        // setCurrentCartPage(newPage)
+        setIsClicked(!isClicked)
+        setQueryCheckValue({ data: "cart" })
+        searchParams.set("orderspageno", newPage)
+        Navigate({ search: `?${searchParams.toString()}` });
+    }
 
     const handleCartPagination = async (newPage) => {
         setCurrentCartPage(newPage)
@@ -879,7 +902,6 @@ const GetWishlistData = () => {
         setQueryCheckValue({ data: "cart" })
         searchParams.set("cartitempageno", newPage)
         Navigate({ search: `?${searchParams.toString()}` });
-
     }
 
     function recordPerPageFxn(value) {
@@ -897,6 +919,7 @@ const GetWishlistData = () => {
         searchParams.set("rpr", value)
         searchParams.set("cartitempageno", 1)
         searchParams.set("wishlistitempageno", 1)
+        searchParams.set("orderspageno", 1)
         Navigate({ search: `?${searchParams.toString()}` });
         setTimeout(() => {
             setIsItemLoading(isItemLoading)
@@ -980,6 +1003,7 @@ const GetWishlistData = () => {
             setCheckCurrentOptions(value)
             setCheckDatePicker(!checkDatePicker)
             searchParams.set("wishlistdata", `all`)
+            searchParams.set("orderspageno", 1)
             Navigate({ search: `?${searchParams.toString()}` });
         }
         else {
@@ -996,6 +1020,7 @@ const GetWishlistData = () => {
             let checkAll = (value !== "all") ? JSON.parse(value) : value
             await checkGetAllItem(checkSelectedData, checkAll, shopApi, "")
             searchParams.set("wishlistdata", `${checkSelectedData}`)
+            searchParams.set("orderspageno", 1)
             Navigate({ search: `?${searchParams.toString()}` });
             setIsItemLoading(isItemLoading)
             setIsCartLoading(isCartLoading)
@@ -1115,6 +1140,7 @@ const GetWishlistData = () => {
     const wishlistItemHandler = (value) => {
         setIsItemLoading(!isItemLoading)
         searchParams.set("wishlistname", `${value}`)
+        searchParams.set("orderspageno", 1)
         Navigate({ search: `?${searchParams.toString()}` });
         setSelectedWishlistItem(value)
 
@@ -1407,7 +1433,7 @@ const GetWishlistData = () => {
                         <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} />
 
                         {/* Items which are ordered */}
-                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} />
+                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} getOrdersPageNo={getOrdersPageNo} handleOrdersPagination={handleOrdersPagination} isCartLoading={isCartLoading} hasOrdersNext={hasOrdersNext} hasOrdersPrevious={hasOrdersPrevious} />
 
                         <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} />
 

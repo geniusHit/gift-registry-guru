@@ -246,7 +246,7 @@ const WishlistItem = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     const viewHandler = async (id) => {
         Navigate({
             pathname: `/GetWishlistData/${id}`,
-            search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all`
+            search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all&orderspageno=1`
         })
     }
 

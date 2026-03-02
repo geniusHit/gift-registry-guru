@@ -1,7 +1,7 @@
 import { AlphaCard, Text, IndexFilters, IndexTable, LegacyCard, Pagination, useSetIndexFiltersMode, IndexFiltersMode, Spinner } from '@shopify/polaris'
 import React from 'react'
 
-const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCartSelected: sortCartSelected, queryCartValue: queryCartValue, handleFiltersQueryChange: handleFiltersQueryChange, setQueryCartValue: setQueryCartValue, handleFiltersClearAll: handleFiltersClearAll, cartData: cartData, orderedItemsTable: orderedItemsTable, startIndexCartValue: startIndexCartValue, totalRecordsCart: totalRecordsCart, handleSortCartChange: handleSortCartChange, currentCartPage: currentCartPage, handleCartPagination, isCartLoading: isCartLoading }) => {
+const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCartSelected: sortCartSelected, queryCartValue: queryCartValue, handleFiltersQueryChange: handleFiltersQueryChange, setQueryCartValue: setQueryCartValue, handleFiltersClearAll: handleFiltersClearAll, cartData: cartData, orderedItemsTable: orderedItemsTable, startIndexCartValue: startIndexCartValue, totalRecordsCart: totalRecordsCart, handleSortCartChange: handleSortCartChange, getOrdersPageNo: getOrdersPageNo, handleOrdersPagination, isCartLoading: isCartLoading, hasOrdersPrevious, hasOrdersNext }) => {
     const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
     const onHandleCancel = () => { };
 
@@ -57,13 +57,13 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
                             <div className='polaris_pagination datePerRecord-pagination'>
                                 <Pagination
                                     onPrevious={() => {
-                                        handleCartPagination(parseInt(currentCartPage) - 1)
+                                        handleOrdersPagination(parseInt(getOrdersPageNo) - 1)
                                     }}
                                     onNext={() => {
-                                        handleCartPagination(parseInt(currentCartPage) + 1)
+                                        handleOrdersPagination(parseInt(getOrdersPageNo) + 1)
                                     }}
-                                    hasNext={startIndexCartValue.current.end < totalRecordsCart.current}
-                                    hasPrevious={currentCartPage > 1}
+                                    hasNext={hasOrdersNext}
+                                    hasPrevious={hasOrdersPrevious}
                                     label={`Total ${orderedItemsTable.length} items`}
                                     accessibilityLabel="Pagination"
                                     nextTooltip="Next page"
