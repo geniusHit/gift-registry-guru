@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
     Frame, Page, Spinner, LegacyCard, IndexTable, Pagination, Button, Text, Icon, Select,
@@ -213,6 +212,9 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     };
 
     const viewHandler = async (id, wishlist_id) => {
+        console.log("id from viewHandler = ", id)
+        console.log("wishlist_id from viewHandler = ", wishlist_id)
+
         Navigate({
             pathname: `/GetWishlistData/${id}`,
             search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all&wishlist_id=${wishlist_id}`
@@ -238,13 +240,16 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     console.log("startIndex = ", startIndex)
     console.log("endIndex = ", endIndex)
     const registriesListTable = allRegistries.slice(startIndex, endIndex).map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name }, index) => {
+        console.log("allRegistries = ", allRegistries)
+        console.log("id = ", id)
+        console.log("wishlist_id = ", wishlist_id)
         console.log("wishlistItems = ", wishlistItems)
         const totalItems = wishlistItems.filter((item) => item.wishlist_id === wishlist_id)
         console.log("totalItems = ", totalItems)
         let totalPrice = 0
         totalItems.map(({price}) => totalPrice+=parseInt(price))
         console.log("totalPrice = ", totalPrice)
-        console.log("id = ", id)
+        // console.log("id = ", id)
 
         return <IndexTable.Row id={id} key={`${id}-${index}`} position={id} >
             <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>

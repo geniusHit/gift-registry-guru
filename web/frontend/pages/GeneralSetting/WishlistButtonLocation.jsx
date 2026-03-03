@@ -214,7 +214,7 @@ const WishlistButtonLocation = () => {
                                     <p>{myLanguage.iconLocationCheckHeadText}</p>
                                 </div>
                                 <div className='wishlistUi-TyleInner'>
-                                    <SingleFieldController
+                                    {/* <SingleFieldController
                                         name="wlbLocation1"
                                         control={control}
                                     >
@@ -230,7 +230,7 @@ const WishlistButtonLocation = () => {
                                                 }}
                                             />
                                         }
-                                    </SingleFieldController>
+                                    </SingleFieldController> */}
 
                                     <SingleFieldController
                                         name="wlbLocation2"

@@ -1301,9 +1301,9 @@ export default function Dashboard() {
                             </div>
 
                             <br />
-                            <div className='new-dash-bg annouce-new-dash'>
-                                {/* -----------announcements in collapsible------------ */}
-                                <div className="wf-dashboard-box wf-dashboard-boxplain">
+                            {/* <div className='new-dash-bg annouce-new-dash'> */}
+                            {/* -----------announcements in collapsible------------ */}
+                            {/* <div className="wf-dashboard-box wf-dashboard-boxplain">
                                     <Grid>
                                         <Grid.Cell columnSpan={{ xs: 10, sm: 10, md: 10, lg: 11, xl: 11 }}>
                                             <Text variant="headingMd" as="h2">{myLanguage.announcementHeading}</Text>
@@ -1328,8 +1328,8 @@ export default function Dashboard() {
                                             />
                                         </div>
                                     </Collapsible>
-                                </div>
-                            </div>
+                                </div> */}
+                            {/* </div> */}
                             <br />
 
                             <div className='new-dash-bg'>
@@ -1394,7 +1394,7 @@ export default function Dashboard() {
                                     </Grid.Cell>
 
                                     {/* -----------multi wishlist box----------- */}
-                                    <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
+                                    {/* <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
                                             <div className='new-dash-mobile'>
                                                 <Grid>
@@ -1423,10 +1423,10 @@ export default function Dashboard() {
                                                         <Button onClick={visitPlanPage} ><LockMinor />{myLanguage.upgrade}</Button>
                                                     </div>}
                                         </div>
-                                    </Grid.Cell>
+                                    </Grid.Cell> */}
 
                                     {/* -----------multi variant wishlist box----------- */}
-                                    <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
+                                    {/* <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
                                             <div className='new-dash-mobile'>
                                                 <Grid>
@@ -1454,13 +1454,8 @@ export default function Dashboard() {
                                                         <Button onClick={visitPlanPage} ><LockMinor />{myLanguage.upgrade}</Button>
                                                     </div>}
                                         </div>
-                                    </Grid.Cell>
-                                </Grid>
-                            </div>
-                            <br />
+                                    </Grid.Cell> */}
 
-                            <div className='new-dash-bg'>
-                                <Grid>
                                     {/* add to wishlist button apperance */}
                                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
@@ -1544,35 +1539,13 @@ export default function Dashboard() {
                                             </div>
                                         </div>
                                     </Grid.Cell>
+                                </Grid>
+                            </div>
+                            <br />
 
-                                    {/* wishlist page display setting */}
-                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
-                                        <div className="wf-dashboard-box wf-dashboard-boxplain">
-                                            <div className='new-dash-mobile'>
-                                                <Grid>
-                                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 3, lg: 2, xl: 2 }}><img src={wishlistDisplayN} alt="CheckIcon" className="greenIcon" loading="lazy" /></Grid.Cell>
-                                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 9, lg: 10, xl: 10 }}><Text variant="heading2xl" as="h3">{myLanguage.overValueB4}</Text></Grid.Cell>
-                                                </Grid>
-                                                <p>{myLanguage.overValue4}</p>
-                                                <br />
-                                                <Text variant="headingSm" as="h5">{myLanguage.wishlistUIHeading}</Text>
-                                                {showcurrentPlan === "" ?
-                                                    <p> {myLanguage.loadingText}</p> :
-                                                    <Grid>
-                                                        <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 8, lg: 8, xl: 8 }}><Text variant="headingSm" as="h5"><li style={{ textTransform: "capitalize" }}>{getGenDataInfo.wishlistDisplay}</li></Text></Grid.Cell>
-                                                        <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
-                                                            <div className='icon-enable-wf-new'><img src={greenTick} alt="CheckIcon" className="greenIcon" loading="lazy" />{myLanguage.enabled}</div>
-                                                        </Grid.Cell>
-                                                    </Grid>}
-                                                <br />
-                                            </div>
-                                            <div className='wf-dashboard-box-inner'>
-                                                <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
-                                                    <Button onClick={() => goToSectionHandler("GeneralSetting/wishlistuisetting", "wishlist-ui-section")}>{myLanguage.configue}</Button>
-                                                </Grid.Cell>
-                                            </div>
-                                        </div>
-                                    </Grid.Cell>
+                            <div className='new-dash-bg'>
+                                <Grid>
+
                                 </Grid>
                                 <br />
                                 {/*language settings/multiple language support */}
@@ -1611,10 +1584,10 @@ export default function Dashboard() {
                                 </div>
                             </div>
                             <br />
-                            <div className='new-dash-bg'>
-                                <Grid>
+                            {/* <div className='new-dash-bg'> */}
+                                {/* <Grid> */}
                                     {/* email reminders */}
-                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
+                                    {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
                                             <div className='new-dash-mobile'>
                                                 <Grid>
@@ -1681,44 +1654,10 @@ export default function Dashboard() {
                                                         </div>}
                                             </div>
                                         </div>
-                                    </Grid.Cell>
-
-                                    {/* required login to add the wishlist */}
-                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
-                                        <div className="wf-dashboard-box wf-dashboard-boxplain">
-                                            <div className='new-dash-mobile'>
-                                                <Grid>
-                                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 3, lg: 2, xl: 2 }}><img src={loginRequiredN} alt="CheckIcon" className="greenIcon" loading="lazy" /></Grid.Cell>
-                                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 7, lg: 8, xl: 8 }}><Text variant="heading2xl" as="h3">{myLanguage.isLoginHeading}</Text></Grid.Cell>
-                                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 2, lg: 2, xl: 2 }}>
-                                                        {showcurrentPlan === "" ?
-                                                            <p>{myLanguage.loadingText}</p> :
-                                                            currentPlan > 2 ? <Toggle
-                                                                checked={saveLoginRequired}
-                                                                onChange={updateLoginRequiredForWishlist}
-                                                                icons={false}
-                                                                disabled={false} /> : <span className='pro-plan new-pro-plan' >{myLanguage.pro}</span>}
-
-                                                    </Grid.Cell>
-                                                </Grid>
-                                                <p>{myLanguage.isLoginSubHeading}</p>
-                                            </div>
-                                            <div className='wf-dashboard-box-inner'>
-                                                {showcurrentPlan === "" ?
-                                                    <p>{myLanguage.loadingText}</p> :
-                                                    currentPlan > 2 ?
-                                                        <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
-                                                            <Button onClick={() => goToSectionHandler("GeneralSetting/userlogin", "")}>{myLanguage.configue}</Button>
-                                                        </Grid.Cell> :
-                                                        <div className='lock-minor'>
-                                                            <Button onClick={visitPlanPage} ><LockMinor />{myLanguage.upgrade}</Button>
-                                                        </div>}
-                                            </div>
-                                        </div>
-                                    </Grid.Cell>
+                                    </Grid.Cell> */}
 
                                     {/* klaaviyo integration */}
-                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
+                                    {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
                                             <div className='new-dash-mobile'>
                                                 <Grid>
@@ -1745,12 +1684,11 @@ export default function Dashboard() {
                                                         </div>}
                                             </div>
                                         </div>
-                                    </Grid.Cell>
-                                </Grid>
-                                <br />
+                                    </Grid.Cell> */}
+                                {/* </Grid> */}
 
                                 {/* share wishlist settings */}
-                                <div className="wf-dashboard-box wf-dashboard-boxplain new-sws">
+                                {/* <div className="wf-dashboard-box wf-dashboard-boxplain new-sws">
                                     <div className='new-dash-mobile'>
                                         <Grid>
                                             <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 9, lg: 9, xl: 9 }}><Text variant="headingMd" as="h2"><img src={shareWishlistN} alt="CheckIcon" className="greenIcon" loading="lazy" />{myLanguage.overValueB12}{showcurrentPlan === "" ? <p>{myLanguage.loadingText}</p> : currentPlan > 3 ? <></> : <span className='pro-plan' >{myLanguage.premium}</span>}</Text>
@@ -1784,13 +1722,13 @@ export default function Dashboard() {
                                                 <img style={{ filter: getGenDataInfo?.fbMessengerCheckIcon ? 'none' : 'grayscale(100%) brightness(80%) opacity(40%)' }} src={fbMesswngerF} alt="CheckIcon" className="greenIcon" loading="lazy" />
                                             </div> </Grid.Cell>
                                     </Grid>
-                                </div>
-                            </div>
+                                </div> */}
+                            {/* </div> */}
                             <br />
                             <div className='new-dash-bg'>
                                 <Grid>
                                     {/* SMTP integration */}
-                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
+                                    {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
                                             <div className='new-dash-mobile'>
                                                 <Grid>
@@ -1817,7 +1755,7 @@ export default function Dashboard() {
                                                         </div>}
                                             </div>
                                         </div>
-                                    </Grid.Cell>
+                                    </Grid.Cell> */}
 
                                     {/* custom js/css */}
                                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
@@ -1849,7 +1787,7 @@ export default function Dashboard() {
                                     </Grid.Cell>
 
                                     {/* custom code integration */}
-                                    <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
+                                    {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                                         <div className="wf-dashboard-box wf-dashboard-boxplain">
                                             <div className='new-dash-mobile'>
                                                 <Grid>
@@ -1875,7 +1813,7 @@ export default function Dashboard() {
                                                         </div>}
                                             </div>
                                         </div>
-                                    </Grid.Cell>
+                                    </Grid.Cell> */}
                                 </Grid>
                             </div>
                             <br />

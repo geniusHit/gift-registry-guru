@@ -450,7 +450,7 @@ const LanguageSwitcher2 = ({ data }) => {
                         <div className='wf-listingRecord-inner'>
                             <div className='language-switcher-table disable-app'>
                                 <Text variant="headingLg" as="h2">{myLanguage.manageLanguagehd}</Text>
-                                <Button onClick={() => {
+                                {/* <Button onClick={() => {
 
 
                                     if (currentPlan === 3 && langData.length === 2) {
@@ -475,7 +475,7 @@ const LanguageSwitcher2 = ({ data }) => {
                                             urlValue: "",
                                             storeFrontLanguage: "english"
                                         })
-                                }}>{myLanguage.addBtn}</Button>
+                                }}>{myLanguage.addBtn}</Button> */}
                             </div>
                             <LegacyCard>
                                 <IndexTable

@@ -663,7 +663,7 @@ const LanguageSetting = () => {
                                 },
                             }}
                         >
-                            {
+                            {/* {
                                 language_id === null &&
                                 <div className='wf-style-wishbtn'>
                                     <div id="wishlist-Language-section">
@@ -678,7 +678,7 @@ const LanguageSetting = () => {
                                         </SingleFieldController>
                                     </div>
                                 </div>
-                            }
+                            } */}
 
                             {language_id !== null
                                 ? <ManageTranslations data={sendDataToLangSwitcher} />

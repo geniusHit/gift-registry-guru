@@ -116,6 +116,10 @@ const GetWishlistData = () => {
         console.log("userData = ", userData)
     }, [userData])
 
+    useEffect(()=>{
+        console.log("sharedWishlistArr = ", sharedWishlistArr)
+    }, [sharedWishlistArr])
+
     useEffect(() => {
         console.log("registryItems = ", registryItems)
     }, [registryItems])
@@ -248,6 +252,7 @@ const GetWishlistData = () => {
         } else {
             requestBody.checkStatusInCart = false
         }
+        console.log("requestBody = ", requestBody)
         try {
             const userData = await fetch(`${serverURL}/get-current-user-wishlist-data`, {
                 method: "POST",
