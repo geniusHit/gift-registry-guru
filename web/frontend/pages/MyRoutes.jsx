@@ -86,7 +86,7 @@ const MyRoutes = () => {
         return (
             <>
                 <Link to="/" rel="home" />
-                <Link to="/Analytic">{myLanguage?.analyticPage}</Link>
+                {/* <Link to="/Analytic">{myLanguage?.analyticPage}</Link> */}
                 <Link to="/ButtonSetting">{myLanguage?.buttonSetting}</Link>
                 <Link to="/Analytic/UserReport">Registries</Link>
                 <Link to="/GeneralSetting">{myLanguage?.generalSetting}</Link>

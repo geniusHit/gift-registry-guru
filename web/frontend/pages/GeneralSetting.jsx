@@ -53,7 +53,7 @@ const GeneralSetting = () => {
                             </Text>
                         </Grid.Cell> */}
                         <div className='wf-dashboard-box'>
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.wishlistUIcard1Title}
@@ -75,7 +75,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
@@ -84,7 +84,7 @@ const GeneralSetting = () => {
                             </Text>
                         </Grid.Cell> */}
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.iconLocationHeading}
@@ -104,7 +104,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                             <Text as="h2" variant="headingMd">
@@ -140,7 +140,7 @@ const GeneralSetting = () => {
                             </Text>
                         </Grid.Cell> */}
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.shareWishlistHeading}
@@ -160,7 +160,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                             <Text as="h2" variant="headingMd">
@@ -198,7 +198,7 @@ const GeneralSetting = () => {
                                 {myLanguage.adminremoveAdvanceSetting}
                             </Text>
                         </Grid.Cell> */}
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         title={myLanguage.adminremoveAdvanceSetting}
@@ -217,7 +217,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                             <Text as="h2" variant="headingMd">
@@ -249,7 +249,7 @@ const GeneralSetting = () => {
 
                             {/* smtp setting page--------- */}
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         title={myLanguage.smtpHeading}
@@ -266,7 +266,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* smtp setting page---------END */}
 
