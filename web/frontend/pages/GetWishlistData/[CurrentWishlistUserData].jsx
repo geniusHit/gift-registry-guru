@@ -4,7 +4,7 @@ import useApi from '../../hooks/useApi';
 import {
     Page, LegacyCard, IndexTable, Button, Modal, Text, Icon, AlphaCard, Grid, Select, Toast,
     DatePicker, Frame,
-    TextField,
+    TextField, Popover,
 } from '@shopify/polaris';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
@@ -20,6 +20,7 @@ import loaderGif from "../loaderGreen.gif"
 import Footer from '../Footer';
 import collectionCopyIcon from '../../assets/copy-icon.svg'
 import OrderedItems from './OrderedItems';
+import { Controller, useForm } from 'react-hook-form';
 
 
 const GetWishlistData = () => {
@@ -58,6 +59,8 @@ const GetWishlistData = () => {
     let id = useParams();
     const startIndex = (parseInt(getItemPageNo) - 1) * parseInt(getItemRecordPerPage)
     const endIndex = startIndex + parseInt(getItemRecordPerPage)
+    const { control, handleSubmit } = useForm()
+    let wfGetDomain = window.location.href;
     // console.log("id111111111111111111111111", id)
 
     // useEffect(()=>{
@@ -110,13 +113,22 @@ const GetWishlistData = () => {
     const [selectedWishlistItem, setSelectedWishlistItem] = useState(currentWishlist || 'all')
     const [userList, setUserList] = useState([])
     const [userData, setUserData] = useState([])
+    const [currentEmail, setCurrentEmail] = useState()
 
 
     useEffect(() => {
-        console.log("userData = ", userData)
+        setCurrentEmail(userData[0]?.email)
     }, [userData])
 
-    useEffect(()=>{
+    useEffect(() => {
+        console.log("currentEmail = ", currentEmail)
+    }, [currentEmail])
+
+    useEffect(() => {
+        console.log("userList = ", userList)
+    }, [userList])
+
+    useEffect(() => {
         console.log("sharedWishlistArr = ", sharedWishlistArr)
     }, [sharedWishlistArr])
 
@@ -176,6 +188,7 @@ const GetWishlistData = () => {
         setCurrentShopData(shopApi)
         shopCurrency.current = shopApi.shopCurrency
         const data = await getAllAppDataMetafields();
+        console.log("data = ", data)
         const isMultiWish = data.isMultiWish || "no"
         setIsMultiWishlist(isMultiWish)
         await getCurrentUserData(shopApi, res, getCurrentPlan.current, isMultiWish);
@@ -502,13 +515,16 @@ const GetWishlistData = () => {
         }
     };
 
+    const [eventOptions, setEventOptions] = useState([])
     async function getAllAppDataMetafields() {
         const dataArray = await appMetafield.getAllAppMetafields();
         let isMultiWish = null;
+        let generalData = null;
         for (let i = 0; i < dataArray.length; i++) {
             if (dataArray[i].node.key === "general-setting") {
                 let dData = JSON.parse(dataArray[i].node.value);
                 setWishlistTextDirection(dData.wishlistTextDirection);
+                generalData = dData;
             };
 
             if (dataArray[i].node.key === "is-Multi-wishlist") {
@@ -518,9 +534,19 @@ const GetWishlistData = () => {
             }
         }
 
+        if (generalData) {
+            setEventOptions(JSON.parse(generalData?.eventOption || []));
+        }
+
         // console.log("is", isMultiWish)
         return { isMultiWish }
     };
+
+    const [selectedEvent, setSelectedEvent] = useState()
+    const handleSelectChange = useCallback(
+        (value) => setSelectedEvent(value),
+        [],
+    );
 
     const filteredAndSortedDataComponent = useMemo(() => {
         if (queryCheckValue.data === "cart") {
@@ -839,19 +865,19 @@ const GetWishlistData = () => {
     );
 
 
-    let ordersStartIndex = (parseInt(ordersPageNo)-1) * parseInt(getItemRecordPerPage);
+    let ordersStartIndex = (parseInt(ordersPageNo) - 1) * parseInt(getItemRecordPerPage);
     let ordersEndIndex = ordersStartIndex + parseInt(getItemRecordPerPage);
     console.log("ordersPageNo = ", ordersPageNo)
     console.log("getItemRecordPerPage = ", getItemRecordPerPage)
     console.log("ordersStartIndex = ", ordersStartIndex)
     console.log("ordersEndIndex = ", ordersEndIndex)
-    let hasOrdersNext = ordersEndIndex<orderedItems.length;
-    let hasOrdersPrevious = parseInt(ordersPageNo)>1
+    let hasOrdersNext = ordersEndIndex < orderedItems.length;
+    let hasOrdersPrevious = parseInt(ordersPageNo) > 1
     const orderedItemsTable = orderedItems.slice(ordersStartIndex, ordersEndIndex).map(
         ({ title, price, image, quantity, order_id }, index) => {
             return (
                 <IndexTable.Row id={index} key={index} position={index}>
-                    <IndexTable.Cell>{index+1}</IndexTable.Cell>
+                    <IndexTable.Cell>{index + 1}</IndexTable.Cell>
                     <IndexTable.Cell>{order_id}</IndexTable.Cell>
                     <IndexTable.Cell>{title}</IndexTable.Cell>
                     <IndexTable.Cell><img src={image} alt='image' height="40px" width="40px" /></IndexTable.Cell>
@@ -1278,6 +1304,188 @@ const GetWishlistData = () => {
         return filteredArray
     }
 
+
+    const listingAndDate = <div className='listingAndDate'>
+        <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
+            <div className='pb-15'>
+                <Text variant="headingLg" as="h3">{myLanguage.userListingRecordsPerPage}</Text>
+            </div>
+            <Select
+                options={options}
+                onChange={recordPerPageFxn}
+                value={listingPerPage}
+            />
+        </Grid.Cell>
+
+        <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
+            <div className='pb-15'>
+                <Text variant="headingLg" as="h3">{myLanguage.quickOverViewDate}</Text>
+            </div>
+            <Select options={selectedWishlistItemOption} onChange={selectDateHandler}
+                value={checkCurrentOptions}
+            />
+        </Grid.Cell>
+    </div>
+
+    const [name, setName] = useState('');
+    const handleChangeName = useCallback(
+        (newValue) => setName(newValue),
+        [],
+    );
+
+    useEffect(() => {
+        console.log("eventOptions = ", eventOptions)
+    }, [eventOptions])
+
+
+    const [description, setDescription] = useState()
+    const handleChangeDescription = useCallback(
+        (newValue) => setDescription(newValue),
+        []
+    );
+
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [popoverActive, setPopoverActive] = useState(false);
+
+    const togglePopover = useCallback(
+        () => setPopoverActive((active) => !active),
+        []
+    );
+
+    const handleMonthChange2 = useCallback(
+        (month, year) => setDate({ month, year }),
+        []
+    );
+
+    const handleDateChange = useCallback(({ start }) => {
+        setSelectedDate(start);
+        setPopoverActive(false);
+    }, []);
+
+    // const formattedDate = selectedDate
+    //     ? selectedDate.toISOString().split('T')[0]
+    //     : '';
+    const formattedDate = selectedDate
+        ? selectedDate.toLocaleDateString("en-CA")
+        : "";
+
+    const activator = (
+        <TextField
+            label="Event Date"
+            value={formattedDate}
+            onFocus={togglePopover}
+            autoComplete="off"
+        />
+    );
+
+    let urlTypeOption = [
+        { label: "Public", value: "public" },
+        { label: "Private", value: "private" },
+        { label: "Password protected", value: "password-protected" },
+    ];
+    const [selectedUrlType, setSelectedUrlType] = useState()
+    const handleUrlChange = useCallback(
+        (value) => setSelectedUrlType(value),
+        [],
+    );
+
+
+    function shareSingleWishlist(event, key, userId = "") {
+        // key = key.trim().replaceAll(" ", "%20");/
+        event.stopPropagation();
+        openShareWishlistModal(key, userId);
+    }
+
+    const shareModal = useRef()
+    const closeD = useRef()
+    const wgModalD = useRef()
+    const sharableLinkHeading = useRef()
+    async function openShareWishlistModal(singleWishlist = "", userId = "") {
+        // let addLinkContent = document.querySelectorAll(".modal-inside");
+        let addLinkContent = shareModal.current;
+        // for (let wf = 0; wf < addLinkContent.length; wf++) {
+        // addLinkContent[wf].innerHTML = `<div>${storeFrontDefLang?.loadingText}</div>`;
+        addLinkContent.innerHTML = `<div>Loading Text</div>`;
+        // }
+        closeD.current.onclick = function () {
+            wgModalD.current.style.display = "none";
+        };
+        wgModalD.current.style.display = "block";
+        createShareWishlistLink(singleWishlist, userId);
+    }
+    async function createShareWishlistLink(singleWishlist = "", userId = "") {
+        // document.querySelectorAll(".sharable-link-heading").forEach((element) => {
+        sharableLinkHeading.current.innerHTML = "Sharable Link";
+        // });
+        const shopApi = await ShopApi.shop();
+        console.log("shopApi = ", shopApi)
+        const sendID = shopApi.customerEmail;
+        // const sendID = await getCurrentLoginFxn() || localStorage.getItem("access-token");
+        try {
+            const response = await fetch(`${serverURL}/get-id-from-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    shopName: shopApi.domain,
+                    email: sendID
+                }),
+            });
+            const result = await response.json();
+            const getID = userId !== "" ? userId : result.data?.[0]?.id;
+
+            if (!getID) throw new Error("User ID not found");
+            const encryptedEmail = btoa(getID);
+            const encryptedName = btoa('url');
+            // const pageUrl = `${wfGetDomain}apps/wg-wishlist?id=${encryptedEmail}&name=${encryptedName}`;
+            let pageUrl;
+            if (singleWishlist !== "") {
+                pageUrl = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}&wid=${singleWishlist}`;
+            } else {
+                pageUrl = `${wfGetDomain}apps/wf-gift-registry?id=${encryptedEmail}&name=${encryptedName}`;
+            }
+            await Conversion("url", getID, "noReload");
+            const pageUrlDiv = `
+            <div class="share-url-div">
+                <div class="share-url-text">${pageUrl}</div>
+                <div class="deleteIconStyle copyICON" onClick="copyUrl('${pageUrl}')">
+                    <span></span>
+                </div>
+            </div>
+        `;
+
+            document.querySelectorAll(".modal-inside").forEach((element) => {
+                element.innerHTML = pageUrlDiv;
+            });
+        } catch (error) {
+            console.error("Error: ", error);
+
+            const fallbackMessage = "Firstly add items to your wishlist to share";
+            document.querySelectorAll(".modal-inside").forEach((element) => {
+                element.innerHTML = fallbackMessage;
+            });
+        }
+    }
+    async function Conversion(name, sendID, fromWhere) {
+        // console.log("CONVERSION--- ", name, sendID, fromWhere)
+        try {
+            const userData = await fetch(`${serverURL}/share-wishlist-stats`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    type: name,
+                    shopName: permanentDomain,
+                    count: 1,
+                    user_id: sendID,
+                    fromWhere: fromWhere
+                }),
+            });
+        } catch (error) {
+            console.log("errr ", error);
+        }
+    }
+
     return (
         <div dir={wishlistTextDirection} className='wf-dashboard wf-dashboard-report wf-currentWishlistUser'>
             {!isloading ? <SkeletonPage1 /> :
@@ -1292,8 +1500,9 @@ const GetWishlistData = () => {
                             <div className='wf-collection-IconBtn'>
                                 <div className="wf-collection-inner">
                                     <div className="wf-IconBtn-box">
-                                        <TextField value={copyUrl()} />
-                                        <div className="copyIcon" onClick={() => textCopyHandler(copyUrl())}>
+                                        {/* <TextField value={copyUrl()} /> */}
+                                        {/* <div className="copyIcon" onClick={() => textCopyHandler(copyUrl())}> */}
+                                        <div className="copyIcon">
                                             <img src={collectionCopyIcon} alt="Collect Copy Icon" />
                                         </div>
                                     </div>
@@ -1341,7 +1550,7 @@ const GetWishlistData = () => {
                     >
                         <AlphaCard >
 
-                            <div className='wf-style-wishbtn currentWishlistUser'>
+                            {/* <div className='wf-style-wishbtn currentWishlistUser'>
                                 <div className='customer-recently-table'>
                                     <IndexTable
                                         itemCount={userData.length}
@@ -1363,12 +1572,109 @@ const GetWishlistData = () => {
 
                                     </IndexTable>
                                 </div>
+                            </div> <br /><br /> */}
+
+
+                            <div className='wf-style-wishbtn currentWishlistUser'>
+                                <div className='customer-recently-table'>
+                                    <form>
+                                        <Controller
+                                            control={control}
+                                            name='name'
+                                            render={({ field }) => (
+                                                <TextField value={name} onChange={handleChangeName} placeholder='Name' />
+                                            )}
+                                        /><br />
+
+                                        <Controller
+                                            control={control}
+                                            name='description'
+                                            render={({ field }) => (
+                                                <TextField
+                                                    label="Description"
+                                                    value={description}
+                                                    onChange={handleChangeDescription}
+                                                    multiline={3}
+                                                />
+                                            )}
+                                        /><br />
+
+                                        <Controller
+                                            control={control}
+                                            name='options'
+                                            render={({ field }) => (
+                                                <Select
+                                                    label="Event Options"
+                                                    options={eventOptions}
+                                                    onChange={handleSelectChange}
+                                                    value={selectedEvent}
+                                                />
+                                            )}
+                                        /><br />
+
+                                        <Controller
+                                            control={control}
+                                            name='date'
+                                            render={({ field }) => (
+                                                <Popover
+                                                    active={popoverActive}
+                                                    activator={activator}
+                                                    onClose={togglePopover}
+                                                    preferredAlignment="left"
+                                                >
+                                                    <Popover.Pane fixed>
+                                                        <DatePicker
+                                                            month={month}
+                                                            year={year}
+                                                            onMonthChange={handleMonthChange2}
+                                                            selected={{ start: selectedDate, end: selectedDate }}
+                                                            onChange={handleDateChange}
+                                                        />
+                                                    </Popover.Pane>
+                                                </Popover>
+                                            )}
+                                        /><br />
+
+                                        <Controller
+                                            control={control}
+                                            name='url'
+                                            render={({ field }) => (
+                                                <Select
+                                                    label="URL Type"
+                                                    options={urlTypeOption}
+                                                    onChange={handleUrlChange}
+                                                    value={selectedUrlType}
+                                                />
+                                            )}
+                                        /><br />
+
+                                        <Controller
+                                            control={control}
+                                            name='url'
+                                            render={({ field }) => (
+                                                <Button onClick={() => shareSingleWishlist(event, id?.CurrentWishlistUserData
+                                                )}>Share Registry</Button>
+                                            )}
+                                        /><br />
+                                    </form>
+                                </div>
+                            </div> <br /><br />
+
+                            <div id="wg-myModalD" class="wg-modalD" ref={wgModalD}>
+                                <div class="wg-modal-content1">
+                                    <span class="closeD" ref={closeD}>&times;</span>
+                                    <div id="main-Modal-form1">
+                                        <span class="sharable-link-heading" ref={sharableLinkHeading}></span>
+                                        <span class="modal-inside" ref={shareModal}></span>
+                                        <br />
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className='wf-overview-inner '>
-                                <div id='boxx-shadow'>
-                                    <Grid >
-                                        <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
+                            {/* <div className='wf-overview-inner '> */}
+                            {/* <div id='boxx-shadow'> */}
+                            {/* <Grid > */}
+                            {/* <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                                             <div className='pb-15'>
                                                 <Text variant="headingLg" as="h3">{myLanguage.wishlistNameHeading}</Text>
                                             </div>
@@ -1386,9 +1692,9 @@ const GetWishlistData = () => {
                                                 </div>
                                                 <Button onClick={hanldeClicks}>{myLanguage.tableDelete}</Button>
                                             </div>
-                                        </Grid.Cell>
+                                        </Grid.Cell> */}
 
-                                        <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
+                            {/* <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                                             <div className='pb-15'>
                                                 <Text variant="headingLg" as="h3">{myLanguage.userListingRecordsPerPage}</Text>
                                             </div>
@@ -1406,11 +1712,11 @@ const GetWishlistData = () => {
                                             <Select options={selectedWishlistItemOption} onChange={selectDateHandler}
                                                 value={checkCurrentOptions}
                                             />
-                                        </Grid.Cell>
+                                        </Grid.Cell> */}
 
-                                    </Grid>
-                                </div>
-                            </div>
+                            {/* </Grid> */}
+                            {/* </div> */}
+                            {/* </div> */}
                         </AlphaCard>
 
                         <Modal
@@ -1435,12 +1741,12 @@ const GetWishlistData = () => {
                             </Modal.Section>
                         </Modal>
 
-                        <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} />
+                        <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} listingAndDate={listingAndDate} />
 
                         {/* Items which are ordered */}
                         <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} getOrdersPageNo={getOrdersPageNo} handleOrdersPagination={handleOrdersPagination} isCartLoading={isCartLoading} hasOrdersNext={hasOrdersNext} hasOrdersPrevious={hasOrdersPrevious} />
 
-                        <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} />
+                        {/* <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} /> */}
 
 
 

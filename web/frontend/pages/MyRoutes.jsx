@@ -91,9 +91,9 @@ const MyRoutes = () => {
                 <Link to="/Analytic/UserReport">Registries</Link>
                 <Link to="/GeneralSetting">{myLanguage?.generalSetting}</Link>
                 <Link to="/CollectionSetting">{myLanguage?.collectionSetting}</Link>
-                <Link to="/Analytic/UserReport">{myLanguage?.reportPage}</Link>
-                <Link to="/EmailReports">{myLanguage?.emailReportsPage}</Link>
-                <Link to="/ShareStats">{myLanguage?.shareStats}</Link>
+                {/* <Link to="/Analytic/UserReport">{myLanguage?.reportPage}</Link> */}
+                {/* <Link to="/EmailReports">{myLanguage?.emailReportsPage}</Link> */}
+                {/* <Link to="/ShareStats">{myLanguage?.shareStats}</Link> */}
                 <Link to="/PricingPlan">{myLanguage?.paidPlans}</Link>
                 <Link to="/RequestFormModal">{myLanguage?.getSupport}</Link>
             </>

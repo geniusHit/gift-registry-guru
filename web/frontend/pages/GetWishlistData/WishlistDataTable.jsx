@@ -1,7 +1,7 @@
 import { AlphaCard, IndexFilters, IndexTable, LegacyCard, Pagination, Text, useSetIndexFiltersMode, IndexFiltersMode, Spinner, DatePicker, Button } from '@shopify/polaris'
 import React from 'react'
 
-const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, handleFiltersQueryChange, setQueryValue, userList, wishlistDataTable, startIndexValue, totalRecords, handleSortChange, currentPage, isItemLoading, handlePagination, handleModalChange, registryItemsTable, totalRegistryItems, hasNext, hasPrevious }) => {
+const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, handleFiltersQueryChange, setQueryValue, userList, wishlistDataTable, startIndexValue, totalRecords, handleSortChange, currentPage, isItemLoading, handlePagination, handleModalChange, registryItemsTable, totalRegistryItems, hasNext, hasPrevious, listingAndDate }) => {
     const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
     const onHandleCancel = () => { };
 
@@ -16,8 +16,11 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                         <p>{myLanguage.userListingText}</p>
                     </div>
 
+                    <div className='listingAndDateWrapper'>
+                        {listingAndDate}
 
-                    <Button onClick={() => { handleModalChange(myLanguage) }}>{myLanguage.shareWishlistButtonName}</Button>
+                        <Button onClick={() => { handleModalChange(myLanguage) }}>{myLanguage.shareWishlistButtonName}</Button>
+                    </div>
                 </div>
 
                 <AlphaCard roundedAbove="sm">

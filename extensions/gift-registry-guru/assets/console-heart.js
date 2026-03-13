@@ -1639,7 +1639,7 @@ async function getSharedWishlistData(userId, selectedID) {
                                         <div class="multiInputDiv">
                                             <input type="text" id="checkPassword" name="checkPassword" placeholder="Enter password" />
                                         </div>
-                                    </div>    
+                                    </div>
                                     <button id="createWishlist" class="cartButtonStyle" type="button"  onclick="wfCheckPassword()">Submit</button>
                                     <p id="mainErrorPara"></p>
                                 </div>`
@@ -3606,7 +3606,6 @@ function wgrAddNavigationSection() {
             link.classList.add("active");
         }
     });
-
 }
 
 
@@ -3648,8 +3647,8 @@ async function wgrListingPageTypeFunction() {
         listingDiv.innerHTML = `There is currently no registry. Please create your first registry by <a href="/apps/wf-gift-registry/create" >clicking here</a>.`
 
     } else {
-
         listingDiv.innerHTML = `${allWishlistData.map(data => {
+            console.log("data = ", data)
             const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
             return `
                                 <div class="wgr-listing-row">
@@ -3971,7 +3970,7 @@ function wgrShowFilteredData(dataArray, inputValue) {
                         </div>
                 ${dataArray.map(data => {
             return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
-                                            <div class="wishlist-modal-all"> 
+                                            <div class="wishlist-modal-all">
                                                 <div class="wf-multi-Wish-heading">
                                                         <div class="wf-multi-Wish-content" >
                                                                 <b>Registry:</b><span data-key="${data.wishlist_name}">${data.wishlist_name}</span> 

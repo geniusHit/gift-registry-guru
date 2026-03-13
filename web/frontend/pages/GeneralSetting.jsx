@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MediaCard, Frame, Page, Grid, Text } from '@shopify/polaris';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +52,7 @@ const GeneralSetting = () => {
                             </Text>
                         </Grid.Cell> */}
                         <div className='wf-dashboard-box'>
-                            {/* <div className='wf-dashboard-box-inner'>
+                            <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.wishlistUIcard1Title}
@@ -75,16 +74,16 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div> */}
+                            </div>
 
 
                             {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
-                            <Text as="h2" variant="headingMd">
-                                {myLanguage.iconLocationHeading}
-                            </Text>
-                        </Grid.Cell> */}
+                                <Text as="h2" variant="headingMd">
+                                    {myLanguage.iconLocationHeading}
+                                </Text>
+                            </Grid.Cell> */}
 
-                            {/* <div className='wf-dashboard-box-inner'>
+                            <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.iconLocationHeading}
@@ -104,7 +103,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div> */}
+                            </div>
 
                             {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>
                             <Text as="h2" variant="headingMd">
@@ -225,7 +224,7 @@ const GeneralSetting = () => {
                             </Text>
                         </Grid.Cell> */}
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.emailSettingHeading}
@@ -244,7 +243,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             {/* smtp setting page--------- */}
@@ -271,7 +270,7 @@ const GeneralSetting = () => {
                             {/* smtp setting page---------END */}
 
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         // title={myLanguage.advanceSettingMainHeading}
@@ -290,9 +289,9 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         title={myLanguage.isLoginHeading}
@@ -309,12 +308,12 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
 
 
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         title={myLanguage.overValueAB16}
@@ -331,10 +330,10 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         title={myLanguage.trendingHeading}
@@ -351,7 +350,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             <div className='wf-dashboard-box-inner'>
@@ -387,7 +386,7 @@ const GeneralSetting = () => {
 
 
 
-                            <div className='wf-dashboard-box-inner'>
+                            {/* <div className='wf-dashboard-box-inner'>
                                 <div className='Polaris-Box'>
                                     <MediaCard
                                         title={myLanguage.cciHeading}
@@ -406,7 +405,7 @@ const GeneralSetting = () => {
                                         />
                                     </MediaCard>
                                 </div>
-                            </div>
+                            </div> */}
 
 
 

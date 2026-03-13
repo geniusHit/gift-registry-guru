@@ -1088,3 +1088,7 @@ div#basic-collapsible\ collapse-hover {
     height: 20px;
     background-color: gray;
 }
+
+.wf-style-wishbtn{
+    padding: 20px 25px;
+}

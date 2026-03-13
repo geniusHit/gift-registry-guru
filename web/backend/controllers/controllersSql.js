@@ -5455,14 +5455,14 @@ export const getWishlistUsersData = async (req, res) => {
         console.log("endDate = ", endDate)
         if (startDate === "" || endDate === "") {
             var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
+            SELECT ${Wishlist_table}.created_at, first_name, last_name, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id;
             `)
         }
         else if (startDate !== "" && endDate !== "" && startDate === endDate) {
             var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
+            SELECT ${Wishlist_table}.created_at, email, first_name, last_name, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
             AND ${Wishlist_table}.created_at LIKE '%${startDate}%'
@@ -5470,7 +5470,7 @@ export const getWishlistUsersData = async (req, res) => {
         }
         else {
             var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
+            SELECT ${Wishlist_table}.created_at, email, first_name, last_name, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
             AND ${Wishlist_table}.created_at BETWEEN '${startDate}' AND '${endDate}'
@@ -5818,7 +5818,6 @@ export const getCurrentUserWishlistData = async (req, res) => {
             cartResultCount: cartCount,
             orderedItems,
         });
-
     } catch (error) {
         console.error("Error:", error);
         logger.error(error);

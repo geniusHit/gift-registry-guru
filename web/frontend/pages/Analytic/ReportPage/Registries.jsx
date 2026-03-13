@@ -14,7 +14,7 @@ import { Constants } from '../../../../backend/constants/constant';
 import moment from 'moment-js';
 import Footer from '../../Footer';
 
-const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, options, setIsCount }) => {
+const Registries = ({ myLanguage, requestBody, selectedValue, selectedOption, options, setIsCount }) => {
     const { serverURL, appName } = Constants;
     const Navigate = useNavigate();
     const { search } = useLocation();
@@ -249,15 +249,17 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         let totalPrice = 0
         totalItems.map(({price}) => totalPrice+=parseInt(price))
         console.log("totalPrice = ", totalPrice)
+        console.log("first_name = ", first_name)
+        console.log("last_name = ", last_name)
         // console.log("id = ", id)
 
         return <IndexTable.Row id={id} key={`${id}-${index}`} position={id} >
             <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>
-            <IndexTable.Cell>{email} <br/> {first_name} {last_name}</IndexTable.Cell>
+            <IndexTable.Cell>{email} <br/> {first_name} {last_name} </IndexTable.Cell>
             <IndexTable.Cell>Active</IndexTable.Cell>
             <IndexTable.Cell>{event_type}</IndexTable.Cell>
             <IndexTable.Cell>{event_date}</IndexTable.Cell>
-            {/* <IndexTable.Cell>{created_at}</IndexTable.Cell> */}
+            <IndexTable.Cell>{created_at}</IndexTable.Cell>
             <IndexTable.Cell>{totalItems.length}</IndexTable.Cell>
             <IndexTable.Cell>{totalPrice}</IndexTable.Cell>
             <IndexTable.Cell><Button onClick={() => viewHandler(id, wishlist_id)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
@@ -510,9 +512,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                             allowRange
                         />
                     </Modal.Section>
-
                 </Modal>
-
 
                 <div className='wf-listingRecord'>
                     <div className='wf-listingRecord-inner'>
@@ -589,7 +589,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                         { title: "Status" },
                                         { title: "Event Type" },
                                         { title: "Event Date" },
-                                        // { title: "Date Created" },
+                                        { title: "Date Created" },
                                         { title: "Products" },
                                         { title: "Potential Value" },
                                         { title: "Action" },
@@ -624,4 +624,4 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     )
 }
 
-export default WishlistUser
+export default Registries

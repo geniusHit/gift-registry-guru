@@ -681,7 +681,7 @@ const WishlistButtonLocation = () => {
 
                             </Collapsible>
 
-                            <div id='custom-code-icon-section' className='wf-style-wishbtn'>
+                            {/* <div id='custom-code-icon-section' className='wf-style-wishbtn'>
                                 <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
                                     <div className='wf-showCount-box'>
                                         <div>
@@ -737,7 +737,7 @@ const WishlistButtonLocation = () => {
                                         }
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div style={{ marginTop: "40px" }}>
                                 <Footer myLanguage={myLanguage} />

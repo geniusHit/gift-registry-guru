@@ -241,23 +241,23 @@ const Data = () => {
   </IndexTable.Row>
 
 
-  const tabs = [
-    {
-      content: myLanguage.userReportHeading,
-      data: <WishlistUser myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} />,
-      id: 'regular-1',
-    },
-    {
-      content: myLanguage.wishlistItemsHeading,
-      data: <WishlistItem myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} />,
-      id: 'hover-2',
-    },
-    {
-      content: myLanguage.revenueDataHeading,
-      data: <RevenueData myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} shopCurrency={shopCurrency.current} getMainCurr={getMainCurr} />,
-      id: 'used-3',
-    }
-  ];
+  // const tabs = [
+  //   {
+  //     content: myLanguage.userReportHeading,
+  //     data: <WishlistUser myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} />,
+  //     id: 'regular-1',
+  //   },
+  //   {
+  //     content: myLanguage.wishlistItemsHeading,
+  //     data: <WishlistItem myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} />,
+  //     id: 'hover-2',
+  //   },
+  //   {
+  //     content: myLanguage.revenueDataHeading,
+  //     data: <RevenueData myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} shopCurrency={shopCurrency.current} getMainCurr={getMainCurr} />,
+  //     id: 'used-3',
+  //   }
+  // ];
 
   const title = useMemo(() => {
     if (selected === 0) {
@@ -280,7 +280,7 @@ const Data = () => {
               secondaryActions={[{
                 content: currentPlan >= 2 ?
                   <div className='wf-style-wishbtn currentWishlistUser'><div className='customer-recently-table'>
-                    <IndexTable
+                    {/* <IndexTable
                       itemCount={1}
                       headings={[
                         { title: selected === 0 ? myLanguage.tab0heading : selected === 1 ? myLanguage.tab1heading : myLanguage.tab2heading },
@@ -288,7 +288,7 @@ const Data = () => {
                       selectable={false}
                     >
                       {countValue}
-                    </IndexTable>
+                    </IndexTable> */}
                   </div>
                   </div> : <div></div>
               }]}
@@ -307,9 +307,11 @@ const Data = () => {
               </div>
                 :
                 <div className='wf-style-wishbtn'>
-                  <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange} fitted>
+                  {/* <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange} fitted>
                     {tabs[selected].data}
-                  </Tabs>
+                  </Tabs> */}
+
+                  <WishlistUser myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} />
                 </div>}
               <div className='wf-analatic-footer'>
                 <Footer myLanguage={myLanguage} />
