@@ -650,4 +650,3 @@ const LanguageSwitcher2 = ({ data }) => {
 }
 
 export default LanguageSwitcher2;
-

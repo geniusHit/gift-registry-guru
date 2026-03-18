@@ -4391,6 +4391,10 @@ export const downloadStoreCsvFile = async (req, res) => {
             "Content-Disposition",
             `attachment; filename="Wishlist-Guru.csv"`
         );
+        res.setHeader(
+            "Content-Security-Policy",
+            "frame-ancestors https://admin.shopify.com https://*.myshopify.com"
+        );
         return res.status(200).send(csvData);
     } catch (err) {
         console.error(err);
@@ -5688,8 +5692,8 @@ export const getCurrentUserWishlistData = async (req, res) => {
         // 2️⃣ Get wishlist data
         // ------------------------------------
         const [wishlistData] = await database.query(
-            `SELECT wt.wishlist_id AS id, wt.wishlist_name AS name
-             FROM ${Wishlist_table} AS wt, ${user_table} AS u
+            `SELECT wt.wishlist_id AS id, wt.wishlist_name AS name, wt.wishlist_description, wt.event_type, wt.event_date, wt.url_type, wt.password 
+            FROM ${Wishlist_table} AS wt, ${user_table} AS u
              WHERE u.shop_name = '${shopName}'
                AND u.id = wt.wishlist_user_id
                AND u.id = ${wishlistId}`
@@ -6953,5 +6957,22 @@ export const klaviyoAuthCallback = async (req, res) => {
         console.error("Unexpected error:", err.message);
         res.status(500).send("OAuth failed");
     }
+}
 
+
+export const updateRegistry = async (req, res) => {
+    try{
+        const { name, description, options, date, url } = req.body.data;
+        const { registryId, userId } = req.body.registryData;
+
+        const [result] = await database.query(`UPDATE ${Wishlist_table}
+            SET wishlist_name='${name}', wishlist_description='${description}', event_type='${options}', event_date='${date}', url_type='${url}'
+            WHERE wishlist_id=${registryId} AND wishlist_user_id=${userId}`)
+
+        res.json("Registry updated successfully")
+    }
+    catch(err){
+        console.err("Error : ", err)
+        res.status(500).send("Updating registry failed");
+    }
 }

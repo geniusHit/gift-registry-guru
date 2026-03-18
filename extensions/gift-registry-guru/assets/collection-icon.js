@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", getCurentPlanSql2);
 // console.log(" ---------------- collection page code render ---------------- ")
 
 const serverURL1 = 'http://localhost:5000'; // -------------- local
-// const serverURL1 = "https://airplane-manufacture-creativity-tour.trycloudflare.com"; // -------------- local
+// const serverURL1 = "https://understand-accessory-doc-danny.trycloudflare.com"; // -------------- local
 // const serverURL1 = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL1 = 'https://wishlist-guru-api.webframez.com';  // -------------- stagging
 

@@ -20,7 +20,8 @@ import loaderGif from "../loaderGreen.gif"
 import Footer from '../Footer';
 import collectionCopyIcon from '../../assets/copy-icon.svg'
 import OrderedItems from './OrderedItems';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, set, useForm } from 'react-hook-form';
+import SaveBar from '../SaveBar';
 
 
 const GetWishlistData = () => {
@@ -59,8 +60,10 @@ const GetWishlistData = () => {
     let id = useParams();
     const startIndex = (parseInt(getItemPageNo) - 1) * parseInt(getItemRecordPerPage)
     const endIndex = startIndex + parseInt(getItemRecordPerPage)
-    const { control, handleSubmit } = useForm()
     let wfGetDomain = window.location.href;
+    const [registryData, setRegistryData] = useState([])
+    const [saveBar, setSaveBar] = useState(false);
+
     // console.log("id111111111111111111111111", id)
 
     // useEffect(()=>{
@@ -289,6 +292,12 @@ const GetWishlistData = () => {
             console.log("items = ", items)
             setRegistryItems(items)
             setOrderedItems(result?.orderedItems)
+            result?.wishlistData.map((registry) => {
+                console.log("registry = ", registry)
+                console.log("registry_id = ", registry_id)
+                const wishlist_id = searchParams.get("wishlist_id")
+                registry?.id === parseInt(wishlist_id) && setRegistryData(registry)
+            })
 
             if (selectedWishlistItem !== "all") {
                 setAllWishlistData(result.productResult)
@@ -542,9 +551,12 @@ const GetWishlistData = () => {
         return { isMultiWish }
     };
 
-    const [selectedEvent, setSelectedEvent] = useState()
-    const handleSelectChange = useCallback(
-        (value) => setSelectedEvent(value),
+    const [selectedEvent, setSelectedEvent] = useState('')
+    const handleSelectChangeEventOptions = useCallback(
+        (value) => {
+            setSelectedEvent(value);
+            setSaveBar(true)
+        },
         [],
     );
 
@@ -847,6 +859,8 @@ const GetWishlistData = () => {
             <IndexTable.Cell><Button onClick={() => deleteUserHandle(id, variant_id)}><Icon source={DeleteMajor} color="base" /></Button></IndexTable.Cell>
         </IndexTable.Row>
     ));
+
+    console.table("wishlistDataTable = ", wishlistDataTable)
 
     const cartWishlistTable = cartData.map(
         ({ title, price, image, created_at, quantity }, index) => {
@@ -1329,7 +1343,10 @@ const GetWishlistData = () => {
 
     const [name, setName] = useState('');
     const handleChangeName = useCallback(
-        (newValue) => setName(newValue),
+        (newValue) => {
+            setName(newValue);
+            setSaveBar(true);
+        },
         [],
     );
 
@@ -1338,9 +1355,12 @@ const GetWishlistData = () => {
     }, [eventOptions])
 
 
-    const [description, setDescription] = useState()
+    const [description, setDescription] = useState('')
     const handleChangeDescription = useCallback(
-        (newValue) => setDescription(newValue),
+        (newValue) => {
+            setDescription(newValue);
+            setSaveBar(true)
+        },
         []
     );
 
@@ -1360,14 +1380,30 @@ const GetWishlistData = () => {
     const handleDateChange = useCallback(({ start }) => {
         setSelectedDate(start);
         setPopoverActive(false);
+        setSaveBar(true)
     }, []);
 
     // const formattedDate = selectedDate
     //     ? selectedDate.toISOString().split('T')[0]
     //     : '';
-    const formattedDate = selectedDate
+    // const formattedDate = selectedDate
+    //     ? selectedDate.toLocaleDateString("en-CA")
+    //     : "";
+    const [formattedDate, setFormattedDate] = useState(selectedDate
         ? selectedDate.toLocaleDateString("en-CA")
-        : "";
+        : "")
+
+    useEffect(() => {
+        setFormattedDate(selectedDate
+            ? selectedDate.toLocaleDateString("en-CA")
+            : "")
+    }, [selectedDate])
+
+    useEffect(() => {
+        console.log("formattedDate = ", formattedDate)
+    }, [formattedDate])
+
+    // useEffect(())
 
     const activator = (
         <TextField
@@ -1385,13 +1421,17 @@ const GetWishlistData = () => {
     ];
     const [selectedUrlType, setSelectedUrlType] = useState()
     const handleUrlChange = useCallback(
-        (value) => setSelectedUrlType(value),
+        (value) => {
+            setSelectedUrlType(value);
+            setSaveBar(true);
+        },
         [],
     );
 
 
     function shareSingleWishlist(event, key, userId = "") {
         // key = key.trim().replaceAll(" ", "%20");/
+        console.log("key = ", key)
         event.stopPropagation();
         openShareWishlistModal(key, userId);
     }
@@ -1453,6 +1493,7 @@ const GetWishlistData = () => {
             </div>
         `;
 
+
             document.querySelectorAll(".modal-inside").forEach((element) => {
                 element.innerHTML = pageUrlDiv;
             });
@@ -1475,7 +1516,7 @@ const GetWishlistData = () => {
                 },
                 body: JSON.stringify({
                     type: name,
-                    shopName: permanentDomain,
+                    shopName: currentShopData.domain,
                     count: 1,
                     user_id: sendID,
                     fromWhere: fromWhere
@@ -1485,6 +1526,66 @@ const GetWishlistData = () => {
             console.log("errr ", error);
         }
     }
+
+
+    useEffect(() => {
+        console.log("registryData = ", registryData)
+        setName(registryData?.name)
+        setDescription(registryData?.wishlist_description)
+        setSelectedEvent(registryData?.event_type)
+        setFormattedDate(registryData?.event_date)
+        setSelectedUrlType(registryData?.url_type)
+        setPassword(registryData?.password)
+
+        setValue("name", registryData?.name)
+        setValue("description", registryData?.wishlist_description)
+        setValue("options", registryData?.event_type)
+        setValue("date", registryData?.event_date)
+        setValue("url", registryData?.url_type)
+        setValue("password", registryData?.password)
+    }, [registryData])
+
+    const handleSubmit2 = async (data) => {
+        console.log("handleSubmit2 called")
+        console.log("data = ", data)
+
+        const result = await fetch(`${serverURL}/update-registry`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                data: data,
+                registryData: {
+                    registryId: registryData?.id,
+                    userId: Number(id.CurrentWishlistUserData),
+                }
+            })
+        })
+        const message = await result.json()
+
+        Swal.fire({
+            // title: message,
+            text: message,
+            icon: "success",
+            // showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Ok",
+        })
+
+        setSaveBar(false)
+    }
+
+    const { control, handleSubmit, setValue } = useForm()
+
+    const [password, setPassword] = useState('')
+    const handlePasswordChange = useCallback(
+        (value) => {
+            setPassword(value);
+            setSaveBar(true);
+        }
+    );
+
 
     return (
         <div dir={wishlistTextDirection} className='wf-dashboard wf-dashboard-report wf-currentWishlistUser'>
@@ -1577,12 +1678,13 @@ const GetWishlistData = () => {
 
                             <div className='wf-style-wishbtn currentWishlistUser'>
                                 <div className='customer-recently-table'>
-                                    <form>
+                                    <form onSubmit={handleSubmit(handleSubmit2)}>
+                                        {(saveBar) ? <SaveBar save="Save" /> : ""}
                                         <Controller
                                             control={control}
                                             name='name'
                                             render={({ field }) => (
-                                                <TextField value={name} onChange={handleChangeName} placeholder='Name' />
+                                                <TextField onChange={(value) => { field.onChange(value); handleChangeName(value); }} placeholder='Name' value={name} />
                                             )}
                                         /><br />
 
@@ -1593,7 +1695,7 @@ const GetWishlistData = () => {
                                                 <TextField
                                                     label="Description"
                                                     value={description}
-                                                    onChange={handleChangeDescription}
+                                                    onChange={(value) => { field.onChange(value); handleChangeDescription(value); }}
                                                     multiline={3}
                                                 />
                                             )}
@@ -1606,7 +1708,7 @@ const GetWishlistData = () => {
                                                 <Select
                                                     label="Event Options"
                                                     options={eventOptions}
-                                                    onChange={handleSelectChange}
+                                                    onChange={(value) => { field.onChange(value); handleSelectChangeEventOptions(value); }}
                                                     value={selectedEvent}
                                                 />
                                             )}
@@ -1628,7 +1730,10 @@ const GetWishlistData = () => {
                                                             year={year}
                                                             onMonthChange={handleMonthChange2}
                                                             selected={{ start: selectedDate, end: selectedDate }}
-                                                            onChange={handleDateChange}
+                                                            onChange={(value) => {
+                                                                let date = value.start;
+                                                                field.onChange(date.toLocaleDateString("en-CA")); handleDateChange(value);
+                                                            }}
                                                         />
                                                     </Popover.Pane>
                                                 </Popover>
@@ -1642,7 +1747,7 @@ const GetWishlistData = () => {
                                                 <Select
                                                     label="URL Type"
                                                     options={urlTypeOption}
-                                                    onChange={handleUrlChange}
+                                                    onChange={(value) => { field.onChange(value); handleUrlChange(value); }}
                                                     value={selectedUrlType}
                                                 />
                                             )}
@@ -1650,17 +1755,30 @@ const GetWishlistData = () => {
 
                                         <Controller
                                             control={control}
-                                            name='url'
+                                            name='password'
                                             render={({ field }) => (
-                                                <Button onClick={() => shareSingleWishlist(event, id?.CurrentWishlistUserData
-                                                )}>Share Registry</Button>
+                                                <TextField
+                                                    label="Enter Password"
+                                                    type='password'
+                                                    onChange={(value) => { field.onChange(value); handlePasswordChange(value); }}
+                                                    value={password}
+                                                />
                                             )}
                                         /><br />
+
+                                        {/* <Controller
+                                            control={control}
+                                            name='url'
+                                            render={({ field }) => (
+                                                <Button onClick={() => shareSingleWishlist(event, registry_id
+                                                )}>Share Registry</Button>
+                                            )}
+                                        /><br /> */}
                                     </form>
                                 </div>
                             </div> <br /><br />
 
-                            <div id="wg-myModalD" class="wg-modalD" ref={wgModalD}>
+                            {/* <div id="wg-myModalD" class="wg-modalD" ref={wgModalD}>
                                 <div class="wg-modal-content1">
                                     <span class="closeD" ref={closeD}>&times;</span>
                                     <div id="main-Modal-form1">
@@ -1669,7 +1787,7 @@ const GetWishlistData = () => {
                                         <br />
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* <div className='wf-overview-inner '> */}
                             {/* <div id='boxx-shadow'> */}

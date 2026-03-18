@@ -1945,6 +1945,7 @@ body {
 }
 
 .wf-style-wishbtn .Polaris-TextField input[type="text"],
+.wf-style-wishbtn .Polaris-TextField input[type="password"],
 .wf-style-wishbtn .Polaris-TextField input[type="number"],
 .wf-advanceSetting textarea {
     border: 1px solid #D9D9D9;

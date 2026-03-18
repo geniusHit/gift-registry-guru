@@ -10,7 +10,7 @@ var shareModal = document.getElementById("myshareModal");
 var shareModalContent = document.querySelector(".modal-share-content");
 var successDiv = document.querySelector(".successDiv");
 var successInnerDiv = document.querySelector(".successInnerDiv");
-let localData = JSON.parse(localStorage.getItem("wg-local-data"));
+let localData = JSON.parse(localStorage.getItem("wg-local-data")) || [];
 let customButton = localData?.customButton || JSON.parse(heartButton.getAttribute("button-setting"));
 let customLanguage = localData?.customLanguage || JSON.parse(heartButton.getAttribute("language-setting").replace(/~/g, "'"));
 let generalSetting = localData?.generalSetting || JSON.parse(heartButton.getAttribute("general-setting"));
@@ -121,7 +121,7 @@ let modalDrawerTextColor = generalSetting?.wlTextColor?.color ? generalSetting?.
 document.addEventListener("DOMContentLoaded", getCurentPlanSql);
 
 const serverURL = "http://localhost:5000"; // -------------- local
-// const serverURL = "https://airplane-manufacture-creativity-tour.trycloudflare.com"; // -------------- local
+// const serverURL = "https://understand-accessory-doc-danny.trycloudflare.com"; // -------------- local
 // const serverURL = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL = 'https://wishlist-guru-api.webframez.com'; // -------------- stagging
 
@@ -4945,6 +4945,7 @@ async function wfqChangeSelect(event, index, handle, value, prevValue, gridIndex
 
 function shareSingleWishlist(event, key, userId = "") {
     // key = key.trim().replaceAll(" ", "%20");/
+    console.log("key = ", key)
     event.stopPropagation();
     openShareWishlistModal(key, userId);
 }
@@ -6328,6 +6329,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
         let item = arrayList[itemIndex];
         let key = Object.keys(item)[0];
         let items = item[key];
+        console.log("item.id = ", item.id)
 
         wishlistBody += `<div class="wf-multi-Wish-heading">
                           <div class="wf-multi-Wish-content">

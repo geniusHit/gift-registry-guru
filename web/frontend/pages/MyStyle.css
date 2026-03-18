@@ -1092,3 +1092,8 @@ div#basic-collapsible\ collapse-hover {
 .wf-style-wishbtn{
     padding: 20px 25px;
 }
+
+.currentWishlistUser .header-save {
+top: 0;
+left: 0;
+}

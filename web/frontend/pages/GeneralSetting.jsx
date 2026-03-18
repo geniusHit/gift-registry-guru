@@ -431,4 +431,3 @@ const GeneralSetting = () => {
 }
 
 export default GeneralSetting;
-
