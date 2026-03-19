@@ -14,7 +14,7 @@ import moment from 'moment-js';
 import WishlistDataTable from './WishlistDataTable';
 import CartDataTable from './CartDataTable';
 import { useAuthenticatedFetch } from '../../hooks';
-import { ArrowLeftMinor, DeleteMajor, ClipboardMinor } from '@shopify/polaris-icons';
+import { ArrowLeftMinor, DeleteMajor, ClipboardMinor, DuplicateMinor } from '@shopify/polaris-icons';
 import Swal from 'sweetalert2';
 import loaderGif from "../loaderGreen.gif"
 import Footer from '../Footer';
@@ -63,6 +63,7 @@ const GetWishlistData = () => {
     let wfGetDomain = window.location.href;
     const [registryData, setRegistryData] = useState([])
     const [saveBar, setSaveBar] = useState(false);
+    const [showPassField, setShowPassField] = useState(false)
 
     // console.log("id111111111111111111111111", id)
 
@@ -908,16 +909,15 @@ const GetWishlistData = () => {
     const hasNext = endIndex < registryItems.length
     const hasPrevious = parseInt(getItemPageNo) > 1
     const registryItemsTable = registryItems.slice(startIndex, endIndex).map(
-        ({ id, variant_id, title, price, image, total_quantity, created_at, wishlist_name }, index) => {
+        ({ id, variant_id, title, price, image, total_quantity, items_purchased }, index) => {
             return (
                 <IndexTable.Row id={index} key={index} position={index}>
                     <IndexTable.Cell>{index + 1}</IndexTable.Cell>
                     <IndexTable.Cell>{title}</IndexTable.Cell>
                     <IndexTable.Cell><img src={image} alt='image' height="40px" width="40px" /></IndexTable.Cell>
                     <IndexTable.Cell>{price}</IndexTable.Cell>
-                    <IndexTable.Cell>{total_quantity}</IndexTable.Cell>
-                    <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>
-                    <IndexTable.Cell>{created_at}</IndexTable.Cell>
+                    <IndexTable.Cell>{items_purchased}/{total_quantity}</IndexTable.Cell>
+                    <IndexTable.Cell>{price * total_quantity}</IndexTable.Cell>
                     <IndexTable.Cell><Button onClick={() => deleteUserHandle(id, variant_id)}><Icon source={DeleteMajor} color="base" /></Button></IndexTable.Cell>
                 </IndexTable.Row>
             )
@@ -1279,24 +1279,22 @@ const GetWishlistData = () => {
 
 
     function copyUrl() {
-
-
         if (!currentShopData.domain.endsWith('/')) {
             currentShopData.domain += '/';
         }
         let pageUrl
-        let encryptId = btoa(sharedWishlistArr[0].id)
+        let encryptId = btoa(Number(id.CurrentWishlistUserData))
+        console.log("Number(id.CurrentWishlistUserData) = ", Number(id.CurrentWishlistUserData))
+        console.log("encryptId = ", encryptId)
+        const encryptedName = btoa('url');
 
         // if (currentShopData.domain === 'rubychikankari.com' || currentShopData.domain === 'preahkomaitland.com.au') {
         //     pageUrl = `https://${currentShopData.domain}pages/shared-wishlist?id=${encryptId}`;
         // } else {
-        pageUrl = `https://${currentShopData.domain}apps/wg-wishlist?id=${encryptId}`;
+        pageUrl = `https://${currentShopData.domain}apps/wf-gift-registry?id=${encryptId}&name=${encryptedName}&wid=${registryData?.id}`;
         // }
 
-
         return pageUrl
-
-
     }
     const textCopyHandler = (data) => {
         navigator.clipboard.writeText(data);
@@ -1423,6 +1421,12 @@ const GetWishlistData = () => {
     const handleUrlChange = useCallback(
         (value) => {
             setSelectedUrlType(value);
+            if (value === "password-protected") {
+                setShowPassField(true)
+            }
+            else {
+                setShowPassField(false)
+            }
             setSaveBar(true);
         },
         [],
@@ -1535,6 +1539,12 @@ const GetWishlistData = () => {
         setSelectedEvent(registryData?.event_type)
         setFormattedDate(registryData?.event_date)
         setSelectedUrlType(registryData?.url_type)
+        if (registryData?.url_type === "password-protected") {
+            setShowPassField(true)
+        }
+        else {
+            setShowPassField(false)
+        }
         setPassword(registryData?.password)
 
         setValue("name", registryData?.name)
@@ -1680,91 +1690,135 @@ const GetWishlistData = () => {
                                 <div className='customer-recently-table'>
                                     <form onSubmit={handleSubmit(handleSubmit2)}>
                                         {(saveBar) ? <SaveBar save="Save" /> : ""}
-                                        <Controller
-                                            control={control}
-                                            name='name'
-                                            render={({ field }) => (
-                                                <TextField onChange={(value) => { field.onChange(value); handleChangeName(value); }} placeholder='Name' value={name} />
-                                            )}
-                                        /><br />
 
-                                        <Controller
-                                            control={control}
-                                            name='description'
-                                            render={({ field }) => (
-                                                <TextField
-                                                    label="Description"
-                                                    value={description}
-                                                    onChange={(value) => { field.onChange(value); handleChangeDescription(value); }}
-                                                    multiline={3}
+                                        <Text variant="headingLg" as="h2">Edit Registry</Text><br/>
+
+                                        <Grid>
+                                            <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='name'
+                                                    render={({ field }) => (
+                                                        <TextField onChange={(value) => { field.onChange(value); handleChangeName(value); }} label='Name' value={name} />
+                                                    )}
                                                 />
-                                            )}
-                                        /><br />
+                                            </Grid.Cell>
 
-                                        <Controller
-                                            control={control}
-                                            name='options'
-                                            render={({ field }) => (
-                                                <Select
-                                                    label="Event Options"
-                                                    options={eventOptions}
-                                                    onChange={(value) => { field.onChange(value); handleSelectChangeEventOptions(value); }}
-                                                    value={selectedEvent}
-                                                />
-                                            )}
-                                        /><br />
-
-                                        <Controller
-                                            control={control}
-                                            name='date'
-                                            render={({ field }) => (
-                                                <Popover
-                                                    active={popoverActive}
-                                                    activator={activator}
-                                                    onClose={togglePopover}
-                                                    preferredAlignment="left"
-                                                >
-                                                    <Popover.Pane fixed>
-                                                        <DatePicker
-                                                            month={month}
-                                                            year={year}
-                                                            onMonthChange={handleMonthChange2}
-                                                            selected={{ start: selectedDate, end: selectedDate }}
-                                                            onChange={(value) => {
-                                                                let date = value.start;
-                                                                field.onChange(date.toLocaleDateString("en-CA")); handleDateChange(value);
-                                                            }}
+                                            <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='description'
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            label="Description"
+                                                            value={description}
+                                                            onChange={(value) => { field.onChange(value); handleChangeDescription(value); }}
+                                                            multiline={3}
                                                         />
-                                                    </Popover.Pane>
-                                                </Popover>
-                                            )}
-                                        /><br />
-
-                                        <Controller
-                                            control={control}
-                                            name='url'
-                                            render={({ field }) => (
-                                                <Select
-                                                    label="URL Type"
-                                                    options={urlTypeOption}
-                                                    onChange={(value) => { field.onChange(value); handleUrlChange(value); }}
-                                                    value={selectedUrlType}
+                                                    )}
                                                 />
-                                            )}
-                                        /><br />
+                                            </Grid.Cell>
+                                        </Grid><br />
 
-                                        <Controller
-                                            control={control}
-                                            name='password'
-                                            render={({ field }) => (
-                                                <TextField
-                                                    label="Enter Password"
-                                                    type='password'
-                                                    onChange={(value) => { field.onChange(value); handlePasswordChange(value); }}
-                                                    value={password}
+                                        <Grid>
+                                            <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='options'
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            label="Event Options"
+                                                            options={eventOptions}
+                                                            onChange={(value) => { field.onChange(value); handleSelectChangeEventOptions(value); }}
+                                                            value={selectedEvent}
+                                                        />
+                                                    )}
                                                 />
-                                            )}
-                                        /><br />
+                                            </Grid.Cell>
+
+                                            <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='date'
+                                                    render={({ field }) => (
+                                                        <Popover
+                                                            active={popoverActive}
+                                                            activator={activator}
+                                                            onClose={togglePopover}
+                                                            preferredAlignment="left"
+                                                        >
+                                                            <Popover.Pane fixed>
+                                                                <DatePicker
+                                                                    month={month}
+                                                                    year={year}
+                                                                    onMonthChange={handleMonthChange2}
+                                                                    selected={{ start: selectedDate, end: selectedDate }}
+                                                                    onChange={(value) => {
+                                                                        let date = value.start;
+                                                                        field.onChange(date.toLocaleDateString("en-CA")); handleDateChange(value);
+                                                                    }}
+                                                                />
+                                                            </Popover.Pane>
+                                                        </Popover>
+                                                    )}
+                                                />
+                                            </Grid.Cell>
+                                        </Grid><br/>
+
+                                        <Grid>
+                                            <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='url'
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            label="URL Type"
+                                                            options={urlTypeOption}
+                                                            onChange={(value) => { field.onChange(value); handleUrlChange(value); }}
+                                                            value={selectedUrlType}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid.Cell>
+
+                                            <Grid.Cell>
+                                                {
+                                                    showPassField && <Controller
+                                                        control={control}
+                                                        name='password'
+                                                        render={({ field }) => (
+                                                            <TextField
+                                                                label="Enter Password"
+                                                                type='password'
+                                                                onChange={(value) => { field.onChange(value); handlePasswordChange(value); }}
+                                                                value={password}
+                                                            />
+                                                        )}
+                                                    />
+                                                }
+                                            </Grid.Cell>
+                                        </Grid><br />
+
+                                        <Grid>
+                                            <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='url'
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            label="Share Registry"
+                                                            value={copyUrl()}
+                                                            suffix={<div style={{ cursor: "pointer" }} onClick={() => textCopyHandler(copyUrl())}><Icon source={DuplicateMinor} /></div>}
+                                                            autoComplete="off"
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid.Cell>
+
+                                            <Grid.Cell>
+
+                                            </Grid.Cell>
+                                        </Grid><br/>
 
                                         {/* <Controller
                                             control={control}

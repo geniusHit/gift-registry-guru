@@ -7,8 +7,6 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
 
     return (
         <div className='wf-wishListDataTable'>
-
-
             <div className='wf-style-wishbtn'>
                 <div className='wg-style-tableHeading-wdt'>
                     <div>
@@ -19,7 +17,7 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                     <div className='listingAndDateWrapper'>
                         {listingAndDate}
 
-                        <Button onClick={() => { handleModalChange(myLanguage) }}>{myLanguage.shareWishlistButtonName}</Button>
+                        {/* <Button onClick={() => { handleModalChange(myLanguage) }}>{myLanguage.shareWishlistButtonName}</Button> */}
                     </div>
                 </div>
 
@@ -76,9 +74,8 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                                     { title: myLanguage.productTitle },
                                     { title: myLanguage.productImage },
                                     { title: myLanguage.productPrice },
-                                    { title: myLanguage.productQuantity },
-                                    { title: myLanguage.wishlistName },
-                                    { title: myLanguage.productCreatedAt },
+                                    { title: "Gifted" },
+                                    { title: "Potential Value" },
                                     { title: myLanguage.tableDelete },
                                 ]}
                             >

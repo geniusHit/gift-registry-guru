@@ -6962,11 +6962,12 @@ export const klaviyoAuthCallback = async (req, res) => {
 
 export const updateRegistry = async (req, res) => {
     try{
-        const { name, description, options, date, url } = req.body.data;
+        console.log("req.body.data = ", req.body.data)
+        const { name, description, options, date, url, password } = req.body.data;
         const { registryId, userId } = req.body.registryData;
 
         const [result] = await database.query(`UPDATE ${Wishlist_table}
-            SET wishlist_name='${name}', wishlist_description='${description}', event_type='${options}', event_date='${date}', url_type='${url}'
+            SET wishlist_name='${name}', wishlist_description='${description}', event_type='${options}', event_date='${date}', url_type='${url}', password='${password}' 
             WHERE wishlist_id=${registryId} AND wishlist_user_id=${userId}`)
 
         res.json("Registry updated successfully")

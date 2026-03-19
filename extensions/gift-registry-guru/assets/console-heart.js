@@ -11129,6 +11129,8 @@ async function createShareWishlistLink(singleWishlist = "", userId = "") {
         });
         const result = await response.json();
         const getID = userId !== "" ? userId : result.data?.[0]?.id;
+        console.log("getId = ", getID)
+        console.log("singleWishlist = ", singleWishlist)
 
         if (!getID) throw new Error("User ID not found");
         const encryptedEmail = btoa(getID);
