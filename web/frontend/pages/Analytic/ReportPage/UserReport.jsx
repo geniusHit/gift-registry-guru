@@ -71,7 +71,6 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
 
     async function checkGetAllItem(res) {
-        console.log("res = ", res)
         try {
             const userData = await fetch(`${serverURL}/get-wishlist-users-data`, {
                 method: "POST",
@@ -81,7 +80,6 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                 body: JSON.stringify(res),
             })
             let result = await userData.json();
-            console.log("result = ", result)
             totalRecords.current = result.mainResult.length;
             if (result.mainResult.length === 0) {
                 setMainData(result.mainResult);
@@ -303,8 +301,10 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         } else {
             setLoaderMain(!loaderMain);
             const shopApi = await ShopApi.shop();
+            console.log("shopApi = ", shopApi)
             let requestBody = {
-                shopName: shopApi.shopName
+                shopName: shopApi.shopName,
+                storeName: shopApi.storeName,
             };
 
             if (value !== "all") {
@@ -471,6 +471,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
     const getDataWithDate = async () => {
         const shopApi = await ShopApi.shop();
+        console.log("shopApi = ", shopApi)
         let startDate = moment(new Date(selectedDates.start)).format("YYYY-MM-DD");
         let endDate = moment(new Date(selectedDates.end)).format("YYYY-MM-DD");
 
@@ -479,7 +480,8 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
             shopName: shopApi.shopName,
             startDate: startDate,
             endDate: endDate,
-            checkStatusInItem: true
+            checkStatusInItem: true,
+            storeName: shopApi.storeName,
         };
         await checkGetAllItem(requestBody)
     }
@@ -512,7 +514,6 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                     </Modal.Section>
 
                 </Modal>
-
 
                 <div className='wf-listingRecord'>
                     <div className='wf-listingRecord-inner'>

@@ -5418,8 +5418,10 @@ export const getWishlistUsersData = async (req, res) => {
         let cartQuery = "";
         let itemQuery = "";
         let startDate = "", endDate = "";
-        startDate = req.body?.startDate || ""
-        endDate = req.body?.endDate || ""
+        startDate = req.body?.startDate || "";
+        endDate = req.body?.endDate || "";
+        let storeName = req.body?.storeName;
+        console.log("req.body = ", req.body);
 
         if (req.body.checkStatusInItem === true) {
             query += `AND created_at >= "${req.body.startDate}" AND CAST(created_at as DATE) <= "${req.body.endDate}"`;
@@ -5461,7 +5463,8 @@ export const getWishlistUsersData = async (req, res) => {
             var [allRegistries] = await database.query(`
             SELECT ${Wishlist_table}.created_at, first_name, last_name, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
-            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id;
+            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
+            AND ${user_table}.store_name='${storeName}';
             `)
         }
         else if (startDate !== "" && endDate !== "" && startDate === endDate) {
@@ -5470,6 +5473,7 @@ export const getWishlistUsersData = async (req, res) => {
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
             AND ${Wishlist_table}.created_at LIKE '%${startDate}%'
+            AND ${user_table}.store_name='${storeName}';
             `)
         }
         else {
@@ -5478,6 +5482,7 @@ export const getWishlistUsersData = async (req, res) => {
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
             AND ${Wishlist_table}.created_at BETWEEN '${startDate}' AND '${endDate}'
+            AND ${user_table}.store_name='${storeName}';
             `)
         }
 
@@ -6961,7 +6966,7 @@ export const klaviyoAuthCallback = async (req, res) => {
 
 
 export const updateRegistry = async (req, res) => {
-    try{
+    try {
         console.log("req.body.data = ", req.body.data)
         const { name, description, options, date, url, password } = req.body.data;
         const { registryId, userId } = req.body.registryData;
@@ -6972,7 +6977,7 @@ export const updateRegistry = async (req, res) => {
 
         res.json("Registry updated successfully")
     }
-    catch(err){
+    catch (err) {
         console.err("Error : ", err)
         res.status(500).send("Updating registry failed");
     }

@@ -112,6 +112,7 @@ const Data = () => {
     const shopData = await ShopApi.shop();
     const newRequestBody = {
       shopName: shopData.shopName,
+      storeName: shopData.storeName,
     };
     if (data === 'tabI') {
       // console.log("Fffffff Nooo")
@@ -278,19 +279,19 @@ const Data = () => {
             <Page fullWidth title={title}
               subtitle={myLanguage.analyticDetailUserReportsSubHeading}
               secondaryActions={[{
-                content: currentPlan >= 2 ?
-                  <div className='wf-style-wishbtn currentWishlistUser'><div className='customer-recently-table'>
-                    {/* <IndexTable
-                      itemCount={1}
-                      headings={[
-                        { title: selected === 0 ? myLanguage.tab0heading : selected === 1 ? myLanguage.tab1heading : myLanguage.tab2heading },
-                      ]}
-                      selectable={false}
-                    >
-                      {countValue}
-                    </IndexTable> */}
-                  </div>
-                  </div> : <div></div>
+                // content: currentPlan >= 2 ?
+                //   <div className='wf-style-wishbtn currentWishlistUser'><div className='customer-recently-table'>
+                //     {/* <IndexTable
+                //       itemCount={1}
+                //       headings={[
+                //         { title: selected === 0 ? myLanguage.tab0heading : selected === 1 ? myLanguage.tab1heading : myLanguage.tab2heading },
+                //       ]}
+                //       selectable={false}
+                //     >
+                //       {countValue}
+                //     </IndexTable> */}
+                //   </div>
+                //   </div> : <div></div>
               }]}
               backAction={{ onAction: () => history.back() }}>
               {currentPlan < 2 ? <div className='wf-style-wishbtn wf-reportDiv'>

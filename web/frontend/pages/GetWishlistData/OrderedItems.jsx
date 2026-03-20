@@ -1,7 +1,7 @@
 import { AlphaCard, Text, IndexFilters, IndexTable, LegacyCard, Pagination, useSetIndexFiltersMode, IndexFiltersMode, Spinner } from '@shopify/polaris'
 import React from 'react'
 
-const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCartSelected: sortCartSelected, queryCartValue: queryCartValue, handleFiltersQueryChange: handleFiltersQueryChange, setQueryCartValue: setQueryCartValue, handleFiltersClearAll: handleFiltersClearAll, cartData: cartData, orderedItemsTable: orderedItemsTable, startIndexCartValue: startIndexCartValue, totalRecordsCart: totalRecordsCart, handleSortCartChange: handleSortCartChange, getOrdersPageNo: getOrdersPageNo, handleOrdersPagination, isCartLoading: isCartLoading, hasOrdersPrevious, hasOrdersNext }) => {
+const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCartSelected: sortCartSelected, queryCartValue: queryCartValue, handleFiltersQueryChange: handleFiltersQueryChange, setQueryCartValue: setQueryCartValue, handleFiltersClearAll: handleFiltersClearAll, cartData: cartData, orderedItemsTable: orderedItemsTable, startIndexCartValue: startIndexCartValue, totalRecordsCart: totalRecordsCart, handleSortCartChange: handleSortCartChange, getOrdersPageNo: getOrdersPageNo, handleOrdersPagination, isCartLoading: isCartLoading, hasOrdersPrevious, hasOrdersNext, totalOrderedItems }) => {
     const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
     const onHandleCancel = () => { };
 
@@ -64,7 +64,7 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
                                     }}
                                     hasNext={hasOrdersNext}
                                     hasPrevious={hasOrdersPrevious}
-                                    label={`Total ${orderedItemsTable.length} items`}
+                                    label={`Total ${totalOrderedItems} items`}
                                     accessibilityLabel="Pagination"
                                     nextTooltip="Next page"
                                     previousTooltip="Previous page"

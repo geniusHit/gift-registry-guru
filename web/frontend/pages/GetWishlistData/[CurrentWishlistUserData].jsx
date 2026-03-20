@@ -903,6 +903,8 @@ const GetWishlistData = () => {
             )
         },
     );
+    console.log("orderedItems = ", orderedItems)
+    console.log("orderedItems.length = ", orderedItems.length)
 
     console.log("startIndex = ", startIndex)
     console.log("endIndex = ", endIndex)
@@ -1691,7 +1693,7 @@ const GetWishlistData = () => {
                                     <form onSubmit={handleSubmit(handleSubmit2)}>
                                         {(saveBar) ? <SaveBar save="Save" /> : ""}
 
-                                        <Text variant="headingLg" as="h2">Edit Registry</Text><br/>
+                                        <Text variant="headingLg" as="h2">Edit Registry</Text><br />
 
                                         <Grid>
                                             <Grid.Cell>
@@ -1763,7 +1765,7 @@ const GetWishlistData = () => {
                                                     )}
                                                 />
                                             </Grid.Cell>
-                                        </Grid><br/>
+                                        </Grid><br />
 
                                         <Grid>
                                             <Grid.Cell>
@@ -1782,6 +1784,23 @@ const GetWishlistData = () => {
                                             </Grid.Cell>
 
                                             <Grid.Cell>
+                                                <Controller
+                                                    control={control}
+                                                    name='url'
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            label="Share Registry"
+                                                            value={copyUrl()}
+                                                            suffix={<div style={{ cursor: "pointer" }} onClick={() => textCopyHandler(copyUrl())}><Icon source={DuplicateMinor} /></div>}
+                                                            autoComplete="off"
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid.Cell>
+                                        </Grid><br />
+
+                                        <Grid>
+                                            <Grid.Cell>
                                                 {
                                                     showPassField && <Controller
                                                         control={control}
@@ -1797,28 +1816,11 @@ const GetWishlistData = () => {
                                                     />
                                                 }
                                             </Grid.Cell>
+
+                                            <Grid.Cell>
+
+                                            </Grid.Cell>
                                         </Grid><br />
-
-                                        <Grid>
-                                            <Grid.Cell>
-                                                <Controller
-                                                    control={control}
-                                                    name='url'
-                                                    render={({ field }) => (
-                                                        <TextField
-                                                            label="Share Registry"
-                                                            value={copyUrl()}
-                                                            suffix={<div style={{ cursor: "pointer" }} onClick={() => textCopyHandler(copyUrl())}><Icon source={DuplicateMinor} /></div>}
-                                                            autoComplete="off"
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid.Cell>
-
-                                            <Grid.Cell>
-
-                                            </Grid.Cell>
-                                        </Grid><br/>
 
                                         {/* <Controller
                                             control={control}
@@ -1916,7 +1918,7 @@ const GetWishlistData = () => {
                         <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} listingAndDate={listingAndDate} />
 
                         {/* Items which are ordered */}
-                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} getOrdersPageNo={getOrdersPageNo} handleOrdersPagination={handleOrdersPagination} isCartLoading={isCartLoading} hasOrdersNext={hasOrdersNext} hasOrdersPrevious={hasOrdersPrevious} />
+                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} getOrdersPageNo={getOrdersPageNo} handleOrdersPagination={handleOrdersPagination} isCartLoading={isCartLoading} hasOrdersNext={hasOrdersNext} hasOrdersPrevious={hasOrdersPrevious} totalOrderedItems={orderedItems.length} />
 
                         {/* <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} /> */}
 
