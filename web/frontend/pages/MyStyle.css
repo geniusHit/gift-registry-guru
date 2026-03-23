@@ -1105,3 +1105,7 @@ left: 0;
 .wf-currentWishlistUser .Polaris-Select__Content{
     max-width: 100% !important;
 }
+
+.wf-userReport .Polaris-Box .Polaris-HorizontalStack .Polaris-HorizontalStack{
+    display: none;
+}

@@ -31,7 +31,6 @@ const GetWishlistData = () => {
     const Navigate = useNavigate()
     const { search } = useLocation();
     const searchParams = new URLSearchParams(search.trim());
-    console.log("searchParams = ", searchParams)
     const { serverURL } = Constants;
     const ShopApi = useApi();
     const [cartData, setCartData] = useState([]);
@@ -124,22 +123,6 @@ const GetWishlistData = () => {
         setCurrentEmail(userData[0]?.email)
     }, [userData])
 
-    useEffect(() => {
-        console.log("currentEmail = ", currentEmail)
-    }, [currentEmail])
-
-    useEffect(() => {
-        console.log("userList = ", userList)
-    }, [userList])
-
-    useEffect(() => {
-        console.log("sharedWishlistArr = ", sharedWishlistArr)
-    }, [sharedWishlistArr])
-
-    useEffect(() => {
-        console.log("registryItems = ", registryItems)
-    }, [registryItems])
-
     const toggleActive = useCallback(() => setCopyActive((copyActive) => !copyActive), []);
     const toastMarkup = copyActive ? (
         <Toast content="Copied" onDismiss={toggleActive} />
@@ -192,7 +175,6 @@ const GetWishlistData = () => {
         setCurrentShopData(shopApi)
         shopCurrency.current = shopApi.shopCurrency
         const data = await getAllAppDataMetafields();
-        console.log("data = ", data)
         const isMultiWish = data.isMultiWish || "no"
         setIsMultiWishlist(isMultiWish)
         await getCurrentUserData(shopApi, res, getCurrentPlan.current, isMultiWish);
@@ -269,7 +251,6 @@ const GetWishlistData = () => {
         } else {
             requestBody.checkStatusInCart = false
         }
-        console.log("requestBody = ", requestBody)
         try {
             const userData = await fetch(`${serverURL}/get-current-user-wishlist-data`, {
                 method: "POST",
@@ -279,7 +260,6 @@ const GetWishlistData = () => {
                 body: JSON.stringify(requestBody),
             });
             let result = await userData.json();
-            console.log("result = ", result)
 
             // const items = result.productResult.filter((item) => item.wishlist_id === id)
             // setRegistryItems()
@@ -288,14 +268,10 @@ const GetWishlistData = () => {
             setCheckWishlistItem(result.productResult.length)
             setAllItems(result?.productResult)
             const wishlist_id = searchParams.get("wishlist_id")
-            console.log("wishlist_id = ", wishlist_id)
             const items = result?.productResult.filter((item) => item.wishlist_id === parseInt(wishlist_id))
-            console.log("items = ", items)
             setRegistryItems(items)
             setOrderedItems(result?.orderedItems)
             result?.wishlistData.map((registry) => {
-                console.log("registry = ", registry)
-                console.log("registry_id = ", registry_id)
                 const wishlist_id = searchParams.get("wishlist_id")
                 registry?.id === parseInt(wishlist_id) && setRegistryData(registry)
             })
@@ -861,7 +837,6 @@ const GetWishlistData = () => {
         </IndexTable.Row>
     ));
 
-    console.table("wishlistDataTable = ", wishlistDataTable)
 
     const cartWishlistTable = cartData.map(
         ({ title, price, image, created_at, quantity }, index) => {
@@ -882,10 +857,6 @@ const GetWishlistData = () => {
 
     let ordersStartIndex = (parseInt(ordersPageNo) - 1) * parseInt(getItemRecordPerPage);
     let ordersEndIndex = ordersStartIndex + parseInt(getItemRecordPerPage);
-    console.log("ordersPageNo = ", ordersPageNo)
-    console.log("getItemRecordPerPage = ", getItemRecordPerPage)
-    console.log("ordersStartIndex = ", ordersStartIndex)
-    console.log("ordersEndIndex = ", ordersEndIndex)
     let hasOrdersNext = ordersEndIndex < orderedItems.length;
     let hasOrdersPrevious = parseInt(ordersPageNo) > 1
     const orderedItemsTable = orderedItems.slice(ordersStartIndex, ordersEndIndex).map(
@@ -903,11 +874,6 @@ const GetWishlistData = () => {
             )
         },
     );
-    console.log("orderedItems = ", orderedItems)
-    console.log("orderedItems.length = ", orderedItems.length)
-
-    console.log("startIndex = ", startIndex)
-    console.log("endIndex = ", endIndex)
     const hasNext = endIndex < registryItems.length
     const hasPrevious = parseInt(getItemPageNo) > 1
     const registryItemsTable = registryItems.slice(startIndex, endIndex).map(
@@ -975,7 +941,6 @@ const GetWishlistData = () => {
     };
 
     async function checkGetAllItem(checkSelectedLabel, checkSelectedData, shopApi, resp) {
-        console.log("NNN ", checkSelectedLabel, checkSelectedData, shopApi, resp)
         if (resp === "resp") {
             setIsCartLoading(!isCartLoading)
             setIsItemLoading(!isItemLoading)
@@ -1001,10 +966,8 @@ const GetWishlistData = () => {
                 body: JSON.stringify(requestBody),
             });
             let result = await userData.json();
-            console.log("result = ", result)
             const wishlist_id = searchParams.get("wishlist_id")
             const items = result?.productResult.filter((item) => item.wishlist_id === parseInt(wishlist_id))
-            console.log("items = ", items)
             setRegistryItems(items)
             setSharedWishlistArr(result.wishlistData)
             setCheckCurrentItemData(result.productResult)
@@ -1286,8 +1249,6 @@ const GetWishlistData = () => {
         }
         let pageUrl
         let encryptId = btoa(Number(id.CurrentWishlistUserData))
-        console.log("Number(id.CurrentWishlistUserData) = ", Number(id.CurrentWishlistUserData))
-        console.log("encryptId = ", encryptId)
         const encryptedName = btoa('url');
 
         // if (currentShopData.domain === 'rubychikankari.com' || currentShopData.domain === 'preahkomaitland.com.au') {
@@ -1350,11 +1311,6 @@ const GetWishlistData = () => {
         [],
     );
 
-    useEffect(() => {
-        console.log("eventOptions = ", eventOptions)
-    }, [eventOptions])
-
-
     const [description, setDescription] = useState('')
     const handleChangeDescription = useCallback(
         (newValue) => {
@@ -1399,10 +1355,6 @@ const GetWishlistData = () => {
             : "")
     }, [selectedDate])
 
-    useEffect(() => {
-        console.log("formattedDate = ", formattedDate)
-    }, [formattedDate])
-
     // useEffect(())
 
     const activator = (
@@ -1437,7 +1389,6 @@ const GetWishlistData = () => {
 
     function shareSingleWishlist(event, key, userId = "") {
         // key = key.trim().replaceAll(" ", "%20");/
-        console.log("key = ", key)
         event.stopPropagation();
         openShareWishlistModal(key, userId);
     }
@@ -1464,7 +1415,6 @@ const GetWishlistData = () => {
         sharableLinkHeading.current.innerHTML = "Sharable Link";
         // });
         const shopApi = await ShopApi.shop();
-        console.log("shopApi = ", shopApi)
         const sendID = shopApi.customerEmail;
         // const sendID = await getCurrentLoginFxn() || localStorage.getItem("access-token");
         try {
@@ -1535,7 +1485,6 @@ const GetWishlistData = () => {
 
 
     useEffect(() => {
-        console.log("registryData = ", registryData)
         setName(registryData?.name)
         setDescription(registryData?.wishlist_description)
         setSelectedEvent(registryData?.event_type)
@@ -1558,9 +1507,6 @@ const GetWishlistData = () => {
     }, [registryData])
 
     const handleSubmit2 = async (data) => {
-        console.log("handleSubmit2 called")
-        console.log("data = ", data)
-
         const result = await fetch(`${serverURL}/update-registry`, {
             method: "POST",
             headers: {

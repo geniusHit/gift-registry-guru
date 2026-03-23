@@ -237,7 +237,15 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     const endIndex = startIndex + parseInt(listingPerPage)
     console.log("startIndex = ", startIndex)
     console.log("endIndex = ", endIndex)
-    const registriesListTable = allRegistries.slice(startIndex, endIndex).map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name, first_name, last_name }, index) => {
+    console.log("allRegistries = ", allRegistries)
+    let query= queryValue.trim();
+    const searchedRegistries = queryValue !== "" ? allRegistries.filter((registry)=>{
+        if(registry.email.toLowerCase().includes(query) || registry.first_name.toLowerCase().includes(query) || registry.last_name.toLowerCase().includes(query) || registry.wishlist_name.toLowerCase().includes(query) || registry.event_type.toLowerCase().includes(query)){
+            return registry;
+        };
+    }) : allRegistries;
+    console.log("searchedRegistries = ", searchedRegistries)
+    const registriesListTable = searchedRegistries.slice(startIndex, endIndex).map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name, first_name, last_name }, index) => {
         console.log("allRegistries = ", allRegistries)
         console.log("id = ", id)
         console.log("wishlist_id = ", wishlist_id)
@@ -251,7 +259,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
 
         return <IndexTable.Row id={id} key={`${id}-${index}`} position={id} >
             <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>
-            <IndexTable.Cell>{email} <br/> {first_name} {last_name}</IndexTable.Cell>
+            <IndexTable.Cell><b>{first_name} {last_name}</b> <br/> {email}</IndexTable.Cell>
             <IndexTable.Cell>Active</IndexTable.Cell>
             <IndexTable.Cell>{event_type}</IndexTable.Cell>
             <IndexTable.Cell>{event_date}</IndexTable.Cell>
@@ -487,8 +495,8 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     }
 
     useEffect(() => {
-        console.log("userList = ", userList)
-    }, [userList])
+        console.log("queryValue = ", queryValue)
+    }, [queryValue])
 
     return (
         <div dir={wishlistTextDirection} className='wf-userReport'>
@@ -546,18 +554,18 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                             :
                             <LegacyCard>
                                 <IndexFilters
-                                    sortOptions={sortOptions}
-                                    sortSelected={sortSelected}
+                                    // sortOptions={sortOptions}
+                                    // sortSelected={sortSelected}
                                     queryValue={queryValue}
                                     queryPlaceholder={myLanguage.revenuesearch}
                                     onQueryChange={handleFiltersQueryChange}
                                     onQueryClear={() => setQueryValue('')}
                                     onSort={handleSortChange}
-                                    cancelAction={{
-                                        onAction: onHandleCancel,
-                                        disabled: false,
-                                        loading: false,
-                                    }}
+                                    // cancelAction={{
+                                    //     onAction: onHandleCancel,
+                                    //     disabled: false,
+                                    //     loading: false,
+                                    // }}
                                     tabs={[]}
                                     filters={[]}
                                     onClearAll={handleFiltersClearAll}
@@ -607,10 +615,10 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                             handlePagination(parseInt(currentPage) + 1)
                                         }}
                                         // hasNext={startIndexValue.current.end < totalRecords.current}
-                                        hasNext={endIndex<allRegistries.length}
+                                        hasNext={endIndex<searchedRegistries.length || false}
                                         // hasPrevious={parseInt(currentPage) > 1}
-                                        hasPrevious={parseInt(checkCurrentPage)>1}
-                                        label={`Total Registries: ${allRegistries.length} `}
+                                        hasPrevious={parseInt(checkCurrentPage)>1 || false}
+                                        label={`Total Registries: ${searchedRegistries.length} `}
                                         accessibilityLabel="Pagination"
                                         nextTooltip="Next page"
                                         previousTooltip="Previous page"

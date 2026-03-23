@@ -108,7 +108,6 @@ const Data = () => {
   };
 
   const prepareRequestBody = async (language, data) => {
-    // console.log("data", data)
     const shopData = await ShopApi.shop();
     const newRequestBody = {
       shopName: shopData.shopName,
