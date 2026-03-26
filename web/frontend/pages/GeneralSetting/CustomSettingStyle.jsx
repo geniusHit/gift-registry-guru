@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextField, Select, AlphaCard } from '@shopify/polaris';
+import { Text, TextField, Select, Card } from '@shopify/polaris';
 import BorderController from '../../hooks/useBorderController';
 import ColorPickerController from '../../hooks/useColorPickerController';
 import RangeController from '../../hooks/useRangeController';
@@ -16,7 +16,7 @@ const CustomSettingStyle = ({ showDiv, setSaveBar, control, myLanguage, hideWidt
     return (
         <>
             {!showDiv &&
-                <AlphaCard>
+                <Card>
                     <div className='custom-margin'>
                         <Text variant="headingMd" as="h2">{myLanguage.notificationButtonSetting}</Text>
                         <p>{myLanguage.notificationButtonSettingSubHeading}</p>
@@ -92,10 +92,10 @@ const CustomSettingStyle = ({ showDiv, setSaveBar, control, myLanguage, hideWidt
                         units={"pixel"}
                         myLanguage={myLanguage}
                     />
-                </AlphaCard>
+                </Card>
             }
 
-            <AlphaCard>
+            <Card>
                 <div className='custom-margin'>
                     <Text variant="headingMd" as="h2">{myLanguage.notificationTextSetting}</Text>
                     <p>{myLanguage.notificationTextSettingSubHeading}</p>
@@ -150,7 +150,7 @@ const CustomSettingStyle = ({ showDiv, setSaveBar, control, myLanguage, hideWidt
                         />
                     )}
                 </SingleFieldController>
-            </AlphaCard>
+            </Card>
         </>
     )
 }

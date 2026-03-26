@@ -8,7 +8,7 @@ import moment from 'moment-js';
 import { Constants } from '../../backend/constants/constant';
 import useAppMetafield from '../hooks/useAppMetafield';
 import Footer from './Footer';
-import { ViewMajor } from '@shopify/polaris-icons';
+import { ViewIcon } from '@shopify/polaris-icons';
 
 const ShareStats = () => {
     const ShopApi = useApi();
@@ -171,7 +171,7 @@ const ShareStats = () => {
                 <IndexTable.Cell>{linkedin}</IndexTable.Cell>
                 <IndexTable.Cell>{fb_messenger}</IndexTable.Cell>
                 <IndexTable.Cell>{clicks}</IndexTable.Cell>
-                <IndexTable.Cell><Button onClick={() => viewHandler(user_id)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => viewHandler(user_id)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
             </IndexTable.Row>
         ],
     );

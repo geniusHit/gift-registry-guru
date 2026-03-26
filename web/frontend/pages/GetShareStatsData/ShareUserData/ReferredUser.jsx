@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { Page, Spinner, LegacyCard, IndexTable, Pagination, Button, Text, Icon, Select, IndexFilters, Modal, useSetIndexFiltersMode, IndexFiltersMode, DatePicker } from '@shopify/polaris';
-import { ViewMajor } from '@shopify/polaris-icons';
+import { ViewIcon } from '@shopify/polaris-icons';
 import useAppMetafield from '../../../hooks/useAppMetafield';
 import useApi from '../../../hooks/useApi';
 import useUtilityFunction from '../../../hooks/useUtilityFunction';
@@ -191,7 +191,7 @@ const ReferredUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                 <IndexTable.Cell>{wishlistItemCount}</IndexTable.Cell>
                 <IndexTable.Cell>{cartTableCount}</IndexTable.Cell>
                 <IndexTable.Cell>{extractedDate(created_at)}</IndexTable.Cell>
-                <IndexTable.Cell><Button onClick={() => viewHandler(id)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => viewHandler(id)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
             </IndexTable.Row>
         ],
     )

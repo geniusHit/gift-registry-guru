@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Frame, Page, Text, Grid, TextField } from '@shopify/polaris';
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import useAppMetafield from '../../hooks/useAppMetafield';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
 import SaveBar from '../SaveBar';

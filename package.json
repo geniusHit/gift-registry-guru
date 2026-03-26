@@ -15,6 +15,7 @@
     "@shopify/app": "^3.58.2",
     "@shopify/app-bridge-utils": "^3.5.1",
     "@shopify/cli": "^3.89.0",
+    "@shopify/polaris": "^13.9.5",
     "@shopify/shopify-api": "^11.14.1",
     "buffer": "^6.0.3",
     "cors": "^2.8.6",

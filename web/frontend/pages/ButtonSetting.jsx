@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useMemo, Suspense } from 'react';
-import { Frame, AlphaCard, Button, Page, Text, Grid, RadioButton, Select, Tabs, LegacyCard, Checkbox, Collapsible } from '@shopify/polaris';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { Frame, Card, Button, Page, Text, Grid, RadioButton, Select, Tabs, LegacyCard, Collapsible } from '@shopify/polaris';
 import { Controller, useForm } from "react-hook-form";
 import CssFilterConverter from "css-filter-converter";
 import Swal from "sweetalert2";
@@ -18,8 +18,12 @@ import Footer from './Footer';
 import useApi from '../hooks/useApi';
 import SingleController from '../hooks/useSingleFieldController';
 import { Link } from 'react-router-dom';
+import { useAppBridge } from '@shopify/app-bridge-react';
+
 
 const ButtonSetting = () => {
+    const shopify = useAppBridge()
+
     let iconColor;
     let iconColorHover;
     // let cartButtoniconColor;
@@ -29,7 +33,7 @@ const ButtonSetting = () => {
     let activeBtniconColor;
     const shopApi = useApi()
     const [myLanguage, setMyLanguage] = useState({});
-    const { handleSubmit, watch, control, reset, setValue, formState: { errors } } = useForm();
+    const { handleSubmit, watch, control, reset, trigger, setValue, formState: { errors } } = useForm();
     const appMetafield = useAppMetafield();
     const [saveBar, setSaveBar] = useState(false);
     const [isloading, setIsLoading] = useState(false);
@@ -815,10 +819,37 @@ const ButtonSetting = () => {
     }
 
 
+
+
+
+    // const handleChange = async (shopify) => {
+    //     shopify.saveBar.hide('collection-setting-save-bar');
+    //     const result = await trigger();
+    //     if (result) {
+    //         handleSubmit(saveToMetafield)();
+    //     }
+    // }
+
+    // const handleDiscard = (shopify, id) => {
+    //     shopify.saveBar.hide('collection-setting-save-bar');
+    // };
+
+    // function showSaveBar(shopify) {
+    //     shopify.saveBar.show('collection-setting-save-bar');
+    // }
+
+
     return (
         <div dir={wishlistTextDirection} className='wf-dashboard wf-dashboard-buttonSetting'>
             {!isloading ? <SkeletonPage1 /> :
                 <Frame>
+
+
+                    {/* <SaveBar savebarid={"collection-setting-save-bar"} handlechange={() => { handleChange(shopify) }} handlediscard={() => {
+                        handleDiscard(shopify)
+                    }} /> */}
+
+
                     <form onSubmit={handleSubmit(saveToMetafield)}>
                         {(saveBar) ? <SaveBar save={myLanguage.save} /> : ""}
                         <Page fullWidth title={myLanguage.buttonSettingMainHeading} subtitle={myLanguage.buttonSettingMainText}>
@@ -841,7 +872,7 @@ const ButtonSetting = () => {
                                         <Text variant="headingMd" as="h2">{myLanguage.wishlistButtonHeading}</Text>
                                         <p>{myLanguage.wishlistButtonText}</p>
                                     </div>
-                                    <AlphaCard>
+                                    <Card>
                                         <div id="add-to-wishlist-section">
 
                                             <div className='buttonsGrid'>
@@ -852,6 +883,7 @@ const ButtonSetting = () => {
                                                             value={field.value} id="text-button" checked={field.value === "text-button" && true} onChange={() => {
                                                                 field.onChange("text-button"),
                                                                     setSaveBar(true);
+                                                                // showSaveBar(shopify, "collection-setting-save-bar")
                                                                 setAloneIcon(false)
                                                                 renderColor("bgButton")
                                                             }} />}
@@ -868,6 +900,7 @@ const ButtonSetting = () => {
                                                             value={field.value} id="text" checked={field.value === "text" && true} onChange={() => {
                                                                 field.onChange("text"),
                                                                     setSaveBar(true);
+                                                                // showSaveBar(shopify, "collection-setting-save-bar")
                                                                 setAloneIcon(false)
                                                                 renderColor("onlyTextButton")
                                                             }} />}
@@ -881,7 +914,10 @@ const ButtonSetting = () => {
                                                 <div className='demoCardColored'>
                                                     <SingleFieldController name="buttonTypeRadio" control={control}  >
                                                         {({ field }) => <RadioButton label={iconTextButtonFxn("icon")}
-                                                            value={field.value} id="icon-text-button" checked={field.value === "icon-text-button"} onChange={() => { field.onChange("icon-text-button"), setSaveBar(true), setAloneIcon(false), renderColor("bgButton") }}
+                                                            value={field.value} id="icon-text-button" checked={field.value === "icon-text-button"} onChange={() => {
+                                                                field.onChange("icon-text-button"), setSaveBar(true), setAloneIcon(false), renderColor("bgButton")
+                                                                // showSaveBar(shopify, "collection-setting-save-bar")
+                                                            }}
                                                         />}
                                                     </SingleFieldController>
                                                     <div style={{ paddingLeft: "30px", marginTop: "4px" }}>
@@ -900,6 +936,7 @@ const ButtonSetting = () => {
                                                             onChange={() => {
                                                                 field.onChange("icon-text");
                                                                 setSaveBar(true);
+                                                                // showSaveBar(shopify, "collection-setting-save-bar")
                                                                 setAloneIcon(false)
                                                                 renderColor("onlyTextButton")
                                                             }}
@@ -914,7 +951,10 @@ const ButtonSetting = () => {
                                                 <div className='demoCardAloneIcon'>
                                                     <SingleFieldController name="buttonTypeRadio" control={control}  >
                                                         {({ field }) => <RadioButton label={iconFxn("icon")}
-                                                            value={field.value} id="icon" checked={field.value === "icon" ? true : false} onChange={() => { field.onChange("icon"), setSaveBar(true), setAloneIcon(true), renderColor("bgButton") }}
+                                                            value={field.value} id="icon" checked={field.value === "icon" ? true : false} onChange={() => {
+                                                                field.onChange("icon"), setSaveBar(true), setAloneIcon(true), renderColor("bgButton")
+                                                                // showSaveBar(shopify, "collection-setting-save-bar")
+                                                            }}
                                                         />}
                                                     </SingleFieldController>
                                                     <div style={{ paddingLeft: "30px", marginTop: "4px" }}>
@@ -1054,18 +1094,18 @@ const ButtonSetting = () => {
                                             </div>
                                         </div>
 
-                                    </AlphaCard>
+                                    </Card>
                                 </div>
 
                                 <div className='wf-wishprev-inner'>
-                                    <AlphaCard>
+                                    <Card>
                                         <DemoProduct watchAllFields={watchAllFields} selectedBtn={selectedBtn} myLanguage={myLanguage} />
-                                    </AlphaCard>
+                                    </Card>
                                 </div>
                             </div>
 
 
-                            <AlphaCard>
+                            <Card>
                                 <div className='wf-style-wishbtn'>
                                     <div className='custom-margin'>
                                         <Text variant="headingMd" as="h2">{myLanguage.wbStyleHeading}</Text>
@@ -1077,7 +1117,7 @@ const ButtonSetting = () => {
                                         </LegacyCard.Section>
                                     </Tabs>
                                 </div>
-                            </AlphaCard>
+                            </Card>
 
 
                             {/* SHOW COUNT */}
@@ -1197,7 +1237,7 @@ const ButtonSetting = () => {
 
 
 
-                            {/* <AlphaCard>
+                            {/* <Card>
                                 <div id="add-to-cart-section" className='wf-style-wishbtn'>
                                     <div className='custom-margin'>
                                         <Text variant="headingMd" as="h2">{myLanguage.atcStyleHeading}</Text>
@@ -1210,7 +1250,7 @@ const ButtonSetting = () => {
                                         </LegacyCard.Section>
                                     </Tabs>
                                 </div>
-                            </AlphaCard> */}
+                            </Card> */}
 
                             {/* <br></br>
                             <br></br> */}

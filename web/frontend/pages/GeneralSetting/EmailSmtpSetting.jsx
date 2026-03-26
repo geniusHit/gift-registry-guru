@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
-import { Frame, Page, Text, Grid, TextField, Button } from '@shopify/polaris';
+import { Page, Grid, TextField, Button } from '@shopify/polaris';
 import SkeletonPage1 from '../SkeletonPage1';
 import useAppMetafield from '../../hooks/useAppMetafield';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
@@ -12,7 +12,6 @@ import useApi from '../../hooks/useApi';
 import { Constants } from '../../../backend/constants/constant';
 import Swal from 'sweetalert2';
 import Footer from '../Footer';
-import docLink from '../../assets/docLink.svg';
 
 const EmailSmtpSetting = () => {
     const shopApi = useApi();

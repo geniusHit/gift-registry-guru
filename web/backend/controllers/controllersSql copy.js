@@ -3717,7 +3717,7 @@ export const sendWishlistQuotaLimitMails = async (req, res) => {
                                 Thank you.
                                 Best regards`,
                             };
-                            // sendEmail(emailContent);
+                            sendEmail(emailContent);
 
                         }
 
@@ -4199,7 +4199,7 @@ export const sendMonthlyWishlistToUser = async (req, res) => {
                             }
                         }
 
-                        // await sendEmail22(emailContent, shopName, getSmtpDetail);
+                        await sendEmail22(emailContent, shopName, getSmtpDetail);
                     } catch (err) {
                         console.error(`[Email Failed] ${email}:`, err.message);
                     }
@@ -4537,13 +4537,13 @@ export const shareWishlistByMail = async (req, res) => {
                 const checkSmtp = await sendSmtpEmail(getSmtpDetail, emailContent, "", "");
                 if (checkSmtp === false) {
                     sendErrorMail = true;
-                    // await sendEmail(emailContent);
+                    await sendEmail(emailContent);
                     sendSmtpErrorMail(req.body.shopName);
                 }
                 res.status(200).json("Email sent successfully");
             } else {
                 // console.log("FROM OUR SERVER")
-                // await sendEmail(emailContent);
+                await sendEmail(emailContent);
                 res.status(200).json("Email sent successfully");
             }
 
@@ -5177,7 +5177,7 @@ export const appInstallation = async (req, res) => {
                                                                 Thank you.
                                                                 Best regards`,
                                                         };
-                                                        // sendEmail(emailContent);
+                                                        sendEmail(emailContent);
                                                     }
 
                                                     res.json({ msg: "plan updated in our database" });
@@ -5207,7 +5207,7 @@ export const appInstallation = async (req, res) => {
             9. Plan Name: ${currentPlanName} <br>
             10. Customer Email: ${req.body.customerEmail} <br>`,
                     };
-                    // sendEmail(emailContent);
+                    sendEmail(emailContent);
 
                     let storeCountry = req.body.country.replace(/'/g, "~");
                     let storeOwner = req.body.shopOwner.replace(/'/g, "~");
@@ -5329,13 +5329,13 @@ export const sendTestEmail = async (req, res) => {
                 const checkSmtp = await sendSmtpEmail(getSmtpDetail, emailContent, logoResult, app_install_id);
                 if (checkSmtp === false) {
                     sendErrorMail = true;
-                    // sendEmail(emailContent);
+                    sendEmail(emailContent);
                     sendSmtpErrorMail(shopName)
                 }
                 res.status(200).json({ message: "Email sent Successfully!" });
             } else {
                 // console.log("FROM OUR SERVER")
-                // sendEmail(emailContent);
+                sendEmail(emailContent);
                 res.status(200).json({ message: "email sent Successfully!" });
             }
 

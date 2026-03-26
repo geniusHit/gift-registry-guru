@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { AlphaCard, Button, Text } from '@shopify/polaris'
+import { Card, Button, Text } from '@shopify/polaris'
 import wfHelpAvatar from '../assets/user-avatar.svg';
 import wfHelpDoc from '../assets/doc-text-fill.svg';
 import useApi from '../hooks/useApi';
@@ -46,14 +46,14 @@ const Footer = ({ myLanguage }) => {
     return (
         <div>
             <div className="wf-dashboard-box wf-help-dashboard">
-                <AlphaCard>
+                <Card>
                     <div className='custom-margin'><Text variant="headingLg" as="h2">{myLanguage.helpHeading}</Text></div>
                     <p className='help-text-paragraph'>{myLanguage.helpText1} {myLanguage.helpText2}</p>
                     <div className='wf-help-dashboard-btn'>
                         <a style={{ textDecoration: "none" }} href="https://apps.shopify.com/wishlist-guru/reviews" target="_blank"><Button  ><img src={wfHelpAvatar} />   {myLanguage.contactUs} </Button></a>
                         <a style={{ textDecoration: "none" }} href="https://wishlist-guru.webframez.com/docs/" target="_blank"><Button><img src={wfHelpDoc} />{myLanguage.helpDocs}</Button></a>
                     </div>
-                </AlphaCard>
+                </Card>
             </div>
         </div>
     )

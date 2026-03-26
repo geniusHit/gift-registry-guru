@@ -1,4 +1,4 @@
-import { AlphaCard, Text, IndexFilters, IndexTable, LegacyCard, Pagination, useSetIndexFiltersMode, IndexFiltersMode, Spinner } from '@shopify/polaris'
+import { Card, Text, IndexFilters, IndexTable, Pagination, useSetIndexFiltersMode, IndexFiltersMode, Spinner } from '@shopify/polaris'
 import React from 'react'
 
 const CartDataTable = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCartSelected: sortCartSelected, queryCartValue: queryCartValue, handleFiltersQueryChange: handleFiltersQueryChange, setQueryCartValue: setQueryCartValue, handleFiltersClearAll: handleFiltersClearAll, cartData: cartData, cartWishlistTable: cartWishlistTable, startIndexCartValue: startIndexCartValue, totalRecordsCart: totalRecordsCart, handleSortCartChange: handleSortCartChange, currentCartPage: currentCartPage, handleCartPagination, isCartLoading: isCartLoading }) => {
@@ -11,7 +11,7 @@ const CartDataTable = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortC
                 <Text variant="headingLg" as="h2">{myLanguage.cartItemsHeading}</Text>
                 <p>{myLanguage.userListingText}</p>
 
-                <AlphaCard roundedAbove="sm">
+                <Card roundedAbove="sm">
                     {isCartLoading ?
                         <div style={{ textAlign: 'center' }}><Spinner accessibilityLabel="Spinner example" size="large" />
                         </div>
@@ -70,7 +70,7 @@ const CartDataTable = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortC
                                 />
                             </div>
                         </div>}
-                </AlphaCard>
+                </Card>
             </div>
         </div>
     )

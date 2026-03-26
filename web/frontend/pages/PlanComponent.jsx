@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Page, Grid, LegacyCard, Button, Icon, Badge, ButtonGroup, Text, Toast, Frame, TextField } from '@shopify/polaris';
+import { Page, Grid, LegacyCard, Button, Icon, Text, Toast, Frame, TextField } from '@shopify/polaris';
 import { useAuthenticatedFetch } from '../hooks'
 import useApi from '../hooks/useApi';
-import { StatusActiveMajor } from '@shopify/polaris-icons';
 import useSubscriptionUrl from '../hooks/useSubscriptionUrl';
 import SkeletonPage1 from './SkeletonPage1';
 import useAppMetafield from '../hooks/useAppMetafield';
@@ -19,7 +18,7 @@ import talkToUsIcon from '../assets/talktous-icon.svg';
 import Footer from './Footer';
 import { useNavigate } from 'react-router-dom';
 // import blackFridaySaleImg from '../assets/black-friday-sale.png';
-import { DeleteMinor } from '@shopify/polaris-icons';
+import { DeleteIcon } from '@shopify/polaris-icons';
 import WebframezApps from './WebframezApps';
 // import bannerImage from '../assets/banner-image.png';
 import bannerImage from '../assets/BFCMimg.png';
@@ -596,9 +595,7 @@ const PlanComponent = ({ setCurrentState }) => {
 
                                                             {/* <span>{isYearly ? `/${myLanguage.yearPlan}` : `/${myLanguage.month}`}</span> */}
 
-                                                            {plan_id !== 1 ?
-                                                                <div style={{ marginLeft: "7px", fontSize: "15px" }}>Was $<span style={{ textDecoration: "line-through" }}>{isYearly ? prev_yearly_price : prev_monthly_price}</span></div> : ""}
-                                                            {plan_id !== 1 ? <span style={{ color: "red" }}>Limited Time Offer</span> : ""}
+
 
                                                         </div>
 
@@ -652,7 +649,7 @@ const PlanComponent = ({ setCurrentState }) => {
                                                 </p>
 
                                                 <div className="del-btn" onClick={handleDeletePromo}>
-                                                    <Icon source={DeleteMinor} color="inkLighter" />
+                                                    <Icon source={DeleteIcon} color="inkLighter" />
                                                 </div>
                                             </div>
                                             : ""

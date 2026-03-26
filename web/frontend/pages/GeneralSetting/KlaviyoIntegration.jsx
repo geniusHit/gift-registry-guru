@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
-import { Frame, Page, Text, Grid, TextField } from '@shopify/polaris';
+import { Page, Text, Grid, TextField } from '@shopify/polaris';
 import SkeletonPage1 from '../SkeletonPage1';
 import useAppMetafield from '../../hooks/useAppMetafield';
 import useUtilityFunction from '../../hooks/useUtilityFunction';

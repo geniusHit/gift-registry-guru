@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, RangeSlider, Text, TextField, Select, AlphaCard } from '@shopify/polaris';
+import { Grid, Text, TextField, Select, Card } from '@shopify/polaris';
 import BorderController from '../hooks/useBorderController';
 import ColorPickerController from '../hooks/useColorPickerController';
 import RangeController from '../hooks/useRangeController';
@@ -58,7 +58,7 @@ const CustomStyle = ({ aloneIcon, setSaveBar, control, showCount, formName, myLa
                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 3, lg: 6, xl: 6 }}>
 
                         <div className='endColorPicker'>
-                            <AlphaCard>
+                            <Card>
                                 <div className='custom-margin'>
                                     <Text variant="headingMd" as="h3">{myLanguage.buttonSetting}</Text>
                                     <p>{myLanguage.buttonSettingSubHeading}</p>
@@ -95,14 +95,14 @@ const CustomStyle = ({ aloneIcon, setSaveBar, control, showCount, formName, myLa
                                     <BorderController control={control} controllerName={`${formName}borderInput`} id={`${formName}borderInput`} controllerBorderUnitName={`${formName}borderInputUnit`} label={myLanguage.styleBorder} controllerBorderName={`${formName}borderType`} controllerBorderColor={`${formName}borderColor`} setSaveBar={setSaveBar} unit={"pixel"} myLanguage={myLanguage} />
                                 </div>
 
-                            </AlphaCard>
+                            </Card>
                         </div>
                     </Grid.Cell>}
 
 
                 <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 3, lg: 6, xl: 6 }}>
                     <div className='endColorPicker'>
-                        <AlphaCard>
+                        <Card>
                             <div className='custom-margin'>
                                 <Text variant="headingMd" as="h3">{myLanguage.textSetting}</Text>
                                 <p>{myLanguage.textSettingSubHeading}</p>
@@ -177,14 +177,14 @@ const CustomStyle = ({ aloneIcon, setSaveBar, control, showCount, formName, myLa
                                         />)}
                                     </SingleFieldController></div>}
 
-                        </AlphaCard>
+                        </Card>
                     </div>
                 </Grid.Cell>
 
 
                 {formName === "" && <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 3, lg: 6, xl: 6 }}>
                     <div className='endColorPicker'>
-                        <AlphaCard>
+                        <Card>
                             <div className='custom-margin'>
                                 <Text variant="headingMd" as="h3">{myLanguage.iconSetting}</Text>
                                 <p>{myLanguage.iconSettingSubHeading}</p>
@@ -227,7 +227,7 @@ const CustomStyle = ({ aloneIcon, setSaveBar, control, showCount, formName, myLa
                                     />)}
                                 </SingleFieldController>
                             </div>
-                        </AlphaCard>
+                        </Card>
                     </div>
                 </Grid.Cell >}
             </Grid >

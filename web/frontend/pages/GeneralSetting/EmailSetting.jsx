@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Frame, Page, LegacyCard, IndexTable, Button, Text, AlphaCard, Thumbnail, DropZone, TextField, Grid, Select } from '@shopify/polaris';
+import { Frame, Page, LegacyCard, IndexTable, Button, Text, Card, Thumbnail, DropZone, TextField, Grid, Select } from '@shopify/polaris';
 import SkeletonPage1 from '../SkeletonPage1';
 import Swal from "sweetalert2";
 import useAppMetafield from '../../hooks/useAppMetafield';
@@ -451,7 +451,7 @@ const EmailSetting = () => {
 
                                     <div className='wf-style-wishbtn'>
                                         {/* <div className={`${currentPlan >= 2 ? "" : "disableEverything under-premium"}`} > */}
-                                        <AlphaCard>
+                                        <Card>
                                             <div className='pb-15'>
                                                 <Text variant="headingMd" as="h2">{myLanguage.emailSettingHeading}</Text>
                                                 <p>{myLanguage.emailSettingSubText}</p>
@@ -525,7 +525,7 @@ const EmailSetting = () => {
 
 
 
-                                        </AlphaCard>
+                                        </Card>
                                     </div>
                                     {/* </div> */}
 
@@ -696,7 +696,7 @@ const EmailSetting = () => {
 
                                     <div className='wf-style-wishbtn'>
                                         <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
-                                            <AlphaCard>
+                                            <Card>
                                                 <div className='pb-15'>
                                                     <Text variant="headingMd" as="h2">{myLanguage.uploadHeading}</Text>
                                                     <p>{myLanguage.uploadSubHeading}</p>
@@ -716,7 +716,7 @@ const EmailSetting = () => {
                                                     </div>
                                                     {uploadedFile}
                                                 </div>
-                                            </AlphaCard>
+                                            </Card>
                                         </div>
                                     </div>
 

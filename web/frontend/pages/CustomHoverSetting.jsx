@@ -1,9 +1,7 @@
 import React from 'react';
-import { Text, Select, TextField, AlphaCard, Grid, RangeSlider, } from '@shopify/polaris';
-import CustomColourPicker from './CustomColourPicker';
+import { Text, Card, Grid } from '@shopify/polaris';
 import ColorPickerController from '../hooks/useColorPickerController';
 import BorderController from '../hooks/useBorderController';
-import RangeController from '../hooks/useRangeController';
 
 const CustomHoverSetting = ({ aloneIcon, control, setSaveBar, watchAllFields, formName, myLanguage, showLess, onlyTextButton }) => {
     const Css = [
@@ -31,7 +29,7 @@ const CustomHoverSetting = ({ aloneIcon, control, setSaveBar, watchAllFields, fo
                 {showLess === true ? <></> :
                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                         <div className='endColorPicker'>
-                            <AlphaCard>
+                            <Card>
                                 <div className='custom-margin'>
                                     <Text variant="headingMd" as="h3">{myLanguage.buttonSetting}</Text>
                                     <p>{myLanguage.buttonSettingSubHeading}</p>
@@ -41,13 +39,13 @@ const CustomHoverSetting = ({ aloneIcon, control, setSaveBar, watchAllFields, fo
                                     <ColorPickerController control={control} controllerName={`${formName}hoverBgColor`} id={`${formName}hoverBgColor`} label={myLanguage.styleBackgroundColor} setSaveBar={setSaveBar} />
                                     <BorderController control={control} controllerName={`${formName}hoverBorderInput`} id={`${formName}hoverBorderInput`} controllerBorderUnitName={`${formName}hoverBorderInputUnit`} label={myLanguage.styleBorder} controllerBorderName={`${formName}hoverBorderType`} controllerBorderColor={`${formName}hoverBorderColor`} setSaveBar={setSaveBar} myLanguage={myLanguage} />
                                 </div>
-                            </AlphaCard>
+                            </Card>
                         </div>
                     </Grid.Cell>}
 
                 <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                     <div className='endColorPicker'>
-                        <AlphaCard>
+                        <Card>
                             <div className={`${aloneIcon && 'disableOneByOne'}`}>
                                 {/* <RangeController control={control} controllerName={`${formName}hoverFontSize`} id={`${formName}fontSize`} selectControllerName={`${formName}hoverFontSizeUnit`} label={myLanguage.styleFontSize} setSaveBar={setSaveBar} /> */}
                                 <div className='custom-margin'>
@@ -56,19 +54,19 @@ const CustomHoverSetting = ({ aloneIcon, control, setSaveBar, watchAllFields, fo
                                 </div>
                                 <ColorPickerController control={control} controllerName={`${formName}hoverTextColor`} id={`${formName}hoverTextColor`} label={myLanguage.styleTextColor} setSaveBar={setSaveBar} />
                             </div>
-                        </AlphaCard>
+                        </Card>
                     </div>
                 </Grid.Cell>
                 {formName === "" && <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                     <div className='endColorPicker'>
-                        <AlphaCard>
+                        <Card>
                             <div className='custom-margin'>
                                 <Text variant="headingMd" as="h3">{myLanguage.iconSetting}</Text>
                                 <p>{myLanguage.iconSettingSubHeading}</p>
                             </div>
 
                             <ColorPickerController control={control} controllerName={`${formName}hovericonColor`} id={`${formName}hovericonColor`} label={myLanguage.iconColor} setSaveBar={setSaveBar} />
-                        </AlphaCard>
+                        </Card>
                     </div>
                 </Grid.Cell>
                 }

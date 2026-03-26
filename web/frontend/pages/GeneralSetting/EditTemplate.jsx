@@ -1,4 +1,4 @@
-import { AlphaCard, Tabs, Text, Button, TextField, Checkbox, Grid, RadioButton, Spinner } from '@shopify/polaris';
+import { Card, Text, Button, TextField, Checkbox, RadioButton, Spinner } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from "react-draft-wysiwyg";
@@ -1035,7 +1035,7 @@ const EditTemplate = ({ value }) => {
             </div>
 
             <div className='wf-edit-template-left wf-style-wishbtn wf-right'>
-              <AlphaCard>
+              <Card>
                 <div className='pb-15 wf-previewDiv'>
                   <Text variant="headingMd" as="h2">{myLanguage.previewHeadingText}</Text>
                   <div className='editBtn disable-app'>
@@ -1071,7 +1071,7 @@ const EditTemplate = ({ value }) => {
                   </div>
                 )}
 
-              </AlphaCard>
+              </Card>
             </div>
           </div>
         </form>

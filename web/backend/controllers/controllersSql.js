@@ -1,3 +1,5 @@
+
+
 import fs from "fs";
 import multer from "multer";
 import axios from "axios";
@@ -117,9 +119,33 @@ async function CreateWishlist(req, res, emailOrToken, guestOrUser) {
         if (result2.length === 0) {
             return await addCreateWishlist(req, res, emailOrToken, guestOrUser);
         }
-        const insertQuery = `INSERT INTO ${Wishlist_table} (wishlist_user_id, wishlist_name, wishlist_description, url_type, password, event_type, event_date, first_name, last_name, street_address, zip_code, city, state, country, phone, tags, update_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
-        await database.query(insertQuery, [result2[0].id, req.body.wishlistName, req.body.wishlistDescription, req.body.wishlistUrlType, req.body.password, req.body.eventType, req.body.date, req.body.firstName, req.body.lastName, req.body.streetAddress, req.body.zipCode, req.body.city, req.body.state, req.body.country, req.body.phone, req.body.tags]);
-        return res.send({ msg: "wishlist created successfully" });
+
+        // get store plan
+        const [storePlan] = await database.query(`SELECT active_plan_id FROM ${app_installation_table} WHERE shop_name = ?`,
+            [req.body.shopName]);
+
+        // get registry in plan
+        const [registryInPlan] = await database.query(`SELECT * FROM ${plan_table} WHERE plan_id = ?`,
+            [storePlan[0]?.active_plan_id]);
+
+        // get regisrtry created by the user
+        const [registryByUser] = await database.query(`SELECT COUNT(wishlist_name) as registry_created FROM ${Wishlist_table} WHERE wishlist_user_id = ?`,
+            [result2[0].id]);
+
+        // console.log("registryByUser ---", registryByUser[0].registry_created)
+
+
+        // if (registryInPlan[0]?.registry <= registryByUser[0]?.registry_created) {
+
+        if (registryByUser[0]?.registry_created >= registryInPlan[0]?.registry) {
+            return res.send({ msg: "registry limit crossed" });
+        } else {
+
+            const insertQuery = `INSERT INTO ${Wishlist_table} (wishlist_user_id, wishlist_name, wishlist_description, url_type, password, event_type, event_date, first_name, last_name, street_address, zip_code, city, state, country, phone, tags, update_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
+            await database.query(insertQuery, [result2[0].id, req.body.wishlistName, req.body.wishlistDescription, req.body.wishlistUrlType, req.body.password, req.body.eventType, req.body.date, req.body.firstName, req.body.lastName, req.body.streetAddress, req.body.zipCode, req.body.city, req.body.state, req.body.country, req.body.phone, req.body.tags]);
+            return res.send({ msg: "wishlist created successfully" });
+
+        }
     } catch (err) {
         console.error("❌ SQL Error:", err);
         logger.error(err);
@@ -1300,6 +1326,7 @@ export const getAllItems = async (req, res) => {
                 wt.wishlist_name AS name,
                 u.id AS userId,
                 wt.wishlist_description AS description,
+                wt.wishlist_user_id as userId,
                 wt.url_type,
                 wt.password,
                 wt.event_date,
@@ -1328,6 +1355,7 @@ export const getAllItems = async (req, res) => {
                     wt.wishlist_id AS id,
                     wt.wishlist_name AS name,
                     wt.wishlist_description AS description,
+                    wt.wishlist_user_id as userId,
                     wt.url_type,
                     wt.password,
                     wt.event_date,
@@ -1364,6 +1392,7 @@ export const getAllItems = async (req, res) => {
                     [wish.name]: items,
                     id: wish.id,
                     description: wish.description,
+                    userId: wish.userId,
                     urlType: wish.url_type,
                     password: wish.password,
                     data: {
@@ -1405,6 +1434,7 @@ export const getAllItems = async (req, res) => {
                     [item.name]: items,
                     id: item.id,
                     description: item.description,
+                    userId: item.userId,
                     urlType: item.url_type,
                     password: item.password,
                     data: {
@@ -1448,6 +1478,7 @@ export const getAllItems = async (req, res) => {
                     [item.name]: items,
                     id: item.id,
                     description: item.description,
+                    userId: item.userId,
                     urlType: item.url_type,
                     password: item.password,
                     data: {
@@ -1516,6 +1547,7 @@ export const getAllItems = async (req, res) => {
                 wt.wishlist_id AS id,
                 wt.wishlist_name AS name,
                 wt.wishlist_description AS description,
+                wt.wishlist_user_id as userId,
                 wt.url_type,
                 wt.password,
                 wt.event_date,
@@ -1546,6 +1578,7 @@ export const getAllItems = async (req, res) => {
                 [w.name]: items,
                 id: w.id,
                 description: w.description,
+                userId: w.userId,
                 urlType: w.url_type,
                 password: w.password,
                 data: {
@@ -2365,10 +2398,14 @@ export const getSharedWishlist = async (req, res) => {
     }
     const fixedInput = fixBase64Padding1(getId);
     let extractedId = atob(fixedInput);
+
+    // console.log("extractedId -- ", extractedId)
+    // console.log("extractedId -- ", req.body.listId)
+
     try {
         // Fetch wishlist info
         const [getAllItems] = await database.query(
-            `SELECT wishlist_id AS id, wishlist_name AS name, url_type, wishlist_description
+            `SELECT wishlist_id AS id, wishlist_name AS name, url_type, wishlist_description, event_date, event_type, first_name, last_name, street_address, zip_code, city, state, country, phone, tags     
              FROM ${Wishlist_table}
              WHERE wishlist_user_id = ? AND wishlist_id = ?`,
             [extractedId, Number(req.body.listId)]
@@ -2387,7 +2424,21 @@ export const getSharedWishlist = async (req, res) => {
                 [getAllItems[0].name]: [],
                 id: getAllItems[0].id,
                 description: getAllItems[0].wishlist_description,
-                url_type: getAllItems[0].url_type
+                url_type: getAllItems[0].url_type,
+                userId: extractedId,
+                data: {
+                    eventDate: getAllItems[0].event_date,
+                    eventType: getAllItems[0].event_type,
+                    firstName: getAllItems[0].first_name,
+                    lastName: getAllItems[0].last_name,
+                    streetAddress: getAllItems[0].street_address,
+                    zipCode: getAllItems[0].zip_code,
+                    city: getAllItems[0].city,
+                    state: getAllItems[0].state,
+                    country: getAllItems[0].country,
+                    phone: getAllItems[0].phone,
+                    tags: getAllItems[0].tags,
+                }
             });
             return res.json({ data: getAllItemArr, msg: "password_protected_url" });
         } else if (getAllItems[0].url_type === "private") {
@@ -2395,7 +2446,21 @@ export const getSharedWishlist = async (req, res) => {
                 [getAllItems[0].name]: [],
                 id: getAllItems[0].id,
                 description: getAllItems[0].wishlist_description,
-                url_type: getAllItems[0].url_type
+                url_type: getAllItems[0].url_type,
+                userId: extractedId,
+                data: {
+                    eventDate: getAllItems[0].event_date,
+                    eventType: getAllItems[0].event_type,
+                    firstName: getAllItems[0].first_name,
+                    lastName: getAllItems[0].last_name,
+                    streetAddress: getAllItems[0].street_address,
+                    zipCode: getAllItems[0].zip_code,
+                    city: getAllItems[0].city,
+                    state: getAllItems[0].state,
+                    country: getAllItems[0].country,
+                    phone: getAllItems[0].phone,
+                    tags: getAllItems[0].tags,
+                }
             });
             return res.json({ data: getAllItemArr, msg: "private_url" });
         } else if (getAllItems[0].url_type === "public") {
@@ -2403,7 +2468,21 @@ export const getSharedWishlist = async (req, res) => {
                 [getAllItems[0].name]: getAllWishlistItems,
                 id: getAllItems[0].id,
                 description: getAllItems[0].wishlist_description,
-                url_type: getAllItems[0].url_type
+                url_type: getAllItems[0].url_type,
+                userId: extractedId,
+                data: {
+                    eventDate: getAllItems[0].event_date,
+                    eventType: getAllItems[0].event_type,
+                    firstName: getAllItems[0].first_name,
+                    lastName: getAllItems[0].last_name,
+                    streetAddress: getAllItems[0].street_address,
+                    zipCode: getAllItems[0].zip_code,
+                    city: getAllItems[0].city,
+                    state: getAllItems[0].state,
+                    country: getAllItems[0].country,
+                    phone: getAllItems[0].phone,
+                    tags: getAllItems[0].tags,
+                }
             });
             return res.json({ data: getAllItemArr, msg: "public_url" });
         }
@@ -4391,10 +4470,6 @@ export const downloadStoreCsvFile = async (req, res) => {
             "Content-Disposition",
             `attachment; filename="Wishlist-Guru.csv"`
         );
-        res.setHeader(
-            "Content-Security-Policy",
-            "frame-ancestors https://admin.shopify.com https://*.myshopify.com"
-        );
         return res.status(200).send(csvData);
     } catch (err) {
         console.error(err);
@@ -5412,6 +5487,76 @@ export const clearWishlistData = async (req, res) => {
     }
 };
 
+// export const getWishlistUsersData = async (req, res) => {
+//     try {
+//         let query = "";
+//         let cartQuery = "";
+//         let itemQuery = "";
+
+//         if (req.body.checkStatusInItem === true) {
+//             query += `AND created_at >= "${req.body.startDate}" AND CAST(created_at as DATE) <= "${req.body.endDate}"`;
+//             cartQuery += `AND w.created_at >= "${req.body.startDate}" AND CAST(w.created_at as DATE) <= "${req.body.endDate}"`;
+//             itemQuery += `AND w.created_at >= "${req.body.startDate}" AND CAST(w.created_at as DATE) <= "${req.body.endDate}"`;
+//         }
+
+//         const [userData] = await database.query(
+//             `SELECT * FROM ${user_table} 
+//              WHERE shop_name='${req.body.shopName}' 
+//              ${query}`
+//         );
+
+//         const [cartData] = await database.query(
+//             `SELECT * 
+//              FROM ${cart_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt 
+//              WHERE u.id = wt.wishlist_user_id 
+//              AND w.wishlist_id = wt.wishlist_id 
+//              AND u.shop_name='${req.body.shopName}' 
+//              ${cartQuery}
+//              GROUP BY u.id, w.variant_id 
+//              ORDER BY w.id`
+//         );
+
+//         const [wishlistItemData] = await database.query(
+//             `SELECT * 
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt 
+//              WHERE u.id = wt.wishlist_user_id 
+//              AND w.wishlist_id = wt.wishlist_id 
+//              AND u.shop_name='${req.body.shopName}' 
+//              ${itemQuery}
+//              GROUP BY u.id, w.variant_id 
+//              ORDER BY w.id DESC`
+//         );
+
+//         let results = [];
+//         for (let abItem of userData) {
+//             let count = 0;
+//             let cartCount = 0;
+//             for (let bcItem of wishlistItemData) {
+//                 if (abItem.id === bcItem.id) count++;
+//             }
+//             for (let itemData of cartData) {
+//                 if (abItem.id === itemData.id) cartCount++;
+//             }
+//             results.push({
+//                 ...abItem,
+//                 wishlistItemCount: count,
+//                 cartTableCount: cartCount,
+//             });
+//         }
+//         res.send({
+//             mainResult: results,
+//             userData,
+//             cartData,
+//             wishlistItemData,
+//             results,
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         logger.error(err);
+//         res.status(500).json({ msg: "Internal Server Error" });
+//     }
+// };
+
 export const getWishlistUsersData = async (req, res) => {
     try {
         let query = "";
@@ -5420,8 +5565,19 @@ export const getWishlistUsersData = async (req, res) => {
         let startDate = "", endDate = "";
         startDate = req.body?.startDate || "";
         endDate = req.body?.endDate || "";
-        let storeName = req.body?.storeName;
-        console.log("req.body = ", req.body);
+        let endDate2, shopName;
+        if (endDate === "") {
+            endDate2 = "";
+        }
+        else {
+            endDate2 = new Date(endDate);
+            endDate2.setDate(endDate2.getDate() + 1);
+            endDate2 = (endDate2.toISOString()).split("T")[0];
+        }
+        shopName = req.body?.shopName;
+        console.log("req.body = ", req.body)
+        console.log("startDate = ", startDate)
+        console.log("endDate2 = ", endDate2)
 
         if (req.body.checkStatusInItem === true) {
             query += `AND created_at >= "${req.body.startDate}" AND CAST(created_at as DATE) <= "${req.body.endDate}"`;
@@ -5457,32 +5613,30 @@ export const getWishlistUsersData = async (req, res) => {
              ORDER BY w.id DESC`
         );
 
-        console.log("startDate = ", startDate)
-        console.log("endDate = ", endDate)
-        if (startDate === "" || endDate === "") {
+        if (startDate === "" || endDate2 === "") {
             var [allRegistries] = await database.query(`
             SELECT ${Wishlist_table}.created_at, first_name, last_name, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
-            AND ${user_table}.store_name='${storeName}';
+            AND ${user_table}.shop_name='${shopName}';
             `)
         }
-        else if (startDate !== "" && endDate !== "" && startDate === endDate) {
+        else if (startDate !== "" && endDate2 !== "" && startDate === endDate2) {
             var [allRegistries] = await database.query(`
             SELECT ${Wishlist_table}.created_at, email, first_name, last_name, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
             JOIN ${Wishlist_table}
             WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
             AND ${Wishlist_table}.created_at LIKE '%${startDate}%'
-            AND ${user_table}.store_name='${storeName}';
+            AND ${user_table}.shop_name='${shopName}';
             `)
         }
         else {
             var [allRegistries] = await database.query(`
-            SELECT ${Wishlist_table}.created_at, email, first_name, last_name, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table}
-            JOIN ${Wishlist_table}
-            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id
-            AND ${Wishlist_table}.created_at BETWEEN '${startDate}' AND '${endDate}'
-            AND ${user_table}.store_name='${storeName}';
+            SELECT ${Wishlist_table}.created_at, email, first_name, last_name, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name  FROM ${user_table} 
+            JOIN ${Wishlist_table} 
+            WHERE ${user_table}.id=${Wishlist_table}.wishlist_user_id 
+            AND ${Wishlist_table}.created_at>='${startDate}' AND ${Wishlist_table}.created_at<'${endDate2}' 
+            AND ${user_table}.shop_name='${shopName}';
             `)
         }
 
@@ -5669,14 +5823,297 @@ export const getWishlistCartData = async (req, res) => {
     }
 };
 
+// export const getCurrentUserWishlistData = async (req, res) => {
+//     try {
+//         let lastQuery = "";
+//         let query = "";
+//         const { startDate, endDate, wishlistId, shopName, checkStatusInItem } =
+//             req.body;
+
+//         if (checkStatusInItem === true) {
+//             query += `AND w.created_at >= "${startDate}" AND CAST(w.created_at as DATE) <= "${endDate}"`;
+//             lastQuery += `AND w.created_at >= "${startDate}" AND CAST(w.created_at as DATE) <= "${endDate}"`;
+//         }
+
+//         // ------------------------------------
+//         // 1️⃣ Get user data
+//         // ------------------------------------
+//         const [userResult] = await database.query(
+//             `SELECT * 
+//              FROM ${user_table} 
+//              WHERE id = ${wishlistId} 
+//              AND shop_name = '${shopName}'`
+//         );
+
+//         // ------------------------------------
+//         // 2️⃣ Get wishlist data
+//         // ------------------------------------
+//         const [wishlistData] = await database.query(
+//             `SELECT wt.wishlist_id AS id, wt.wishlist_name AS name
+//              FROM ${Wishlist_table} AS wt, ${user_table} AS u
+//              WHERE u.shop_name = '${shopName}'
+//                AND u.id = wt.wishlist_user_id
+//                AND u.id = ${wishlistId}`
+//         );
+
+//         // Build dropdown options
+//         const mainArr = [{ label: "All", value: "all" }];
+//         const optionArray = mainArr.concat(
+//             wishlistData.map((dev) => ({
+//                 label: capitalizeFirstLetter(dev.name),
+//                 value: dev.name,
+//             }))
+//         );
+
+//         // ------------------------------------
+//         // 3️⃣ Get Product (wishlist item) Data
+//         // ------------------------------------
+//         const [productResult] = await database.query(
+//             `SELECT wt.wishlist_name, w.quantity as total_quantity, w.*
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//                ${query}
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 4️⃣ Get cart data
+//         // ------------------------------------
+//         const [cartData] = await database.query(
+//             `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${cart_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//                ${lastQuery}
+//              GROUP BY w.variant_id
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 5️⃣ Get cart count
+//         // ------------------------------------
+//         const [cartCount] = await database.query(
+//             `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${cart_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//              GROUP BY w.variant_id
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 6️⃣ Get product count
+//         // ------------------------------------
+//         const [productCount] = await database.query(
+//             `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//              GROUP BY w.variant_id, wt.wishlist_name
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 7️⃣ Send Final Response
+//         // ------------------------------------
+//         res.send({
+//             productResult,
+//             itemCount: productCount,
+//             userResult,
+//             optionArray,
+//             cartData,
+//             wishlistData,
+//             cartResultCount: cartCount,
+//         });
+
+//     } catch (error) {
+//         console.error("Error:", error);
+//         logger.error(error);
+//         res.status(500).send("Internal Server Error");
+//     }
+// };
+
+// export const getCurrentUserWishlistData = async (req, res) => {
+//     try {
+//         console.log("req.body = ", req.body)
+//         let lastQuery = "";
+//         let query = "";
+//         const { startDate, endDate, wishlistId, shopName, checkStatusInItem, registryId } =
+//             req.body;
+//         console.log("wishlistId = ", wishlistId)
+
+//         if (checkStatusInItem === true) {
+//             query += `AND w.created_at >= "${startDate}" AND CAST(w.created_at as DATE) <= "${endDate}"`;
+//             lastQuery += `AND w.created_at >= "${startDate}" AND CAST(w.created_at as DATE) <= "${endDate}"`;
+//         }
+
+//         // ------------------------------------
+//         // 1️⃣ Get user data
+//         // ------------------------------------
+//         const [userResult] = await database.query(
+//             `SELECT * 
+//              FROM ${user_table} 
+//              WHERE id = ${wishlistId} 
+//              AND shop_name = '${shopName}'`
+//         );
+
+//         // ------------------------------------
+//         // 2️⃣ Get wishlist data
+//         // ------------------------------------
+//         const [wishlistData] = await database.query(
+//             `SELECT wt.wishlist_id AS id, wt.wishlist_name AS name, wt.wishlist_description, wt.event_type, wt.event_date, wt.url_type, wt.password 
+//             FROM ${Wishlist_table} AS wt, ${user_table} AS u
+//              WHERE u.shop_name = '${shopName}'
+//                AND u.id = wt.wishlist_user_id
+//                AND u.id = ${wishlistId}`
+//         );
+
+//         // Build dropdown options
+//         const mainArr = [{ label: "All", value: "all" }];
+//         const optionArray = mainArr.concat(
+//             wishlistData.map((dev) => ({
+//                 label: capitalizeFirstLetter(dev.name),
+//                 value: dev.name,
+//             }))
+//         );
+
+//         // ------------------------------------
+//         // 3️⃣ Get Product (wishlist item) Data
+//         // ------------------------------------
+//         const [productResult] = await database.query(
+//             `SELECT wt.wishlist_name, w.quantity as total_quantity, w.*
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//                ${query}
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 4️⃣ Get cart data
+//         // ------------------------------------
+//         const [cartData] = await database.query(
+//             `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${cart_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//                ${lastQuery}
+//              GROUP BY w.variant_id
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 5️⃣ Get cart count
+//         // ------------------------------------
+//         const [cartCount] = await database.query(
+//             `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${cart_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//              GROUP BY w.variant_id
+//              ORDER BY w.id DESC`
+//         );
+
+//         // ------------------------------------
+//         // 6️⃣ Get product count
+//         // ------------------------------------
+//         if (startDate === "" || endDate === "") {
+//             var [productCount] = await database.query(
+//                 `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//              GROUP BY w.variant_id, wt.wishlist_name
+//              ORDER BY w.id DESC`
+//             );
+//         }
+//         else if (startDate !== "" && endDate !== "" && startDate === endDate) {
+//             var [productCount] = await database.query(
+//                 `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//                AND w.created_at='${startDate}'
+//              GROUP BY w.variant_id, wt.wishlist_name
+//              ORDER BY w.id DESC`
+//             );
+//         }
+//         else {
+//             var [productCount] = await database.query(
+//                 `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//              FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//              WHERE u.id = wt.wishlist_user_id
+//                AND w.wishlist_id = wt.wishlist_id
+//                AND u.shop_name='${shopName}'
+//                AND wt.wishlist_user_id = ${wishlistId}
+//                AND w.created_at BETWEEN '${startDate}' AND '${endDate}'
+//              GROUP BY w.variant_id, wt.wishlist_name
+//              ORDER BY w.id DESC`
+//             );
+//         }
+
+//         let [orderedItems] = await database.query(`
+//             SELECT * FROM cart_record
+//             WHERE wishlist_id=${registryId}
+//         `)
+
+//         // const [productCount] = await database.query(
+//         //     `SELECT wt.wishlist_name, SUM(w.quantity) AS total_quantity, w.*
+//         //      FROM ${product_table} AS w, ${user_table} AS u, ${Wishlist_table} AS wt
+//         //      WHERE u.id = wt.wishlist_user_id
+//         //        AND w.wishlist_id = wt.wishlist_id
+//         //        AND u.shop_name='${shopName}'
+//         //        AND wt.wishlist_user_id = ${wishlistId}
+//         //      GROUP BY w.variant_id, wt.wishlist_name
+//         //      ORDER BY w.id DESC`
+//         // );
+
+//         // ------------------------------------
+//         // 7️⃣ Send Final Response
+//         // ------------------------------------
+//         res.send({
+//             productResult,
+//             itemCount: productCount,
+//             userResult,
+//             optionArray,
+//             cartData,
+//             wishlistData,
+//             cartResultCount: cartCount,
+//             orderedItems,
+//         });
+//     } catch (error) {
+//         console.error("Error:", error);
+//         logger.error(error);
+//         res.status(500).send("Internal Server Error");
+//     }
+// };
+
 export const getCurrentUserWishlistData = async (req, res) => {
     try {
-        console.log("req.body = ", req.body)
         let lastQuery = "";
         let query = "";
         const { startDate, endDate, wishlistId, shopName, checkStatusInItem, registryId } =
             req.body;
-        console.log("wishlistId = ", wishlistId)
+        console.log("req.body = ", req.body)
 
         if (checkStatusInItem === true) {
             query += `AND w.created_at >= "${startDate}" AND CAST(w.created_at as DATE) <= "${endDate}"`;
@@ -5799,8 +6236,14 @@ export const getCurrentUserWishlistData = async (req, res) => {
         }
 
         let [orderedItems] = await database.query(`
-            SELECT * FROM cart_record
-            WHERE wishlist_id=${registryId}
+            SELECT cr.order_id, cr.date, cr.name, cr.email, cr.wishlist_id, cr.title, cr.price, cr.quantity, cr.image
+            FROM cart_record AS cr
+            JOIN wishlist 
+            ON wishlist.wishlist_id = cr.wishlist_id
+            JOIN wishlist_users 
+            ON wishlist_users.id = wishlist.wishlist_user_id
+            WHERE wishlist_users.shop_name='${shopName}'
+            AND wishlist.wishlist_id=${registryId};
         `)
 
         // const [productCount] = await database.query(
@@ -5833,10 +6276,68 @@ export const getCurrentUserWishlistData = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+
+
+
+// export const updateRegistry = async (req, res) => {
+//     try {
+//         console.log("req.body.data = ", req.body.data)
+//         const { name, description, options, date, url, password } = req.body.data;
+//         const { registryId, userId } = req.body.registryData;
+
+//         const [result] = await database.query(`UPDATE ${Wishlist_table}
+//             SET wishlist_name='${name}', wishlist_description='${description}', event_type='${options}', event_date='${date}', url_type='${url}', password='${password}' 
+//             WHERE wishlist_id=${registryId} AND wishlist_user_id=${userId}`)
+
+//         res.json("Registry updated successfully")
+//     }
+//     catch (err) {
+//         console.err("Error : ", err)
+//         res.status(500).send("Updating registry failed");
+//     }
+// }
+
+export const updateRegistry = async (req, res) => {
+    try {
+        const { name, description, options, date, url, password } = req.body.data;
+        const { registryId, userId } = req.body.registryData;
+
+        const [result] = await database.query(`UPDATE ${Wishlist_table}
+            SET wishlist_name='${name}', wishlist_description='${description}', event_type='${options}', event_date='${date}', url_type='${url}', password='${password}' 
+            WHERE wishlist_id=${registryId} AND wishlist_user_id=${userId}`)
+
+        res.json("Registry updated successfully")
+    }
+    catch (err) {
+        console.err("Error : ", err)
+        res.status(500).send("Updating registry failed");
+    }
+}
+
+export const getOrders = async (req, res) => {
+    try {
+        const shop = req.params.shop;
+
+        const [orders] = database.query(`SELECT cr.order_id, cr.date, cr.name, cr.email, cr.wishlist_id, cr.title, cr.price, cr.quantity, cr.image
+FROM cart_record AS cr
+JOIN wishlist 
+  ON wishlist.wishlist_id = cr.wishlist_id
+JOIN wishlist_users 
+  ON wishlist_users.id = wishlist.wishlist_user_id
+WHERE wishlist_users.shop_name='${shop}';
+        `)
+
+        res.send(orders)
+    }
+    catch (err) {
+        console.log("Error : ", err)
+    }
+}
+
 
 export const cartItemRecord = async (req, res) => {
     try {
@@ -6962,23 +7463,6 @@ export const klaviyoAuthCallback = async (req, res) => {
         console.error("Unexpected error:", err.message);
         res.status(500).send("OAuth failed");
     }
+
 }
 
-
-export const updateRegistry = async (req, res) => {
-    try {
-        console.log("req.body.data = ", req.body.data)
-        const { name, description, options, date, url, password } = req.body.data;
-        const { registryId, userId } = req.body.registryData;
-
-        const [result] = await database.query(`UPDATE ${Wishlist_table}
-            SET wishlist_name='${name}', wishlist_description='${description}', event_type='${options}', event_date='${date}', url_type='${url}', password='${password}' 
-            WHERE wishlist_id=${registryId} AND wishlist_user_id=${userId}`)
-
-        res.json("Registry updated successfully")
-    }
-    catch (err) {
-        console.err("Error : ", err)
-        res.status(500).send("Updating registry failed");
-    }
-}

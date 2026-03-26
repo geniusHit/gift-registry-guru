@@ -6,20 +6,14 @@ let modalProductLink;
 let matchedModalValue = [];
 let matchedModalValues = "";
 let GridElee;
-
 document.addEventListener("DOMContentLoaded", getCurentPlanSql2);
-// console.log(" ---------------- collection page code render ---------------- ")
 
-const serverURL1 = 'http://localhost:5000'; // -------------- local
-// const serverURL1 = "https://understand-accessory-doc-danny.trycloudflare.com"; // -------------- local
+// const serverURL1 = 'http://localhost:5000'; // -------------- local
+const serverURL1 = "https://arizona-reef-davis-attorney.trycloudflare.com"
 // const serverURL1 = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL1 = 'https://wishlist-guru-api.webframez.com';  // -------------- stagging
 
-
 let getCurrentThemeName = JSON.parse(getThemeNameColl);
-// let localDataC = JSON.parse(localStorage.getItem("wg-local-data"));
-// let getCurrentThemeName = localDataC?.getThemeName || JSON.parse(getThemeNameColl);
-
 const pattern = /\/products\/(.*)/;
 
 let getDomain = window.location.href;
@@ -62,17 +56,6 @@ if (!getDomain.endsWith('/')) {
     getDomain += '/';
 }
 
-
-
-//  ---------------- here we are trying to get the data and icon fast ----------------
-// (async function () {
-//     console.log("this is for the new function")
-
-//     // handleFilterChange1();
-
-// })()
-
-
 async function getCurentPlanSql2() {
     try {
         const response = await fetch(`${serverURL1}/get-current-plan-sql`, {
@@ -81,7 +64,6 @@ async function getCurentPlanSql2() {
                 'Content-Type': 'application/json',
                 "wg-api-key": getWgApiKey(),
                 "wg-mail": localStorage.getItem("customer-email")
-
             },
             body: JSON.stringify({
                 shopName: permanentDomain,
@@ -121,7 +103,7 @@ async function runsAfterDomContentLoaded2() {
 };
 
 async function detechThemeName() {
-    if (Shopify.shop === 'mashbir.myshopify.com') {
+    if (Shopify.shop === 'mashbir.myshopify.com' || Shopify.shop === "scent-memory-fragrance-oil.myshopify.com") {
         settingCurrentFilter = "none";
     }
     const params = {
@@ -167,68 +149,18 @@ detechThemeName().then((result) => {
     console.error('Promise rejected:', error);
 });
 
-// const wgLocalDataT = JSON.parse(localStorage.getItem("wg-local-data")) || {};
-// let themeSelectors = wgLocalDataT?.getThemeSelector || {};
-
-// async function setThemeSelectors() {
-//     if (currentShopPlan >= 2) {
-//         let allHandler = [];
-//         if (typeof themeSelectors.gridElement !== "undefined" && typeof themeSelectors.gridElement !== "null" && themeSelectors.gridElement !== "") {
-//             const data = document.querySelectorAll(themeSelectors.gridElement);
-//             let productHandlerData = [];
-//             let productHandler = {};
-//             if (data.length !== 0) {
-//                 for (const element of data) {
-//                     const productLinkElement = element.querySelector(themeSelectors.productLink);
-//                     if (productLinkElement) {
-//                         const labelledById = productLinkElement.getAttribute("href");
-//                         if (labelledById === null) {
-//                             return;
-//                         }
-//                         const match = labelledById.match(/\/products\/([^?]+)/);
-//                         if (match) {
-//                             const matchedValue = match[1];
-//                             allHandler.push({ handle: matchedValue })
-//                         }
-//                     }
-//                 }
-//                 const filteredArr = allHandler;
-//                 const finalStoredData = storedProductDiv.getAttribute("data-aj");
-//                 if (parseInt(finalStoredData) !== filteredArr.length) {
-//                     storedProductDiv.setAttribute("data-aj", filteredArr.length);
-//                     storedProductDiv.setAttribute("data-product-handle", JSON.stringify(filteredArr));
-//                 } else {
-//                     const storedHandle = JSON.parse(storedProductDiv.getAttribute("data-product-handle"));
-//                     const lastData = areIdsIncluded(storedHandle, filteredArr);
-//                     if (!lastData) {
-//                         storedProductDiv.setAttribute("data-aj", filteredArr.length);
-//                         storedProductDiv.setAttribute("data-product-handle", JSON.stringify(filteredArr));
-//                     } else if (document.querySelectorAll(".wf-wishlist-collection-icon, .wf-wishlist-collection-btn").length === 0) {
-//                         storedProductDiv.setAttribute("data-aj", filteredArr.length);
-//                         storedProductDiv.setAttribute("data-product-handle", JSON.stringify(filteredArr));
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
 async function setThemeSelectors() {
-    if (currentShopPlan < 2) return;
     const allHandler = [];
     if (typeof themeSelectors.gridElement !== "undefined" && typeof themeSelectors.gridElement !== "null" && themeSelectors.gridElement !== "") {
         const data = document.querySelectorAll(themeSelectors.gridElement);
         let productHandlerData = [];
         let productHandler = {};
-
         if (!data.length) return; // Early exit if no grid elements are found
-
 
         // Loop through grid elements and extract product handles
         data.forEach((element) => {
 
             // position relative to all the grids
-
             // if (getCurrentThemeName?.themeName !== "Arterritoires x Symediane") {
             //     element.style.position = 'relative';
             // }
@@ -237,7 +169,6 @@ async function setThemeSelectors() {
             if (!excludedThemes.includes(getCurrentThemeName?.themeName)) {
                 element.style.position = "relative";
             }
-
 
             const productLinkElement = element.querySelector(themeSelectors.productLink);
             if (!productLinkElement) return;
@@ -275,7 +206,7 @@ async function checkModalBtn() {
         const getProductEle = document.querySelector(themeSelectors.modalProductElement);
         let data = document.querySelectorAll(themeSelectors.modalProductElement);
         if (data.length > 0) {
-            if (currentShopPlan < 2 || getProductEle === null) {
+            if (getProductEle === null) {
                 return;
             }
             let productHandlerData = []
@@ -365,39 +296,6 @@ const objConfig = {
     characterData: true
 };
 wgObserver.observe(elTarget, objConfig);
-
-
-// function startObserver() {
-//     const elTarget = document.querySelector("div#wf-current-product"); // update selector
-//     if (elTarget) {
-//         let wgObserver = new MutationObserver(handleFilterChange);
-//         const objConfig = {
-//             childList: true,
-//             subtree: true,
-//             attributes: true,
-//             characterData: true,
-//         };
-//         wgObserver.observe(elTarget, objConfig);
-//         console.log("Observer started ✅");
-//     } else {
-//         console.warn("Target not found, retrying...");
-//         setTimeout(startObserver, 500); // retry after 500ms
-//     }
-// }
-// startObserver();
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 async function appendDivC(el, i) {
@@ -493,27 +391,6 @@ async function checkForModalArray() {
     }
 }
 
-// function checkData(dataa) {
-//     const intervalIconElements = document.querySelectorAll('.wf-wishlist-collection-icon, .wf-wishlist-collection-btn');
-//     let productHandles = [];
-//     intervalIconElements.forEach(element => {
-//         let productHandle = element.getAttribute('product-handle');
-//         if (productHandle) {
-//             productHandles.push(productHandle);
-//         }
-//     });
-//     if (dataa.length !== productHandles.length) {
-//         return false;
-//     }
-//     const idsSet = new Set(dataa.map(obj => obj));
-//     for (let wf = 0; wf < productHandles.length; wf++) {
-//         if (!idsSet.has(productHandles[wf])) {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
 function checkData(dataa) {
     const productHandles = Array.from(document.querySelectorAll('.wf-wishlist-collection-icon, .wf-wishlist-collection-btn'))
         .map(el => el.getAttribute('product-handle'))
@@ -522,7 +399,6 @@ function checkData(dataa) {
     const idsSet = new Set(dataa);
     return productHandles.every(handle => idsSet.has(handle));
 }
-
 
 window.addEventListener("keydown", function (e) {
     if (e.ctrlKey && ['+', '-', '=', '0'].includes(e.key)) {
@@ -539,7 +415,6 @@ window.addEventListener("wheel", function (e) {
 window.addEventListener("resize", function () {
     applyZoomAdjustments();
 });
-
 
 function applyZoomAdjustments() {
     if (currentCollectionSeting.iconPosition === 'icon-bottom-left' || currentCollectionSeting.iconPosition === 'icon-bottom-right') {
@@ -559,741 +434,333 @@ function applyZoomAdjustments() {
     }
 }
 
-
-
-
-// async function handleFilterChange1() {
-//     let localData = JSON.parse(localStorage.getItem("wg-local-data"));
-//     let currentShopPlan1 = localData?.currentPlan;
-//     let themeSelectors1 = localData?.getThemeSelector || {};
-//     let collectionBtnSetting = localData?.collectionBtnSetting;
-//     let getCurrentThemeName1 = localData?.getThemeName;
-
-//     if (!currentShopPlan1 || Object.keys(themeSelectors1).length === 0) {
-//         return;
-//     }
-
-//     console.log(" ------ START ------ ")
-//     if (currentShopPlan1 >= 2) {
-//         // const checkWishlistData = await getDataFromSql();
-//         const checkWishlistData = JSON.parse(localStorage.getItem("wg-local-list")) || [];
-
-//         // console.log("allWishlistData -- ", allWishlistData);
-//         // console.log("DATA ---- ", checkWishlistData);
-
-
-
-
-//         // let allHandle = []
-//         let flag = true;
-//         // const checkProductD = document.querySelectorAll(themeSelectors1.gridElement);
-//         // checkProductD.forEach(async (element, i) => {
-
-//         //     const productLinkElement = element.querySelector(themeSelectors1.productLink);
-//         //     if (productLinkElement) {
-//         //         const labelledById = productLinkElement.getAttribute("href");
-//         //         if (labelledById === null) {
-//         //             return;
-//         //         }
-//         //         const pattern = /\/products\/(.*)/;
-//         //         const match = pattern.exec(labelledById);
-//         //         if (match === null) {
-//         //             return;
-//         //         }
-//         //         let matchedValue;
-//         //         if (match[1].includes('?')) {
-//         //             matchedValue = match[1].split('?')[0];
-//         //         } else {
-//         //             matchedValue = match[1]
-//         //         }
-//         //         allHandle.push(decodeURIComponent(matchedValue));
-//         //     }
-//         // });
-
-
-//         const checkProductD = document.querySelectorAll(themeSelectors1.gridElement);
-//         const allHandle = Array.from(checkProductD)
-//             .map(el => {
-//                 const href = el.querySelector(themeSelectors1.productLink)?.getAttribute("href");
-//                 if (!href) return null;
-//                 const match = href.match(/\/products\/([^?]+)/);
-//                 return match ? decodeURIComponent(match[1]) : null;
-//             })
-//             .filter(Boolean);
-
-
-
-
-
-
-
-
-
-//         // let productHandler = {};
-//         // const data = checkData(allHandle)
-//         // let checkR = true
-//         // checkR = data
-//         // let checkHeartExist = false;
-//         // const fetchPromises = allHandle.map(async (matchedValue) => {
-//         //     if (!checkR) {
-//         //         checkHeartExist = false;
-//         //         let selector;
-//         //         if (collectionBtnSetting.collectionType === "buttonType") {
-//         //             selector = '.wf-wishlist-collection-btn[product-handle="' + matchedValue + '"]';
-//         //         } else {
-//         //             selector = '.wf-wishlist-collection-icon[product-handle="' + matchedValue + '"]';
-//         //         }
-//         //         let elements = document.querySelectorAll(selector);
-//         //         if (elements.length >= 1) {
-//         //             checkHeartExist = true
-//         //         }
-//         //         if (checkHeartExist == false) {
-//         //             try {
-//         //                 const response = await fetch(`${getDomain}products/${matchedValue}.json`);
-//         //                 if (!response.ok) {
-//         //                     throw new Error(`HTTP error! Status: ${response.status}`);
-//         //                 }
-//         //                 const jsonData = await response.json();
-//         //                 return jsonData;
-//         //             } catch (error) {
-//         //                 console.error(`Error fetching data for ${matchedValue}:`, error);
-//         //                 throw error; // Rethrow the error to be caught later
-//         //             }
-//         //         }
-//         //     }
-//         // });
-//         // const responses = await Promise.all(fetchPromises)
-//         // // console.log("responses -- ", responses);
-//         // responses.forEach((ele, i) => {
-//         //     if (ele !== undefined) {
-//         //         productHandler[ele.product.handle] = { id: ele.product.id };
-//         //     }
-//         // });
-
-//         let productHandler = {};
-//         const checkR = checkData(allHandle);
-//         const fetchPromises = allHandle.map(async (matchedValue) => {
-//             if (checkR) return; // if already valid, skip
-//             const selector =
-//                 collectionBtnSetting.collectionType === "buttonType"
-//                     ? `.wf-wishlist-collection-btn[product-handle="${matchedValue}"]`
-//                     : `.wf-wishlist-collection-icon[product-handle="${matchedValue}"]`;
-//             const elements = document.querySelectorAll(selector);
-//             if (elements.length > 0) return; // already exists, skip fetch
-//             try {
-//                 const response = await fetch(`${getDomain}products/${matchedValue}.json`);
-//                 if (!response.ok) {
-//                     throw new Error(`HTTP error! Status: ${response.status}`);
-//                 }
-//                 const { product } = await response.json();
-//                 return product;
-//             } catch (error) {
-//                 console.error(`Error fetching data for ${matchedValue}:`, error);
-//                 return null; // prevent Promise.all from breaking
-//             }
-//         });
-//         const responses = await Promise.all(fetchPromises);
-//         responses
-//             .filter(Boolean)
-//             .forEach(product => {
-//                 productHandler[product.handle] = { id: product.id };
-//             });
-
-
-
-
-
-
-
-
-
-
-
-
-
-//         const checkProduct = document.querySelectorAll(themeSelectors1.gridElement);
-//         const checkImgDiv = document.querySelectorAll(".wf-wishlist-check-img")
-//         const prependPromises = [];
-
-//         if (collectionBtnSetting.collectionType === "buttonType") {
-//             if (flag === true) {
-//                 checkProduct.forEach(async (element, i) => {
-//                     const productLinkElement = element.querySelector(themeSelectors1.productLink);
-//                     if (productLinkElement) {
-//                         const labelledById = productLinkElement.getAttribute("href");
-//                         if (labelledById === null) {
-//                             return;
-//                         }
-//                         const match = labelledById.match(/\/products\/([^?]+)/);
-//                         if (match) {
-//                             const matchedValue = decodeURIComponent(match[1]);
-//                             for (let key in productHandler) {
-//                                 if (key === matchedValue) {
-//                                     // if (!checkProduct[i].querySelector('.wf-wishlist-collection-btn')) {
-
-//                                     if (!checkProduct[i].classList.contains('wf-wishlist-collection-btn')) {
-//                                         const existingWishlistDiv = checkProduct[i].querySelectorAll('.wf-wishlist-collection-btn');
-//                                         if (existingWishlistDiv.length === 0) {
-
-//                                             const wishlistDiv = document.createElement('div');
-//                                             wishlistDiv.className = 'wf-wishlist-collection-btn';
-//                                             wishlistDiv.style.display = 'none';
-//                                             wishlistDiv.style.width = renderWidth(isCollectionCount)
-//                                             wishlistDiv.setAttribute('product-id', productHandler[key].id);
-//                                             wishlistDiv.setAttribute('product-handle', key);
-//                                             if (themeSelectors1.buttonPrependBeforeElemnt) {
-//                                                 const lastChild = checkProduct[i].firstElementChild;
-//                                                 lastChild.appendChild(wishlistDiv);
-//                                             } else {
-//                                                 if (settingCurrentFilter === "sparq") {
-//                                                     checkProduct[i].parentNode.style.position = "relative";
-//                                                 }
-//                                                 else if (settingCurrentFilter === "boost") {
-//                                                     let wishIcon = document.querySelectorAll(".boost-sd__product-image-column")
-//                                                     wishIcon[i].appendChild(wishlistDiv);
-//                                                 } else if (getCurrentThemeName1?.themeName === "Impact") {
-
-//                                                     checkProduct[i].querySelector(themeSelectors1.variableForIconButton).appendChild(wishlistDiv);
-//                                                 } else {
-//                                                     checkProduct[i].appendChild(wishlistDiv);
-//                                                 }
-//                                             }
-//                                             let addWishlistIconCollection = document.createElement("div");
-//                                             addWishlistIconCollection.style.zIndex = "10";
-//                                             addWishlistIconCollection.style.position = "relative";
-//                                             let selectedId = wishlistDiv.getAttribute('product-id');
-
-//                                             const addToWishlistData = await renderButtonAddToWishlist(selectedId, isCollectionCount);
-//                                             const alreadyAddedToWishlistData = await renderButtonAddedToWishlist(selectedId, isCollectionCount);
-
-//                                             // const countData = await isCountOrNot(selectedId, isCollectionCount)
-
-//                                             const matchFound = await checkFound(checkWishlistData, Number(selectedId))
-
-//                                             // if (checkWishlistData.length > 0 && matchFound) {
-//                                             //     addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection" >${alreadyAddedToWishlistData}</div>${!onlyTextButton ? countData : ""}`
-//                                             // } else {
-//                                             //     addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection"  >${addToWishlistData}</div>${!onlyTextButton ? countData : ""}`;
-//                                             // }
-
-//                                             if (checkWishlistData.length > 0 && matchFound) {
-//                                                 addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection" >${alreadyAddedToWishlistData}</div>`
-//                                             } else {
-//                                                 addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection"  >${addToWishlistData}</div>`;
-//                                             }
-
-//                                             prependPromises.push(
-//                                                 wishlistDiv.innerHTML = addWishlistIconCollection.innerHTML
-//                                             );
-//                                             wishlistDiv && (wishlistDiv.onclick = function (event) {
-//                                                 collectionIconClick(event, selectedId, key);
-//                                             });
-//                                             renderCustomButtonBorder(matchFound ? "added" : "removed", selectedId, isCollectionCount)
-//                                         }
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 });
-//                 Promise.all(prependPromises)
-//                     .then(() => {
-//                         let allShow = document.querySelectorAll('.wf-wishlist-collection-btn');
-//                         allShow.forEach((w) => {
-//                             w.style.display = 'flex';
-//                             w.style.position = "relative"
-//                             w.style.zIndex = "999"
-//                             w.style.top = "5px"
-//                         });
-//                     })
-//                     .catch((error) => {
-//                         console.log('Error occurred');
-//                     });
-//             }
-//         } else {
-
-//             // -------- this is for the collection icon injected --------
-
-
-//             if (flag === true) {
-//                 checkProduct.forEach(async (element, i) => {
-//                     const productLinkElement = element.querySelector(themeSelectors1.productLink);
-//                     let addIcon = element.querySelector(themeSelectors1.appendIcon)
-//                     if (productLinkElement) {
-//                         const labelledById = productLinkElement.getAttribute("href");
-//                         if (labelledById === null) {
-//                             return;
-//                         }
-//                         const match = labelledById.match(/\/products\/([^?]+)/);
-//                         if (match) {
-//                             const matchedValue = decodeURIComponent(match[1]);
-
-//                             for (let key in productHandler) {
-//                                 if (key === matchedValue) {
-//                                     // if (!addIcon.querySelector('.wf-wishlist-collection-icon')) {
-
-//                                     if (!checkProduct[i].classList.contains('wf-wishlist-collection-icon')) {
-//                                         const existingWishlistDiv = checkProduct[i].querySelectorAll('.wf-wishlist-collection-icon');
-//                                         if (existingWishlistDiv.length === 0) {
-
-//                                             const wishlistDiv = document.createElement('div');
-//                                             wishlistDiv.className = 'wf-wishlist-collection-icon';
-//                                             wishlistDiv.style.display = 'none';
-//                                             wishlistDiv.setAttribute('product-id', productHandler[key].id);
-//                                             wishlistDiv.setAttribute('product-handle', key);
-
-//                                             //   -------  adding a new condition -------- randeep
-//                                             if (addIcon) {
-
-//                                                 if (themeSelectors1.appendIconCheck) {
-//                                                     addIcon.appendChild(wishlistDiv);
-//                                                 } else if (themeSelectors1.afterIcon) {
-//                                                     addIcon.after(wishlistDiv);
-//                                                 }
-//                                                 else if (themeSelectors1.beforeIcon) {
-//                                                     if (getCurrentThemeName1.themeName === "Minimal") {
-//                                                         addIcon.parentNode.style.position = 'relative';
-//                                                     }
-//                                                     addIcon.parentNode.insertBefore(wishlistDiv, addIcon);
-
-//                                                 }
-//                                                 else {
-//                                                     if (getCurrentThemeName1?.themeName === "Modular") {
-//                                                         addIcon.appendChild(wishlistDiv);
-//                                                     } else {
-//                                                         if (settingCurrentFilter === "sparq") {
-//                                                             addIcon.parentNode.style.position = "relative";
-//                                                         }
-//                                                         else if (settingCurrentFilter === "boost") {
-//                                                             let wishIcon = document.querySelectorAll(".boost-sd__product-image-column")
-//                                                             addIcon.prepend(wishlistDiv);
-//                                                         } else {
-//                                                             addIcon.prepend(wishlistDiv);
-//                                                         }
-//                                                     }
-//                                                 }
-
-//                                             }
-
-//                                             const getSelectedIcon = await whichClassIsAdded();
-//                                             let imgHeight = 10;
-
-//                                             let addWishlistIconCollection = document.createElement("div");
-//                                             addWishlistIconCollection.style.zIndex = "10";
-//                                             addWishlistIconCollection.style.position = "relative";
-//                                             let selectedId = wishlistDiv.getAttribute('product-id');
-
-//                                             wishlistDiv.classList.add(getSelectedIcon.iconPosition)
-
-//                                             if (getSelectedIcon.checkClassExist === true) {
-//                                                 const currentImageElement = getCurrentThemeName1?.themeName === "Eurus" ? imgFxn(checkProduct[i]) : checkProduct[i].querySelector('img').parentNode;
-//                                                 if (settingCurrentFilter === "boost") {
-//                                                     if (currentImageHeight) {
-//                                                         imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
-//                                                     }
-//                                                 } else if (currentImageElement) {
-//                                                     imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
-//                                                 }
-//                                                 if (getCurrentThemeName1?.themeName === "Grid" || getCurrentThemeName1?.themeName === "Impact" || getCurrentThemeName1?.themeName === "Aurora" || getCurrentThemeName1?.themeName === "Gain" || getCurrentThemeName1?.themeName === "Alchemy" || getCurrentThemeName1?.themeName === "Xclusive") {
-//                                                     const currentImageElement = checkProduct[i].querySelector(themeSelectors1.appendIcon);
-//                                                     imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
-//                                                 }
-//                                             }
-//                                             let iconHtml;
-//                                             const isNewHeartIcon = (currentCollectionSeting.collectionIconType === 'comboHeart' || currentCollectionSeting.collectionIconType === 'comboStar' || currentCollectionSeting.collectionIconType === 'comboSave')
-
-//                                             const countData = await isCountOrNot(selectedId, isCollectionCount)
-//                                             const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
-//                                             const matchFound = await checkFound(checkWishlistData, Number(selectedId))
-
-//                                             isCollectionCount && (imgHeight = imgHeight - 15)
-//                                             if (checkWishlistData.length > 0 && matchFound) {
-//                                                 iconHtml = `<div class="collection_icon_new_selected" style="${getSelectedIcon.checkClassExist === true ? 'top:' + imgHeight + 'px;' : ''}">
-//                                                                 <div onClick="collectionIconClick(event,'${selectedId}','${key}')" class="${isNewHeartIcon ? getSelectedIcon.iconStyle2 : getSelectedIcon.iconStyle} wg-collectionIcon selected">
-//                                                                     <span class="span-hearticon"></span>
-//                                                                 </div>
-//                                                             </div>${isCollectionCount ? newCountData : ""}`;
-//                                             } else {
-//                                                 iconHtml = `<div class="collection_icon_new" style="${getSelectedIcon.checkClassExist === true ? 'top:' + imgHeight + 'px;' : ''}">
-//                                                                 <div  onClick="collectionIconClick(event,'${selectedId}','${key}')" class="${getSelectedIcon.iconStyle} wg-collectionIcon">
-//                                                                     <span class="span-hearticon"></span>
-//                                                                 </div>
-//                                                             </div>${isCollectionCount ? newCountData : ""}`;
-//                                             }
-//                                             prependPromises.push(
-//                                                 wishlistDiv.innerHTML = iconHtml
-//                                             );
-//                                             if (isCollectionCount) {
-//                                                 const countDataElement = document.querySelector(`.wf-wishlist-collection-icon[product-id='${selectedId}'] .wf-product-count`);
-
-//                                                 if (countDataElement) {
-//                                                     if (getSelectedIcon.checkClassExist === true) {
-//                                                         countDataElement.style.top = `${imgHeight + 25}px`;
-//                                                     } else {
-//                                                         countDataElement.style.top = `25px`;
-//                                                     }
-//                                                 };
-//                                                 renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount)
-//                                             }
-//                                             collectionIconSize()
-//                                         }
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 });
-//                 Promise.all(prependPromises)
-//                     .then(() => {
-//                         let allShow = document.querySelectorAll('.wf-wishlist-collection-icon');
-//                         allShow.forEach((w) => {
-//                             if (getCurrentThemeName1?.themeName === "Avante") {
-//                                 w.style.position = "relative";
-//                             }
-//                             w.style.display = 'block';
-//                         });
-//                     })
-//                     .catch((error) => {
-//                         console.log('Error occurred');
-//                     });
-//             }
-//             // console.log(" ------ END 222 ------ ")
-//         }
-//         flag = false;
-//         // console.log(" ------ END 111 ------ ")
-//     }
-//     console.log(" ------ END 000  ------ ")
-// }
-
-
-
 async function handleFilterChange() {
     // console.log(" ------ START ------ ")
-    if (currentShopPlan >= 2) {
-        // const checkWishlistData = await getDataFromSql();
-        const checkWishlistData = allWishlistData;
+    // if (currentShopPlan >= 2) {
+    // const checkWishlistData = await getDataFromSql();
+    const checkWishlistData = allWishlistData;
 
-        // console.log("allWishlistData -- ", allWishlistData);
-        // console.log("DATA ---- ", checkWishlistData);
+    // console.log("allWishlistData -- ", allWishlistData);
+    // console.log("DATA ---- ", checkWishlistData);
 
-        let allHandle = []
-        let flag = true;
-        const checkProductD = document.querySelectorAll(themeSelectors.gridElement);
-        checkProductD.forEach(async (element, i) => {
+    let allHandle = []
+    let flag = true;
+    const checkProductD = document.querySelectorAll(themeSelectors.gridElement);
+    checkProductD.forEach(async (element, i) => {
 
-            const productLinkElement = element.querySelector(themeSelectors.productLink);
-            if (productLinkElement) {
-                const labelledById = productLinkElement.getAttribute("href");
-                if (labelledById === null) {
-                    return;
-                }
-                const pattern = /\/products\/(.*)/;
-                const match = pattern.exec(labelledById);
-                if (match === null) {
-                    return;
-                }
-                let matchedValue;
-                if (match[1].includes('?')) {
-                    matchedValue = match[1].split('?')[0];
-                } else {
-                    matchedValue = match[1]
-                }
-                allHandle.push(decodeURIComponent(matchedValue));
+        const productLinkElement = element.querySelector(themeSelectors.productLink);
+        if (productLinkElement) {
+            const labelledById = productLinkElement.getAttribute("href");
+            if (labelledById === null) {
+                return;
             }
-        });
-        let productHandler = {};
+            const pattern = /\/products\/(.*)/;
+            const match = pattern.exec(labelledById);
+            if (match === null) {
+                return;
+            }
+            let matchedValue;
+            if (match[1].includes('?')) {
+                matchedValue = match[1].split('?')[0];
+            } else {
+                matchedValue = match[1]
+            }
+            allHandle.push(decodeURIComponent(matchedValue));
+        }
+    });
+    let productHandler = {};
 
-        // console.log("allHandle -- ", allHandle);
+    // console.log("allHandle -- ", allHandle);
 
-        const data = await checkData(allHandle)
-        let checkR = true
-        checkR = data
-        let checkHeartExist = false;
-        const fetchPromises = allHandle.map(async (matchedValue) => {
-            if (!checkR) {
-                checkHeartExist = false;
-                let selector;
-                if (collectionBtnSetting.collectionType === "buttonType") {
-                    selector = '.wf-wishlist-collection-btn[product-handle="' + matchedValue + '"]';
-                } else {
-                    selector = '.wf-wishlist-collection-icon[product-handle="' + matchedValue + '"]';
-                }
-                let elements = document.querySelectorAll(selector);
-                if (elements.length >= 1) {
-                    checkHeartExist = true
-                }
-                if (checkHeartExist == false) {
-                    try {
-                        const response = await fetch(`${getDomain}products/${matchedValue}.json`);
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        const jsonData = await response.json();
-                        return jsonData;
-                    } catch (error) {
-                        console.error(`Error fetching data for ${matchedValue}:`, error);
-                        throw error; // Rethrow the error to be caught later
+    const data = await checkData(allHandle)
+    let checkR = true
+    checkR = data
+    let checkHeartExist = false;
+    const fetchPromises = allHandle.map(async (matchedValue) => {
+        if (!checkR) {
+            checkHeartExist = false;
+            let selector;
+            if (collectionBtnSetting.collectionType === "buttonType") {
+                selector = '.wf-wishlist-collection-btn[product-handle="' + matchedValue + '"]';
+            } else {
+                selector = '.wf-wishlist-collection-icon[product-handle="' + matchedValue + '"]';
+            }
+            let elements = document.querySelectorAll(selector);
+            if (elements.length >= 1) {
+                checkHeartExist = true
+            }
+            if (checkHeartExist == false) {
+                try {
+                    const response = await fetch(`${getDomain}products/${matchedValue}.json`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
+                    const jsonData = await response.json();
+                    return jsonData;
+                } catch (error) {
+                    console.error(`Error fetching data for ${matchedValue}:`, error);
+                    throw error; // Rethrow the error to be caught later
                 }
             }
-        });
-        const responses = await Promise.all(fetchPromises)
+        }
+    });
+    const responses = await Promise.all(fetchPromises)
 
 
-        // console.log("responses -- ", responses);
+    // console.log("responses -- ", responses);
 
-        responses.forEach((ele, i) => {
-            if (ele !== undefined) {
-                productHandler[ele.product.handle] = { id: ele.product.id };
-            }
-        });
-        const checkProduct = document.querySelectorAll(themeSelectors.gridElement);
-        const checkImgDiv = document.querySelectorAll(".wf-wishlist-check-img")
-        const prependPromises = [];
+    responses.forEach((ele, i) => {
+        if (ele !== undefined) {
+            productHandler[ele.product.handle] = { id: ele.product.id };
+        }
+    });
+    const checkProduct = document.querySelectorAll(themeSelectors.gridElement);
+    const checkImgDiv = document.querySelectorAll(".wf-wishlist-check-img")
+    const prependPromises = [];
 
-        if (collectionBtnSetting.collectionType === "buttonType") {
-            if (flag = true) {
-                checkProduct.forEach(async (element, i) => {
-                    const productLinkElement = element.querySelector(themeSelectors.productLink);
-                    if (productLinkElement) {
-                        const labelledById = productLinkElement.getAttribute("href");
-                        if (labelledById === null) {
-                            return;
-                        }
-                        const match = labelledById.match(/\/products\/([^?]+)/);
-                        if (match) {
-                            const matchedValue = decodeURIComponent(match[1]);
-                            for (let key in productHandler) {
-                                if (key === matchedValue) {
-                                    // if (!checkProduct[i].querySelector('.wf-wishlist-collection-btn')) {
+    if (collectionBtnSetting.collectionType === "buttonType") {
+        if (flag = true) {
+            checkProduct.forEach(async (element, i) => {
+                const productLinkElement = element.querySelector(themeSelectors.productLink);
+                if (productLinkElement) {
+                    const labelledById = productLinkElement.getAttribute("href");
+                    if (labelledById === null) {
+                        return;
+                    }
+                    const match = labelledById.match(/\/products\/([^?]+)/);
+                    if (match) {
+                        const matchedValue = decodeURIComponent(match[1]);
+                        for (let key in productHandler) {
+                            if (key === matchedValue) {
+                                // if (!checkProduct[i].querySelector('.wf-wishlist-collection-btn')) {
 
-                                    if (!checkProduct[i].classList.contains('wf-wishlist-collection-btn')) {
-                                        const existingWishlistDiv = checkProduct[i].querySelectorAll('.wf-wishlist-collection-btn');
-                                        if (existingWishlistDiv.length === 0) {
+                                if (!checkProduct[i].classList.contains('wf-wishlist-collection-btn')) {
+                                    const existingWishlistDiv = checkProduct[i].querySelectorAll('.wf-wishlist-collection-btn');
+                                    if (existingWishlistDiv.length === 0) {
 
-                                            const wishlistDiv = document.createElement('div');
-                                            wishlistDiv.className = 'wf-wishlist-collection-btn';
-                                            wishlistDiv.style.display = 'none';
-                                            wishlistDiv.style.width = renderWidth(isCollectionCount)
-                                            wishlistDiv.setAttribute('product-id', productHandler[key].id);
-                                            wishlistDiv.setAttribute('product-handle', key);
-                                            if (themeSelectors.buttonPrependBeforeElemnt) {
-                                                const lastChild = checkProduct[i].firstElementChild;
-                                                lastChild.appendChild(wishlistDiv);
-                                            } else {
-                                                if (settingCurrentFilter === "sparq") {
-                                                    checkProduct[i].parentNode.style.position = "relative";
-                                                }
-                                                else if (settingCurrentFilter === "boost") {
-                                                    let wishIcon = document.querySelectorAll(".boost-sd__product-image-column")
-                                                    wishIcon[i].appendChild(wishlistDiv);
-                                                } else if (getCurrentThemeName?.themeName === "Impact") {
-
-                                                    checkProduct[i].querySelector(themeSelectors.variableForIconButton).appendChild(wishlistDiv);
-                                                } else {
-                                                    checkProduct[i].appendChild(wishlistDiv);
-                                                }
+                                        const wishlistDiv = document.createElement('div');
+                                        wishlistDiv.className = 'wf-wishlist-collection-btn';
+                                        wishlistDiv.style.display = 'none';
+                                        wishlistDiv.style.width = renderWidth(isCollectionCount)
+                                        wishlistDiv.setAttribute('product-id', productHandler[key].id);
+                                        wishlistDiv.setAttribute('product-handle', key);
+                                        if (themeSelectors.buttonPrependBeforeElemnt) {
+                                            const lastChild = checkProduct[i].firstElementChild;
+                                            lastChild.appendChild(wishlistDiv);
+                                        } else {
+                                            if (settingCurrentFilter === "sparq") {
+                                                checkProduct[i].parentNode.style.position = "relative";
                                             }
-                                            let addWishlistIconCollection = document.createElement("div");
-                                            addWishlistIconCollection.style.zIndex = "10";
-                                            addWishlistIconCollection.style.position = "relative";
-                                            let selectedId = wishlistDiv.getAttribute('product-id');
+                                            else if (settingCurrentFilter === "boost") {
+                                                let wishIcon = document.querySelectorAll(".boost-sd__product-image-column")
+                                                wishIcon[i].appendChild(wishlistDiv);
+                                            } else if (getCurrentThemeName?.themeName === "Impact") {
 
-                                            const addToWishlistData = await renderButtonAddToWishlist(selectedId, isCollectionCount);
-                                            const alreadyAddedToWishlistData = await renderButtonAddedToWishlist(selectedId, isCollectionCount);
-
-                                            // const countData = await isCountOrNot(selectedId, isCollectionCount)
-
-                                            const matchFound = await checkFound(checkWishlistData, Number(selectedId))
-
-                                            // if (checkWishlistData.length > 0 && matchFound) {
-                                            //     addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection" >${alreadyAddedToWishlistData}</div>${!onlyTextButton ? countData : ""}`
-                                            // } else {
-                                            //     addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection"  >${addToWishlistData}</div>${!onlyTextButton ? countData : ""}`;
-                                            // }
-
-                                            if (checkWishlistData.length > 0 && matchFound) {
-                                                addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection" >${alreadyAddedToWishlistData}</div>`
+                                                checkProduct[i].querySelector(themeSelectors.variableForIconButton).appendChild(wishlistDiv);
                                             } else {
-                                                addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection"  >${addToWishlistData}</div>`;
+                                                checkProduct[i].appendChild(wishlistDiv);
                                             }
-
-                                            prependPromises.push(
-                                                wishlistDiv.innerHTML = addWishlistIconCollection.innerHTML
-                                            );
-                                            wishlistDiv && (wishlistDiv.onclick = function (event) {
-                                                collectionIconClick(event, selectedId, key);
-                                            });
-                                            renderCustomButtonBorder(matchFound ? "added" : "removed", selectedId, isCollectionCount)
                                         }
+                                        let addWishlistIconCollection = document.createElement("div");
+                                        addWishlistIconCollection.style.zIndex = "10";
+                                        addWishlistIconCollection.style.position = "relative";
+                                        let selectedId = wishlistDiv.getAttribute('product-id');
+
+                                        const addToWishlistData = await renderButtonAddToWishlist(selectedId, isCollectionCount);
+                                        const alreadyAddedToWishlistData = await renderButtonAddedToWishlist(selectedId, isCollectionCount);
+
+                                        // const countData = await isCountOrNot(selectedId, isCollectionCount)
+
+                                        const matchFound = await checkFound(checkWishlistData, Number(selectedId))
+
+                                        // if (checkWishlistData.length > 0 && matchFound) {
+                                        //     addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection" >${alreadyAddedToWishlistData}</div>${!onlyTextButton ? countData : ""}`
+                                        // } else {
+                                        //     addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection"  >${addToWishlistData}</div>${!onlyTextButton ? countData : ""}`;
+                                        // }
+
+                                        if (checkWishlistData.length > 0 && matchFound) {
+                                            addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection" >${alreadyAddedToWishlistData}</div>`
+                                        } else {
+                                            addWishlistIconCollection.innerHTML = `<div  class="modalButtonCollection"  >${addToWishlistData}</div>`;
+                                        }
+
+                                        prependPromises.push(
+                                            wishlistDiv.innerHTML = addWishlistIconCollection.innerHTML
+                                        );
+                                        wishlistDiv && (wishlistDiv.onclick = function (event) {
+                                            collectionIconClick(event, selectedId, key);
+                                        });
+                                        renderCustomButtonBorder(matchFound ? "added" : "removed", selectedId, isCollectionCount)
                                     }
                                 }
                             }
                         }
                     }
-                });
-                Promise.all(prependPromises)
-                    .then(() => {
-                        let allShow = document.querySelectorAll('.wf-wishlist-collection-btn');
-                        allShow.forEach((w) => {
-                            w.style.display = 'flex';
-                            w.style.position = "relative"
-                            w.style.zIndex = "999"
-                            w.style.top = "5px"
-                        });
-                    })
-                    .catch((error) => {
-                        console.log('Error occurred');
+                }
+            });
+            Promise.all(prependPromises)
+                .then(() => {
+                    let allShow = document.querySelectorAll('.wf-wishlist-collection-btn');
+                    allShow.forEach((w) => {
+                        w.style.display = 'flex';
+                        w.style.position = "relative"
+                        w.style.zIndex = "999"
+                        w.style.top = "5px"
                     });
-            }
-        } else {
-            if (flag = true) {
-                checkProduct.forEach(async (element, i) => {
-                    const productLinkElement = element.querySelector(themeSelectors.productLink);
-                    let addIcon = element.querySelector(themeSelectors.appendIcon)
-                    if (productLinkElement) {
-                        const labelledById = productLinkElement.getAttribute("href");
-                        if (labelledById === null) {
-                            return;
-                        }
-                        const match = labelledById.match(/\/products\/([^?]+)/);
-                        if (match) {
-                            const matchedValue = decodeURIComponent(match[1]);
+                })
+                .catch((error) => {
+                    console.log('Error occurred');
+                });
+        }
+    } else {
+        if (flag = true) {
+            checkProduct.forEach(async (element, i) => {
+                const productLinkElement = element.querySelector(themeSelectors.productLink);
+                let addIcon = element.querySelector(themeSelectors.appendIcon)
+                if (productLinkElement) {
+                    const labelledById = productLinkElement.getAttribute("href");
+                    if (labelledById === null) {
+                        return;
+                    }
+                    const match = labelledById.match(/\/products\/([^?]+)/);
+                    if (match) {
+                        const matchedValue = decodeURIComponent(match[1]);
 
-                            for (let key in productHandler) {
-                                if (key === matchedValue) {
-                                    // if (!addIcon.querySelector('.wf-wishlist-collection-icon')) {
+                        for (let key in productHandler) {
+                            if (key === matchedValue) {
+                                // if (!addIcon.querySelector('.wf-wishlist-collection-icon')) {
 
-                                    if (!checkProduct[i].classList.contains('wf-wishlist-collection-icon')) {
-                                        const existingWishlistDiv = checkProduct[i].querySelectorAll('.wf-wishlist-collection-icon');
-                                        if (existingWishlistDiv.length === 0) {
+                                if (!checkProduct[i].classList.contains('wf-wishlist-collection-icon')) {
+                                    const existingWishlistDiv = checkProduct[i].querySelectorAll('.wf-wishlist-collection-icon');
+                                    if (existingWishlistDiv.length === 0) {
 
-                                            const wishlistDiv = document.createElement('div');
-                                            wishlistDiv.className = 'wf-wishlist-collection-icon';
-                                            wishlistDiv.style.display = 'none';
-                                            wishlistDiv.setAttribute('product-id', productHandler[key].id);
-                                            wishlistDiv.setAttribute('product-handle', key);
+                                        const wishlistDiv = document.createElement('div');
+                                        wishlistDiv.className = 'wf-wishlist-collection-icon';
+                                        wishlistDiv.style.display = 'none';
+                                        wishlistDiv.setAttribute('product-id', productHandler[key].id);
+                                        wishlistDiv.setAttribute('product-handle', key);
 
-                                            //   -------  adding a new condition -------- randeep
-                                            if (addIcon) {
+                                        //   -------  adding a new condition -------- randeep
+                                        if (addIcon) {
 
-                                                if (themeSelectors.appendIconCheck) {
+                                            if (themeSelectors.appendIconCheck) {
+                                                addIcon.appendChild(wishlistDiv);
+                                            } else if (themeSelectors.afterIcon) {
+                                                addIcon.after(wishlistDiv);
+                                            }
+                                            else if (themeSelectors.beforeIcon) {
+                                                if (getCurrentThemeName.themeName === "Minimal") {
+                                                    addIcon.parentNode.style.position = 'relative';
+                                                }
+                                                addIcon.parentNode.insertBefore(wishlistDiv, addIcon);
+
+                                            }
+                                            else {
+                                                if (getCurrentThemeName?.themeName === "Modular") {
                                                     addIcon.appendChild(wishlistDiv);
-                                                } else if (themeSelectors.afterIcon) {
-                                                    addIcon.after(wishlistDiv);
-                                                }
-                                                else if (themeSelectors.beforeIcon) {
-                                                    if (getCurrentThemeName.themeName === "Minimal") {
-                                                        addIcon.parentNode.style.position = 'relative';
+                                                } else {
+                                                    if (settingCurrentFilter === "sparq") {
+                                                        addIcon.parentNode.style.position = "relative";
                                                     }
-                                                    addIcon.parentNode.insertBefore(wishlistDiv, addIcon);
-
-                                                }
-                                                else {
-                                                    if (getCurrentThemeName?.themeName === "Modular") {
-                                                        addIcon.appendChild(wishlistDiv);
+                                                    else if (settingCurrentFilter === "boost") {
+                                                        let wishIcon = document.querySelectorAll(".boost-sd__product-image-column")
+                                                        addIcon.prepend(wishlistDiv);
                                                     } else {
-                                                        if (settingCurrentFilter === "sparq") {
-                                                            addIcon.parentNode.style.position = "relative";
-                                                        }
-                                                        else if (settingCurrentFilter === "boost") {
-                                                            let wishIcon = document.querySelectorAll(".boost-sd__product-image-column")
-                                                            addIcon.prepend(wishlistDiv);
-                                                        } else {
-                                                            addIcon.prepend(wishlistDiv);
-                                                        }
+                                                        addIcon.prepend(wishlistDiv);
                                                     }
                                                 }
-
                                             }
 
-                                            const getSelectedIcon = await whichClassIsAdded();
-                                            let imgHeight = 10;
+                                        }
 
-                                            let addWishlistIconCollection = document.createElement("div");
-                                            addWishlistIconCollection.style.zIndex = "10";
-                                            addWishlistIconCollection.style.position = "relative";
-                                            let selectedId = wishlistDiv.getAttribute('product-id');
+                                        const getSelectedIcon = await whichClassIsAdded();
+                                        let imgHeight = 10;
 
-                                            wishlistDiv.classList.add(getSelectedIcon.iconPosition)
+                                        let addWishlistIconCollection = document.createElement("div");
+                                        addWishlistIconCollection.style.zIndex = "10";
+                                        addWishlistIconCollection.style.position = "relative";
+                                        let selectedId = wishlistDiv.getAttribute('product-id');
 
-                                            if (getSelectedIcon.checkClassExist === true) {
-                                                const currentImageElement = getCurrentThemeName?.themeName === "Eurus" ? imgFxn(checkProduct[i]) : checkProduct[i].querySelector('img').parentNode;
-                                                if (settingCurrentFilter === "boost") {
-                                                    if (currentImageHeight) {
-                                                        imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
-                                                    }
-                                                } else if (currentImageElement) {
+                                        wishlistDiv.classList.add(getSelectedIcon.iconPosition)
+
+                                        if (getSelectedIcon.checkClassExist === true) {
+                                            const currentImageElement = getCurrentThemeName?.themeName === "Eurus" ? imgFxn(checkProduct[i]) : checkProduct[i].querySelector('img').parentNode;
+                                            if (settingCurrentFilter === "boost") {
+                                                if (currentImageHeight) {
                                                     imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
                                                 }
-                                                if (getCurrentThemeName?.themeName === "Grid" || getCurrentThemeName?.themeName === "Impact" || getCurrentThemeName?.themeName === "Aurora" || getCurrentThemeName?.themeName === "Gain" || getCurrentThemeName?.themeName === "Alchemy" || getCurrentThemeName?.themeName === "Xclusive") {
-                                                    const currentImageElement = checkProduct[i].querySelector(themeSelectors.appendIcon);
-                                                    imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
-                                                }
+                                            } else if (currentImageElement) {
+                                                imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
                                             }
-                                            let iconHtml;
-                                            const isNewHeartIcon = (currentCollectionSeting.collectionIconType === 'comboHeart' || currentCollectionSeting.collectionIconType === 'comboStar' || currentCollectionSeting.collectionIconType === 'comboSave')
+                                            if (getCurrentThemeName?.themeName === "Grid" || getCurrentThemeName?.themeName === "Impact" || getCurrentThemeName?.themeName === "Aurora" || getCurrentThemeName?.themeName === "Gain" || getCurrentThemeName?.themeName === "Alchemy" || getCurrentThemeName?.themeName === "Xclusive") {
+                                                const currentImageElement = checkProduct[i].querySelector(themeSelectors.appendIcon);
+                                                imgHeight = currentImageElement.clientHeight - Number(getSelectedIcon.iconHeight) - 5;
+                                            }
+                                        }
+                                        let iconHtml;
+                                        const isNewHeartIcon = (currentCollectionSeting.collectionIconType === 'comboHeart' || currentCollectionSeting.collectionIconType === 'comboStar' || currentCollectionSeting.collectionIconType === 'comboSave')
 
-                                            const countData = await isCountOrNot(selectedId, isCollectionCount)
-                                            const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
-                                            const matchFound = await checkFound(checkWishlistData, Number(selectedId))
+                                        const countData = await isCountOrNot(selectedId, isCollectionCount)
+                                        const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
+                                        const matchFound = await checkFound(checkWishlistData, Number(selectedId))
 
-                                            isCollectionCount && (imgHeight = imgHeight - 15)
-                                            if (checkWishlistData.length > 0 && matchFound) {
-                                                iconHtml = `<div class="collection_icon_new_selected" style="${getSelectedIcon.checkClassExist === true ? 'top:' + imgHeight + 'px;' : ''}">
+                                        isCollectionCount && (imgHeight = imgHeight - 15)
+                                        if (checkWishlistData.length > 0 && matchFound) {
+                                            iconHtml = `<div class="collection_icon_new_selected" style="${getSelectedIcon.checkClassExist === true ? 'top:' + imgHeight + 'px;' : ''}">
                                                                 <div onClick="collectionIconClick(event,'${selectedId}','${key}')" class="${isNewHeartIcon ? getSelectedIcon.iconStyle2 : getSelectedIcon.iconStyle} wg-collectionIcon selected">
                                                                     <span class="span-hearticon"></span>
                                                                 </div>
                                                             </div>${isCollectionCount ? newCountData : ""}`;
-                                            } else {
-                                                iconHtml = `<div class="collection_icon_new" style="${getSelectedIcon.checkClassExist === true ? 'top:' + imgHeight + 'px;' : ''}">
+                                        } else {
+                                            iconHtml = `<div class="collection_icon_new" style="${getSelectedIcon.checkClassExist === true ? 'top:' + imgHeight + 'px;' : ''}">
                                                                 <div  onClick="collectionIconClick(event,'${selectedId}','${key}')" class="${getSelectedIcon.iconStyle} wg-collectionIcon">
                                                                     <span class="span-hearticon"></span>
                                                                 </div>
                                                             </div>${isCollectionCount ? newCountData : ""}`;
-                                            }
-                                            prependPromises.push(
-                                                wishlistDiv.innerHTML = iconHtml
-                                            );
-                                            if (isCollectionCount) {
-                                                const countDataElement = document.querySelector(`.wf-wishlist-collection-icon[product-id='${selectedId}'] .wf-product-count`);
-
-                                                if (countDataElement) {
-                                                    if (getSelectedIcon.checkClassExist === true) {
-                                                        countDataElement.style.top = `${imgHeight + 25}px`;
-                                                    } else {
-                                                        countDataElement.style.top = `25px`;
-                                                    }
-                                                };
-                                                renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount)
-                                            }
-                                            collectionIconSize()
                                         }
+                                        prependPromises.push(
+                                            wishlistDiv.innerHTML = iconHtml
+                                        );
+                                        if (isCollectionCount) {
+                                            const countDataElement = document.querySelector(`.wf-wishlist-collection-icon[product-id='${selectedId}'] .wf-product-count`);
+
+                                            if (countDataElement) {
+                                                if (getSelectedIcon.checkClassExist === true) {
+                                                    countDataElement.style.top = `${imgHeight + 25}px`;
+                                                } else {
+                                                    countDataElement.style.top = `25px`;
+                                                }
+                                            };
+                                            renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount)
+                                        }
+                                        collectionIconSize()
                                     }
                                 }
                             }
                         }
                     }
-                });
-                Promise.all(prependPromises)
-                    .then(() => {
-                        let allShow = document.querySelectorAll('.wf-wishlist-collection-icon');
-                        allShow.forEach((w) => {
-                            if (getCurrentThemeName?.themeName === "Avante") {
-                                w.style.position = "relative";
-                            }
-                            w.style.display = 'block';
-                        });
-                    })
-                    .catch((error) => {
-                        console.log('Error occurred');
+                }
+            });
+            Promise.all(prependPromises)
+                .then(() => {
+                    let allShow = document.querySelectorAll('.wf-wishlist-collection-icon');
+                    allShow.forEach((w) => {
+                        if (getCurrentThemeName?.themeName === "Avante") {
+                            w.style.position = "relative";
+                        }
+                        w.style.display = 'block';
                     });
-            }
-            // console.log(" ------ END 222 ------ ")
+                })
+                .catch((error) => {
+                    console.log('Error occurred');
+                });
         }
-        flag = false;
-        // console.log(" ------ END 111 ------ ")
+        // console.log(" ------ END 222 ------ ")
     }
+    flag = false;
+    // console.log(" ------ END 111 ------ ")
+    // }
     // console.log(" ------ END 000  ------ ")
 }
 

@@ -1,9 +1,9 @@
 import {
-    Page, Grid, LegacyCard, Text, AlphaCard, IndexTable, Tooltip as Tool, useIndexResourceState, RangeSlider, Collapsible
+    Page, Grid, LegacyCard, Text, Card, IndexTable, Tooltip as Tool, useIndexResourceState, RangeSlider
 } from '@shopify/polaris';
 import { Spinner } from '@shopify/polaris';
 import React, { useEffect, useState, useCallback } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import useApi from '../hooks/useApi';
 import moment from 'moment-js'
 import SkeletonPage1 from './SkeletonPage1';
@@ -666,7 +666,7 @@ export default function Analytic() {
         <div dir={wishlistTextDirection} className='wf-dashboard wf-dashboard-analytic onlyAnalyticPage'>
             {!isloading ? <SkeletonPage1 /> :
                 <Page fullWidth title={myLanguage.analyticPageMainHeading} subtitle={myLanguage.analyticPageMainText} >
-                    <AlphaCard roundedAbove="sm">
+                    <Card roundedAbove="sm">
                         <div className='wf-overview-inner'>
                             <div className='overview-main'>
                                 <Text variant="headingLg" as="h2">{myLanguage.quickOverView}</Text>
@@ -784,9 +784,9 @@ export default function Analytic() {
                                     </Grid>
                                 </div>}
                         </div>
-                    </AlphaCard>
+                    </Card>
 
-                    <AlphaCard className="legacy-graph">
+                    <Card className="legacy-graph">
                         <div className='graphical-representation-dates'>
                             <div className='overview-main overview-main1'>
                                 <div className='graphical-representation'>
@@ -910,11 +910,11 @@ export default function Analytic() {
                                 </div>
                             </div>
                         </div>
-                    </AlphaCard>
+                    </Card>
 
                     <div className="customer-recently-table">
                         <div className="customer-recently-inner analytic_last_tables">
-                            <AlphaCard roundedAbove="sm">
+                            <Card roundedAbove="sm">
                                 {/* <p>View a summary of your online store’s sales.</p> */}
                                 <LegacyCard>
                                     <div className='analytic-content-btn'>
@@ -950,10 +950,10 @@ export default function Analytic() {
                                     </div>
                                 </LegacyCard>
 
-                            </AlphaCard>
+                            </Card>
                         </div>
                         <div className="customer-recently-inner analytic_last_tables">
-                            <AlphaCard roundedAbove="sm">
+                            <Card roundedAbove="sm">
                                 <LegacyCard>
                                     <div className='wf-recently-inner'>
                                         <Text variant="headingLg" as="h2">{myLanguage.recentProductsHeading}</Text>
@@ -981,7 +981,7 @@ export default function Analytic() {
                                             </IndexTable>}
                                     </div>
                                 </LegacyCard>
-                            </AlphaCard>
+                            </Card>
 
                         </div>
                     </div>

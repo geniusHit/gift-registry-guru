@@ -120,8 +120,8 @@ function onHeaderActionsRender(element) {
 let modalDrawerTextColor = generalSetting?.wlTextColor?.color ? generalSetting?.wlTextColor?.color : generalSetting.wlTextColor;
 document.addEventListener("DOMContentLoaded", getCurentPlanSql);
 
-// const serverURL = "http://localhost:5000"; // -------------- local
-const serverURL = "https://thousand-exemption-organization-sam.trycloudflare.com"; // -------------- local
+const serverURL = "http://localhost:5000"; // -------------- local
+// const serverURL = "https://thousand-exemption-organization-sam.trycloudflare.com"; // -------------- local
 // const serverURL = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL = 'https://wishlist-guru-api.webframez.com'; // -------------- stagging
 

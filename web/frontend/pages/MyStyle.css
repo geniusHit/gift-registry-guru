@@ -1045,64 +1045,20 @@ div#basic-collapsible\ collapse-hover {
     width: 200px;
 }
 
-
-
-#registries {
-    padding: 0px 1.5rem;
-}
-
-#registries .nav {
-    padding: 22px 0px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#registries .nav p {
-    font-weight: 600;
-    font-size: 15pt;
-}
-
-.Polaris-Button{
-    border-radius: 8px !important;
-    padding: 6px !important;
-}
-
-.Polaris-Button__Text {
-    display: flex;
-    align-items: center;
-}
-
-#registries .header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.header .icon {
-    width: 15px;
-}
-
-#registries .vertical-line {
-    width: 2px;
-    height: 20px;
-    background-color: gray;
-}
-
-.wf-style-wishbtn{
+.wf-style-wishbtn {
     padding: 20px 25px;
 }
 
 .currentWishlistUser .header-save {
-top: 0;
-left: 0;
+    top: 0;
+    left: 0;
 }
 
-.wf-currentWishlistUser .Polaris-Grid{
+/* .wf-currentWishlistUser .Polaris-Grid {
     grid-template-columns: repeat(2, 1fr) !important;
-}
+} */
 
-.wf-currentWishlistUser .Polaris-Select__Content{
+.wf-currentWishlistUser .Polaris-Select__Content {
     max-width: 100% !important;
 }
 

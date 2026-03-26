@@ -1,5 +1,5 @@
 // import React, { useEffect, useState, useRef, useMemo, Suspense } from 'react';
-// import { Frame, AlphaCard, Button, Page, Text, Grid, RadioButton, Select, Tabs, LegacyCard, Checkbox, Collapsible } from '@shopify/polaris';
+// import { Frame, Card, Button, Page, Text, Grid, RadioButton, Select, Tabs, LegacyCard, Checkbox, Collapsible } from '@shopify/polaris';
 // import { Controller, useForm } from "react-hook-form";
 // import CssFilterConverter from "css-filter-converter";
 // import Swal from "sweetalert2";
@@ -883,7 +883,7 @@
 //                                         <Text variant="headingMd" as="h2">{myLanguage.wishlistButtonHeading}</Text>
 //                                         <p>{myLanguage.wishlistButtonText}</p>
 //                                     </div>
-//                                     <AlphaCard>
+//                                     <Card>
 //                                         <div id="add-to-wishlist-section">
 
 //                                             <div className='buttonsGrid'>
@@ -987,17 +987,17 @@
 //                                                 </Grid.Cell>
 //                                             </Grid>
 //                                         </div>
-//                                     </AlphaCard>
+//                                     </Card>
 //                                 </div>
 
 //                                 <div className='wf-wishprev-inner'>
-//                                     <AlphaCard>
+//                                     <Card>
 //                                         <DemoProduct watchAllFields={watchAllFields} selectedBtn={selectedBtn} myLanguage={myLanguage} />
-//                                     </AlphaCard>
+//                                     </Card>
 //                                 </div>
 //                             </div>
 
-//                             <AlphaCard>
+//                             <Card>
 //                                 <div className='wf-style-wishbtn'>
 //                                     <div className='custom-margin'>
 //                                         <Text variant="headingMd" as="h2">{myLanguage.wbStyleHeading}</Text>
@@ -1009,7 +1009,7 @@
 //                                         </LegacyCard.Section>
 //                                     </Tabs>
 //                                 </div>
-//                             </AlphaCard>
+//                             </Card>
 
 
 //                             {/* SHOW COUNT */}
@@ -1129,7 +1129,7 @@
 
 
 
-//                             <AlphaCard>
+//                             <Card>
 //                                 <div id="add-to-cart-section" className='wf-style-wishbtn'>
 //                                     <div className='custom-margin'>
 //                                         <Text variant="headingMd" as="h2">{myLanguage.atcStyleHeading}</Text>
@@ -1142,7 +1142,7 @@
 //                                         </LegacyCard.Section>
 //                                     </Tabs>
 //                                 </div>
-//                             </AlphaCard>
+//                             </Card>
 
 //                             {/* <br></br>
 //                             <br></br> */}

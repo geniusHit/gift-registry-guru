@@ -1,12 +1,3 @@
-import {
-  SkeletonPage,
-  Layout,
-  LegacyCard,
-  SkeletonBodyText,
-  Text,
-  SkeletonDisplayText,
-  Frame
-} from '@shopify/polaris';
 import React, { useEffect } from 'react';
 import loaderGif from "./loaderGreen.gif";
 import Swal from 'sweetalert2';

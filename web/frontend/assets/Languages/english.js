@@ -40,7 +40,7 @@ const english = {
     // --------------------defaultPage--------------------
 
     defaultPageMainHeading: "Dashboard Page",
-    defaultPageMainText: "This is the dashboard of Wishlist Guru App",
+    defaultPageMainText: "This is the dashboard of registry Guru App",
 
     planBoxHeading: `For more information and features in different plans you can visit to Plan page.`,
     planFree: "Currently you are using free plan, which is free forever.",
@@ -65,46 +65,46 @@ const english = {
     mandatoryFeatureHeading: "Installation Steps",
     mandatoryFeatureText: "These are basic installation steps, We highly recommend going through these settings and change them as per your requirements.",
 
-    overValueB1: "ADD TO WISHLIST Button Appearance",
-    overValue1: "You can customize and style Add to Wishlist Button for Product Page to match with your theme styles.",
+    overValueB1: "ADD TO registry Button Appearance",
+    overValue1: "You can customize and style Add to registry Button for Product Page to match with your theme styles.",
 
     overValueB2: "ADD TO CART Button Appearance",
-    overValue2: "You can customize and style ADD TO CART Button  to match with your theme colors. This button will show on the Wishlist Page where all wishlist items will be shown, Using this button users will be able to add their Wishlist items directly to cart.",
+    overValue2: "You can customize and style ADD TO CART Button  to match with your theme colors. This button will show on the registry Page where all registry items will be shown, Using this button users will be able to add their registry items directly to cart.",
 
     overValueB3: "Language Settings/Multiple Language Support",
     overValue3: "You can change Text translation of overall app and all frontside wordings and headings from here",
 
-    overValueB4: "Wishlist Page Display Settings",
-    overValue4: "You can choose how you want to show Wishlist items to your users, There are 3 possible ways to showcase Wishlist Items which are On a separate Page Or as Modal POPUP or as DRAWER (Similar to cart drawer layout).",
+    overValueB4: "Registry Page Display Settings",
+    overValue4: "You can choose how you want to show registry items to your users, There are 3 possible ways to showcase registry Items which are On a separate Page Or as Modal POPUP or as DRAWER (Similar to cart drawer layout).",
 
-    overValueB5: "Wishlist UI Type (as Drawer)",
-    overValue5: "Select wishlist UI type as Drawer option",
+    overValueB5: "Registry UI Type (as Drawer)",
+    overValue5: "Select registry UI type as Drawer option",
 
-    overValueB6: "Wishlist Icon Location",
-    // overValue6: "Choose desired location for your Main Wishlist Menu option which your users will click to see their respective wishlist. By default we show Wishlist Icon in the header, Feel free to change in other available options to show as Menu item or Floating icon as per your need.",
-    overValue6: "Choose desired location for your Main Wishlist Menu option which your users will click to see their respective wishlist. By default we show Wishlist Icon in the header.",
+    overValueB6: "Registry Icon Location",
+    // overValue6: "Choose desired location for your Main registry Menu option which your users will click to see their respective registry. By default we show registry Icon in the header, Feel free to change in other available options to show as Menu item or Floating icon as per your need.",
+    overValue6: "Choose desired location for your Main registry Menu option which your users will click to see their respective registry. By default we show registry Icon in the header.",
 
-    overValueB7: "Add Wishlist Icon Using Custom Code",
-    overValue7: "Although our app covers all important features and has been designed to work with all common requirements. But there are some occasions where you may want to add Wishlist Icons but our APP has not covered that yet, So for such situations we have provided Custom code which can be added in desired respective file and it will work like charm. If you need assistance with integration, Feel free to Contact us and we will add this for you.",
+    overValueB7: "Add registry Icon Using Custom Code",
+    overValue7: "Although our app covers all important features and has been designed to work with all common requirements. But there are some occasions where you may want to add registry Icons but our APP has not covered that yet, So for such situations we have provided Custom code which can be added in desired respective file and it will work like charm. If you need assistance with integration, Feel free to Contact us and we will add this for you.",
 
     overValueB8: "Notification Settings",
     overValue8: "You can choose from different options to show Notifications to users, We have the option to show all notifications as Tooltip, Toast or as a Text. You can even customize colors, styles and size etc of your notifications from this settings.",
 
 
     overValueB9: "Collection Page Settings",
-    overValue9: "Configure and customize your preference to show Wishlist Icon or Button on Collection pages, Home page, Search page, Quick View or any other pages as per your requirement.",
+    overValue9: "Configure and customize your preference to show registry Icon or Button on Collection pages, Home page, Search page, Quick View or any other pages as per your requirement.",
 
     overValueB10: "Custom CSS/JS Code",
     overValue10: "Add any custom CSS or JS code on a different set of  predefined actions to track conversions or any other data.",
 
     overValueB11: "Email Reminders",
-    overValue11: "Configure when you want to send Email reminders to your customers about their Wishlist Items",
+    overValue11: "Configure when you want to send Email reminders to your customers about their registry Items",
 
-    overValueB12: "Share Wishlist Settings",
-    overValue12: "Configure and Customize all settings related to sharing wishlist data via URL, Facebook, X (Foremly Twitter) and Email. In FREE Plan users can only share wishlist via URL.",
+    overValueB12: "Share registry Settings",
+    overValue12: "Configure and Customize all settings related to sharing registry data via URL, Facebook, X (Foremly Twitter) and Email. In FREE Plan users can only share registry via URL.",
 
-    overValueB15: "Collection Page Wishlist Settings",
-    overValue15: "You will need to Enable this widget first so Wishlist functionality can be used from Collection pages and other Pages.",
+    overValueB15: "Collection Page registry Settings",
+    overValue15: "You will need to Enable this widget first so registry functionality can be used from Collection pages and other Pages.",
 
 
     helpText1: "For any questions, setup requests, comments or suggestions please contact us from the below button.",
@@ -123,7 +123,7 @@ const english = {
     // --------------------analyticPage--------------------
 
     analyticPageMainHeading: "Analytic page",
-    analyticPageMainText: "Here you can analyze your wishlist app",
+    analyticPageMainText: "Here you can analyze your registry app",
     quickOverView: "Quick Overview",
     selectValue1: "Today",
     selectValue2: "Yesterday",
@@ -131,11 +131,11 @@ const english = {
     selectValue4: "Last week",
     selectValue5: "This month",
     selectValue6: "Last month",
-    userHeading: "Wishlist Users",
-    userText: "Total number of wishlist users",
+    userHeading: "Registry Users",
+    userText: "Total number of registry users",
     users: "Users:",
-    itemHeading: "Wishlist Items",
-    itemText: "Total number of wishlist items",
+    itemHeading: "Registry Items",
+    itemText: "Total number of registry items",
     items: "Items",
     totalRevenueHeading: "Total Revenue",
     totalRevenueText: "Items added to cart from the app is the total revenue",
@@ -146,15 +146,15 @@ const english = {
     graphRepsHeading: "Graphical Representation",
     graphDay: "DAY",
     graphMonth: "MONTH",
-    itemGraph: "Total Wishlist Item in your store",
-    userGraph: "Total Wishlist User in your store",
+    itemGraph: "Total registry Item in your store",
+    userGraph: "Total registry User in your store",
     mostProductsHeading: "Customer's Favourite Products",
     mostProductsTableHeading: "Top Picks: What Customers Love",
     mostProductsTableText: "The figure below shows the number of different users who added each product.",
     mostProductsText: "Below figure show which product is added by how many different users",
-    recentProductsHeading: "Recently Wishlist Products",
+    recentProductsHeading: "Recently registry Products",
     recentProductstext: "Below products are recently added by users on your store",
-    unlimitedItemsText: "You can add unlimited wishlist items",
+    unlimitedItemsText: "You can add unlimited registry items",
     mpvalue1: "Sr. no.",
     mpvalue2: "Title",
     mpvalue3: "Image",
@@ -163,7 +163,7 @@ const english = {
     rpvalue2: "Title",
     rpvalue3: "Image",
     rpvalue4: "Price",
-    reportModalHeading: "Wishlist detail of",
+    reportModalHeading: "Registry detail of",
     reportModalCartHeading: "Move to cart detail of",
     reportModalTotalItems: "Total items",
     specificDateDataHeading: "Select specific dates for Graphical Representation ",
@@ -173,7 +173,7 @@ const english = {
     totalusers: "users",
     totalitems: "items",
     tab0heading: "Total users",
-    tab1heading: "Total wishlist items",
+    tab1heading: "Total registry items",
     tab2heading: "Total revenue",
     totalheading: "Total",
     revenuedatacancel: "Cancel",
@@ -181,39 +181,39 @@ const english = {
     emailValue: "email",
     analyticDetailUserReportsHeading: 'Analytic Report Page :',
     userReportHeading: "User Reports",
-    wishlistItemsHeading: 'Wishlist Items',
+    wishlistItemsHeading: 'Registry Items',
     wishlistItemsItemName: 'Item Name',
     revenueDataHeading: ' Revenue Data',
-    revenueDataText: "Here, we're displaying a revenue report based on wishlist items.",
-    deleteAllItem: "All items from wishlist are deleted ",
-    deleteItem: "Wishlist item has been successfully deleted",
-    wishlistName: "Wishlist Name",
-    clearAllWishlistItem: "Clear all wishlist items",
+    revenueDataText: "Here, we're displaying a revenue report based on Registry items.",
+    deleteAllItem: "All items from Registry are deleted ",
+    deleteItem: "Registry item has been successfully deleted",
+    wishlistName: "Registry Name",
+    clearAllWishlistItem: "Clear all Registry items",
     productTotalPrice: "Total Price",
     selectValue0: "All",
-    wishlistNameHeading: "Filter by Wishlist name",
+    wishlistNameHeading: "Filter by Registry name",
     quickOverViewDate: "Date Range",
     contactUs: "Leave a review",
     helpHeading: "Leave a Review and Help Us Grow",
     helpText2: "We hope you’re enjoying our app! Your feedback is incredibly valuable to us and helps us improve and grow. Please take a moment to leave a review and let us know about your experience. Whether it's a feature you love or a suggestion for improvement, we'd love to hear from you. Thank you for your support!",
     selectValue7: "Custom Range",
-    SeeDocsText1: "ADD TO WISHLIST Button on Product Page",
-    SeeDocsText2: "Add the Wishlist button block in Shopify's Theme Editor to display it on your Product page.",
+    SeeDocsText1: "ADD TO Registry Button on Product Page",
+    SeeDocsText2: "Add the Registry button block in Shopify's Theme Editor to display it on your Product page.",
     SeeDocs: "See Docs",
 
     // --------------------buttonSetting--------------------
 
     buttonSettingMainHeading: "Button settings",
-    buttonSettingMainText: "Here you can customize and style your Add to Wishlist button and Move to Cart Button",
+    buttonSettingMainText: "Here you can customize and style your Add to Registry button and Move to Cart Button",
     alreadyAdded: "ALREADY ADDED",
 
-    wishlistButtonHeading: "Add to Wishlist Button",
-    wishlistButtonText: "Select wishlist button/icon appearance for the product page",
+    wishlistButtonHeading: "Add to Registry Button",
+    wishlistButtonText: "Select Registry button/icon appearance for the product page",
 
     wbApperanceHeading: "Button appearance",
-    wbApperanceText: "Select wishlist button/icon type",
-    buttonText: "ADD TO WISHLIST",
-    pickIconColorHeading: "Pick a wishlist icon for your site",
+    wbApperanceText: "Select Registry button/icon type",
+    buttonText: "ADD TO Registry",
+    pickIconColorHeading: "Pick a Registry icon for your site",
     pickAnimationHeading: "Pick animation for your button",
 
     animationNone: "None",
@@ -243,17 +243,17 @@ const english = {
     borderNone: "None",
 
 
-    wbStyleHeading: "Styles for the Add to Wishlist Button",
-    wbStyleText: "Here your can customize and Style your Add to Wishlist button for Product Page and Button option for all over the site",
+    wbStyleHeading: "Styles for the Add to Registry Button",
+    wbStyleText: "Here your can customize and Style your Add to Registry button for Product Page and Button option for all over the site",
 
     addToCartHeading: "Move to Cart Button",
     addToCartText: "Customize Move to Cart Button appearance for the Modal, Page and Drawer option",
     atcStyleHeading: "Styles for the Move to Cart button",
-    atcStyleText: "Here your can customize and Style your Move to Cart button for modal, drawer and page option to view wishlist",
+    atcStyleText: "Here your can customize and Style your Move to Cart button for modal, drawer and page option to view Registry",
     hareModalButton: "Share Modal Button",
     customiseShareModalButtonText: "Customize share modal Button appearance for the Modal, Page and Drawer option",
     ctylesForShareButton: "Styles for the share button",
-    stylesShareButtonText: "Here your can Customize and Style your share modal button for modal, drawer and page option to view wishlist",
+    stylesShareButtonText: "Here your can Customize and Style your share modal button for modal, drawer and page option to view Registry",
     regular: "Regular",
     hover: "Hover",
     active: "Active",
@@ -289,43 +289,43 @@ const english = {
     LanguageForTextMessages: "Select language for your Text messages",
 
     productPageMain: "Product page:",
-    ppHeading1: "Button text before adding to wishlist",
-    ppHeading2: "Button text after adding to wishlist",
-    ppHeading3: "Notification text after item is added to wishlist (Toast, ToolTip, As a text)",
-    ppHeading4: "Notification text after item is removed from wishlist (Toast, ToolTip, As a text)",
+    ppHeading1: "Button text before adding to Registry",
+    ppHeading2: "Button text after adding to Registry",
+    ppHeading3: "Notification text after item is added to Registry (Toast, ToolTip, As a text)",
+    ppHeading4: "Notification text after item is removed from Registry (Toast, ToolTip, As a text)",
 
-    wishlistModalMain: "Wishlist Modal/Page/Drawer:",
+    wishlistModalMain: "Registry Modal/Page/Drawer:",
     wmHeading1: "Page Heading",
     wmHeading2: "Text for Grid Icons",
-    wmHeading3: "Button text remove from wishlist",
+    wmHeading3: "Button text remove from Registry",
     wmHeading4: "Button text for move to cart",
-    wmHeading5: "Text to show when there are no items in wishlist",
-    wmHeading6: "Button text for share your wishlist",
+    wmHeading5: "Text to show when there are no items in Registry",
+    wmHeading6: "Button text for share your Registry",
     wmHeading7: "Alert for remove button",
     wmHeading8: "Alert for move to cart button",
     wmHeading9: "Button Text for view cart",
     wmHeading10: "Text to show on button to Move All items to cart",
 
-    sharableLinkMain: "Share Wishlist via URL Modal",
+    sharableLinkMain: "Share Registry via URL Modal",
     slHeading1: "Heading for sharable link modal",
     slHeading2: "Alert message for link copied",
 
-    sharedWishlistPageMain: "Shared Wishlist page (Viewed by your users friends)",
-    swpHeading1: "Heading text for shared wishlist page",
-    swpHeading2: "Button text for Add to my wishlist",
+    sharedWishlistPageMain: "Shared Registry page (Viewed by your users friends)",
+    swpHeading1: "Heading text for shared Registry page",
+    swpHeading2: "Button text for Add to my Registry",
     swpHeading3: "Button text for Move to my cart",
-    swpHeading4: "Alert for item added to your wishlist",
-    swpHeading5: "Alert for item already added to your wishlist",
+    swpHeading4: "Alert for item added to your Registry",
+    swpHeading5: "Alert for item already added to your Registry",
     swpHeading6: "Alert for item added to your cart",
     swpHeading7: "Alert for item already added to your Cart",
 
 
-    shareWishlistViaEmail: "Share wishlist via Email",
-    swveHeading1: "Button Text for share wishlist via email",
-    swveHeading2: "Heading for share wishlist via email",
-    swveHeading3: "Form Button text for share wishlist via email",
-    swveHeading4: "Message for successfull share wishlist via email",
-    swveHeading5: "Tooltip Message for share wishlist via email if user is not logged in",
+    shareWishlistViaEmail: "Share Registry via Email",
+    swveHeading1: "Button Text for share Registry via email",
+    swveHeading2: "Heading for share Registry via email",
+    swveHeading3: "Form Button text for share Registry via email",
+    swveHeading4: "Message for successfull share Registry via email",
+    swveHeading5: "Tooltip Message for share Registry via email if user is not logged in",
     iconHeading: "Heading for icons",
 
     swveHeading6: "Heading for sender name field",
@@ -334,7 +334,7 @@ const english = {
 
     // --------------------advanceSetting--------------------
     advanceSettingMainHeading: "Advance Settings",
-    advanceSettingMainText: "Here you add custom css and js on wishlist app",
+    advanceSettingMainText: "Here you add custom css and js on Registry app",
 
 
     customCssHeading: "Custom css",
@@ -346,28 +346,28 @@ const english = {
     customJsPlaceholder: "Enter here custom js/jQuery for your site...",
 
     customJsAfterAddHeading: "Custom js/jQuery after Add Item",
-    customJsAfterAddText: `Customize js/jQuery after Add item to your wishlist (use "" only)`,
-    customJsAfterAddPlaceholder: "Enter here custom js/jQuery that you want to run after pressing add to wishlist button for your site...",
+    customJsAfterAddText: `Customize js/jQuery after Add item to your Registry (use "" only)`,
+    customJsAfterAddPlaceholder: "Enter here custom js/jQuery that you want to run after pressing add to Registry button for your site...",
 
     customJsAfterRemoveHeading: "Custom js/jQuery after Remove Item",
-    customJsAfterRemoveText: `Customize js/jQuery after Removed item from wishlist (use "" only)`,
-    customJsAfterRemovePlaceholder: "Enter here custom js/jQuery that you want to run after pressing remove from wishlist button for your site...",
+    customJsAfterRemoveText: `Customize js/jQuery after Removed item from Registry (use "" only)`,
+    customJsAfterRemovePlaceholder: "Enter here custom js/jQuery that you want to run after pressing remove from Registry button for your site...",
 
     // --------------------generalSetting--------------------
     generalSettingMainHeading: "General settings",
-    generalSettingMainText: "Here you can customize some general settings of your wishlist app",
+    generalSettingMainText: "Here you can customize some general settings of your Registry app",
 
 
-    wishlistUIHeading: "Wishlist UI type (Modal, Page & Drawer)",
-    wishlistUiTypeText: "Select your wishlist UI type in which you want to see your Wishlist items",
-    wishlistUIText: "Select wishlist UI type for wishlist items. We have three option for showing wishlist items these are Modal, Page and Drawer.",
+    wishlistUIHeading: "Registry UI type (Modal, Page & Drawer)",
+    wishlistUiTypeText: "Select your Registry UI type in which you want to see your Registry items",
+    wishlistUIText: "Select Registry UI type for Registry items. We have three option for showing wishlist items these are Modal, Page and Drawer.",
     wishlistUIValue1: "As modal",
     wishlistUIValue2: "Seperate page",
     wishlistUIValue3: "As drawer",
-    wishlistUIcard1Title: "Wishlist UI type",
+    wishlistUIcard1Title: "Registry UI type",
 
-    wishlistUIStyleHeading: "Styles for the Wishlist UI type (Modal, Page & Drawer)",
-    wishlistUIStyleText: "Styles for the Modal, Page & Drawer option which is showing wishlist items",
+    wishlistUIStyleHeading: "Styles for the Registry UI type (Modal, Page & Drawer)",
+    wishlistUIStyleText: "Styles for the Modal, Page & Drawer option which is showing Registry items",
     wishlistUIStylebackgroundColor: "Pick a color for the Background",
     wishlistUIStyleCrossColor: "Pick a color for the Cross",
     wishlistUIStyleWidth: "Width (only works for modal option)",
@@ -378,8 +378,8 @@ const english = {
     languageHeading: "Language settings",
     languageText: "Select language here for your admin side",
 
-    iconLocationHeading: "Wishlist icon location",
-    iconLocationText: "Choose location from where you want to open the wishlist. (In menu/header icon/floating icon)",
+    iconLocationHeading: "Registry icon location",
+    iconLocationText: "Choose location from where you want to open the Registry. (In menu/header icon/floating icon)",
     iconLocationValue1: "As a menu item",
     iconLocationValue2: "As a header icon",
     iconLocationValue3: "As a floating icon button",
@@ -388,8 +388,8 @@ const english = {
     iconLocationValue3Sub2: "Middle left",
     iconLocationValue3Sub3: "Middle right",
     iconLocationValue3Sub4: "Bottom left",
-    iconLocationCheckHeading: "Select Wishlist Icon Location",
-    iconLocationCheckHeadText: "Select option from where you want to open the wishlist, we have following three option",
+    iconLocationCheckHeading: "Select Registry Icon Location",
+    iconLocationCheckHeadText: "Select option from where you want to open the Registry, we have following three option",
 
     iconLocationMainHeading: "Customization for Floating icon",
     iconLocationHeaderIconHeading: "Customization for header icon",
@@ -403,8 +403,8 @@ const english = {
     floatingIconBgColorText: "Floating icon background color",
     floatingIconColorText: "Floating icon text color",
 
-    iconCustomCodeHeading: "Wishlist icon or text with custom code",
-    iconCustomCodeText: "You can add a wishlist icon or text anywhere on your site to open a Modal, Page, or Drawer. Simply add a custom selector (class='custom-wishlist-icon') to the specific div or span tag. Additionally, include the attribute wishlist-type if you want to specify whether it should display an icon or text. If no wishlist-type is specified, an icon will be displayed by default.",
+    iconCustomCodeHeading: "Registry icon or text with custom code",
+    iconCustomCodeText: "You can add a Registry icon or text anywhere on your site to open a Modal, Page, or Drawer. Simply add a custom selector (class='custom-wishlist-icon') to the specific div or span tag. Additionally, include the attribute wishlist-type if you want to specify whether it should display an icon or text. If no wishlist-type is specified, an icon will be displayed by default.",
     iconCustomCodeExample: `Example for icon: <span class="custom-wishlist-icon" wishlist-type="icon"> </span>`,
     iconCustomCodeExample2: `Example for text: <span class="custom-wishlist-icon" wishlist-type="text"> </span>`,
     iconCustomCodeExampleText: "After added the code, please select yes option to enable the icon or text on site otherwise select no option",
@@ -413,18 +413,18 @@ const english = {
 
     notificationHeading: "Notification Settings",
     notificationText: "Select notification type and customize the notification. We have three type of notification (Tooltip, Toast, Text Messages)",
-    notificationValue1: "Show Wishlist",
+    notificationValue1: "Show Registry",
     notificationValue2: "Show Notification",
 
-    notificationOptionHeading: "Notification or Wishlist (After added a item)",
-    notificationOptionText: "Choose what you want after added a item to the wishlist (Show wishlist or notification)",
+    notificationOptionHeading: "Notification or Registry (After added a item)",
+    notificationOptionText: "Choose what you want after added a item to the Registry (Show Registry or notification)",
 
     subNotificationHeading: "Notification type",
-    subNotificationText: "Choose which kind of notification you want after adding an item to wishlist (Tooltip, Toast)",
+    subNotificationText: "Choose which kind of notification you want after adding an item to Registry (Tooltip, Toast)",
 
     subNotificationValue1: "As a tool tip",
-    subNotificationValue1Sub1: "Below the wishlist button",
-    subNotificationValue1Sub2: "Above the wishlist button",
+    subNotificationValue1Sub1: "Below the Registry button",
+    subNotificationValue1Sub2: "Above the Registry button",
 
     subNotificationValue2: "As a toast",
     subNotificationValue2Sub1: "Bottom Center of the screen",
@@ -435,52 +435,52 @@ const english = {
     subNotificationValue2Sub6: "Top right of the screen",
 
     subNotificationValue3: "As a text",
-    subNotificationValue3Sub1: "Below the wishlist button",
-    subNotificationValue3Sub2: "Above the wishlist button",
+    subNotificationValue3Sub1: "Below the Registry button",
+    subNotificationValue3Sub2: "Above the Registry button",
 
     notificationTimerHeading: "Notification delay timer",
     notificationTimerText: "You can mention the timer to hide tooltip, toast (in sec).",
 
     subNotificationStyleHeading: "Styles for Notification (Tooltip, Toast)",
-    subNotificationStyleText: "Customize and style your wishlist notification (Tooltip, Toast)",
+    subNotificationStyleText: "Customize and style your Registry notification (Tooltip, Toast)",
 
 
 
     // --------- share wishlist settings----------
 
-    shareWishlistHeading: "Share wishlist settings",
-    shareWishlistSubHeading: "Who Can Share Wishlist",
-    shareWishlistText: "Admin has option to set guest user can share the wishlist or not.",
+    shareWishlistHeading: "Share Registry settings",
+    shareWishlistSubHeading: "Who Can Share Registry",
+    shareWishlistText: "Admin has option to set guest user can share the Registry or not.",
     shareWishlistValue1: "Login user",
     shareWishlistValue2: "All user (Guest and Login both)",
 
     chooseThemeButtonText: "Choose theme",
     chooseThemeModalHeading: "Choose theme",
-    chooseThemeModalSubHeading: "Here you can choose where you want to active and test the Wishlist Guru App. Please make sure to Enable Wishlist Guru App Embed is enabled via Theme Editor.",
+    chooseThemeModalSubHeading: "Here you can choose where you want to active and test the Registry Guru App. Please make sure to Enable Registry Guru App Embed is enabled via Theme Editor.",
     chooseThemeModalSubmitButton: "Save theme name",
 
-    disableThemeEditor: "To disable the Wishlist Guru app from your online store",
-    enableThemeEditor: "To display the Wishlist Guru app on your online store, you have to enable app embed on your theme",
+    disableThemeEditor: "To disable the Registry Guru app from your online store",
+    enableThemeEditor: "To display the Registry Guru app on your online store, you have to enable app embed on your theme",
 
     // --------------update  -------
 
-    shareWishlistButtonTypeHeading: "Button type for Add To My Wishlist Button",
-    shareWishlistButtonTypeSubHeading: "Choose button type for add to my wishlist button on the share wishlist page",
+    shareWishlistButtonTypeHeading: "Button type for Add To My Registry Button",
+    shareWishlistButtonTypeSubHeading: "Choose button type for add to my Registry button on the share Registry page",
     shareWishlistButtonTypeValue1: "As Icon",
     shareWishlistButtonTypeValue2: "As Button",
 
-    shareWishlistAdvanceHeading: "Share Wishlist (Via Email, Facebook & X)",
-    shareWishlistAdvanceText: "You can share your wishlist to someone through Url, Email, Facebook & X (twitter)",
+    shareWishlistAdvanceHeading: "Share Registry (Via Email, Facebook & X)",
+    shareWishlistAdvanceText: "You can share your Registry to someone through Url, Email, Facebook & X (twitter)",
     emailSubject: "Email subject",
-    emailSubjectText: "Email message sent when your customer shares a wishlist with their family and friend, you can use the following placeholder in the email to be replaced by wishlist content:",
+    emailSubjectText: "Email message sent when your customer shares a Registry with their family and friend, you can use the following placeholder in the email to be replaced by Registry content:",
 
     // --------------------reportPage--------------------
     reportPageMainHeading: "Report Page",
-    reportPageMainText: "Here, we're displaying a revenue report based on wishlist items.",
+    reportPageMainText: "Here, we're displaying a revenue report based on Registry items.",
 
 
     userListingHeading: "Users Listing",
-    userListingText: "Check out our Wishlist User Report here.",
+    userListingText: "Check out our Registry User Report here.",
     userListingRecordsPerPage: "Record Per Page",
 
     searchHere: "Search Here",
@@ -489,9 +489,9 @@ const english = {
     tableSrno: "Sr. no",
     tableEmail: "Email/ Session",
     tableUserType: "User type",
-    tableWishlistItems: "Wishlist Items",
+    tableWishlistItems: "Registry Items",
     tableCartItems: "Move to cart Items",
-    tableViewWishlistItems: "View wishlist items",
+    tableViewWishlistItems: "View Registry items",
     tableViewAddToCartDetail: "View move to cart items",
     // tableTotalItems: "Total items",
     tableAccountCreated: "Account created",
@@ -514,7 +514,7 @@ const english = {
     talkToUsText: "Talk to us",
 
     noteHeading: "Note",
-    noteText1: "Firstly, you have to choose a plan for yourself to start the wishlist app. If you don't want to go with the paid plan in the beginning, you can go with our free plan which has limited features. Below is a brief explanation of all of our plans.",
+    noteText1: "Firstly, you have to choose a plan for yourself to start the Registry app. If you don't want to go with the paid plan in the beginning, you can go with our free plan which has limited features. Below is a brief explanation of all of our plans.",
     noteText2: "Remember that, if you are on a paid plan and you switched from the paid plan to the free plan. This is an immediate action, you can't reverse this action.",
 
 
@@ -528,7 +528,7 @@ const english = {
     // //---------------------------contactUs--Page//---------------------------
 
     contactPageHeading: "Get Support",
-    contactPageText: "Get support for any kind of query related to our wishlist app",
+    contactPageText: "Get support for any kind of query related to our Registry app",
 
     cpFAQ: "FAQ",
     cpViewFAQ: "View FAQ",
@@ -558,8 +558,8 @@ const english = {
 
     addAllToCart: "Move to cart Page",
 
-    adminlanguageSub: "Remove or do not remove items from wishlist after Move to cart",
-    adminlanguageSubText: "Admin has the option to retain/remove items from the wishlist after they are added to the cart",
+    adminlanguageSub: "Remove or do not remove items from Registry after Move to cart",
+    adminlanguageSubText: "Admin has the option to retain/remove items from the Registry after they are added to the cart",
 
     adminremoveAdvanceSetting: "Move to Cart settings",
     adminremoveCartSetting: "Choose option to delete or don't delete the item after an item is added to cart",
@@ -568,11 +568,11 @@ const english = {
 
     collectionHeading: "Collection Button",
     collectionHeadingText: "Here you can customize and style your collection button",
-    collectionHeading1: "Quick Add to wishlist for Collection Page and Home Page",
-    collectionHeadingText1: "You can add Icon/Button for add to wishlist on collection page and Home page. You just have to add below code in your card-product.liquid file",
+    collectionHeading1: "Quick Add to Registry for Collection Page and Home Page",
+    collectionHeadingText1: "You can add Icon/Button for add to Registry on collection page and Home page. You just have to add below code in your card-product.liquid file",
     collectionIconEx: "Example for the Icon:",
     collectionBtnEx: "Example for the Button:",
-    collectionIconHeading: "Pick a wishlist icon for your collection page",
+    collectionIconHeading: "Pick a Registry icon for your collection page",
     collectionIconSettingHeading: "Icon settings",
     collectionIconSelectedColor: "Icon selected color",
     collectionIconDefaultColor: "Icon default color",
@@ -583,7 +583,7 @@ const english = {
     //--------------------------------- email setting ---------------------------------
 
     emailSettingHeading: "Choose when to send email reminders to your customer",
-    emailSettingHeadingText: "Cutomise email option for your wishlist app",
+    emailSettingHeadingText: "Cutomise email option for your Registry app",
     emailSettingSubText: "Here you can choose option to send email to the user weekly or monthly.",
     emsValue1: "Weekly",
     emsValue2: "Monthly",
@@ -611,7 +611,7 @@ const english = {
 
     // --------------------------- New Page--------------------------------------------
 
-    wishlistItemsHeading: "Wishlist Items",
+    wishlistItemsHeading: "Registry Items",
     wishlistItemsText: "Check out the list below to see which users have added items to their wishlist!",
     cartItemsHeading: "Cart Items",
     productTitle: "Title",
@@ -622,7 +622,7 @@ const english = {
     tableDetails: "Details",
     tableCreatedDate: "Created Date",
 
-    reportPageFullDetailedTitle: "Wishlist User Report Page",
+    reportPageFullDetailedTitle: "Registry User Report Page",
     reportPageFullDetailedSubTitle: "Here you can analyse the detailed user details",
 
     userWishlistName: "Name",
@@ -672,7 +672,7 @@ const english = {
 
 
 
-    collectionIconHeading: "Pick a wishlist icon for your collection page",
+    collectionIconHeading: "Pick a Registry icon for your collection page",
     collectionIconHeading1: "Choose Icon or Button To show on Collection page",
     collectionIconSubHeading1: "Select whether you want to show the Heart icon or button on your collection, search or catalog pages",
 
@@ -689,7 +689,7 @@ const english = {
 
 
     youtubeVideoHeading2: "Step 2: Introduction and Basic setup",
-    youtubeVideoText2: "After activating app, Please watch this video to get familiar with some of the important features provided by Wishlist Guru app along with basic configuration steps to run this app on your store easily.",
+    youtubeVideoText2: "After activating app, Please watch this video to get familiar with some of the important features provided by Registry Guru app along with basic configuration steps to run this app on your store easily.",
 
     themeSavedText: "Theme saved",
     buyThemeFirstText: "You have to buy this theme first !!",
@@ -708,7 +708,7 @@ const english = {
     manualButtontext: "Manual",
 
     continueShoppingHeading: "Continue Shopping Text for Button",
-    loginSignupText: "Login/signup text to save your wishlist  ",
+    loginSignupText: "Login/signup text to save your Registry  ",
     loginTextAnchor: "Login text for anchor tag",
     createAccountAnchor: "Create account text for anchor tag",
     searchHereForModal: "Heading text for search bar",
@@ -722,15 +722,15 @@ const english = {
     productNotAvailableHeading: 'Heading for Product not available button',
 
 
-    buttonPageNoteText: "By default we are auto injecting Add to Wishlist button on Product detail page below Buy buttons, In case you want to rearrange position or button doesn't show on your product detail page then please configure Manually.",
+    buttonPageNoteText: "By default we are auto injecting Add to Registry button on Product detail page below Buy buttons, In case you want to rearrange position or button doesn't show on your product detail page then please configure Manually.",
     buttonPageNoteButton: "Configure Manually",
     headerIconType: "Select icon type",
-    quotalimitReached: "Alert message for wishlist Quota limit is reached",
+    quotalimitReached: "Alert message for Registry Quota limit is reached",
     alertForAddAllToCart: "Notification message for add all items to cart button",
 
 
     // -----today-----
-    headerMenuWishlist: "Header menu text to open the wishlist",
+    headerMenuWishlist: "Header menu text to open the Registry",
     buttonForYouTubeLink: "watch tutorial videos",
 
     //rajeev sir added//
@@ -760,8 +760,8 @@ const english = {
     // ----------------------------------------------------------------------------
 
     paidPlanHeading: "This feature is only available in paid plan",
-    shareWishlistModalHeading: "You can share this wishlist through this link..!",
-    shareWishlistButtonName: "Share this wishlist",
+    shareWishlistModalHeading: "You can share this Registry through this link..!",
+    shareWishlistButtonName: "Share this Registry",
     shareWishlistSwalTitle: "Upgrade to basic plan",
     slashError: "Please remove / from each side of the text",
 
@@ -798,8 +798,8 @@ const english = {
     LogoTokenValue: "This token will be replaced with the logo",
     shopButtonToken: "{Shop Button}",
     shopButtonTokenValue: "This token will be replaced with shop now button(To redirct Home page)",
-    wishlistButtonToken: "{Go To Wishlist}",
-    wishlistButtonTokenValue: "This token will be replaced with go to wishlis button(To redirect Wishlist page)",
+    wishlistButtonToken: "{Go To Registry}",
+    wishlistButtonTokenValue: "This token will be replaced with go to wishlis button(To redirect Registry page)",
     emailSubject: "Email subject",
     emailContent: "Email body content",
     FooterContent: "Email footer content",
@@ -839,28 +839,28 @@ const english = {
 
 
     reportUpgradeHeadingBasic: "This feature is not available in the free plan. Please upgrade your plan",
-    analyticDetailUserReportsSubHeading: "Here you can see detailed report of users, wishlist items and revenue data",
+    analyticDetailUserReportsSubHeading: "Here you can see detailed report of users, Registry items and revenue data",
 
 
     showHidePageHeading: "B2B Solutions",
     showHidePageSubHeading: "Here you can show/hide product price, product quantity and cart buttons in modal, page and drawer",
     showHideCardHeading: "B2B Solutions",
-    showHideCardDes: "From this setting you can configure your preferences to show or hide Prices,Quantity and Add to cart buttons Rules for Wishlist Page",
+    showHideCardDes: "From this setting you can configure your preferences to show or hide Prices,Quantity and Add to cart buttons Rules for Registry Page",
 
-    showPriceHeading: "Manage Product Price Rule for Wishlist Page",
-    showPriceSubHeading: "You can choose your preferred rule to show or hide prices on Wishlist Page",
+    showPriceHeading: "Manage Product Price Rule for Registry Page",
+    showPriceSubHeading: "You can choose your preferred rule to show or hide prices on Registry Page",
     priceHideAlways: "Hide product price for everyone",
     priceShowAlways: "Show product price to everyone",
     priceShowOnlyLogin: "Show product price only to login users",
 
-    showQtyHeading: "Manage Product quantity Rule for Wishlist Page",
-    showQtySubHeading: "You can choose your preferred rule to show or hide quantity on Wishlist Page",
+    showQtyHeading: "Manage Product quantity Rule for Registry Page",
+    showQtySubHeading: "You can choose your preferred rule to show or hide quantity on Registry Page",
     qtyHideAlways: "Hide product quantity for everyone",
     qtyShowAlways: "Show product quantity to everyone",
     qtyShowOnlyLogin: "Show product quantity only to login users",
 
-    showMoveHeading: "Manage cart button Rule for Wishlist Page",
-    showMoveSubHeading: "You can choose your preferred rule to show or hide cart buttons on Wishlist Page",
+    showMoveHeading: "Manage cart button Rule for Registry Page",
+    showMoveSubHeading: "You can choose your preferred rule to show or hide cart buttons on Registry Page",
     moveHideAlways: "Hide Move To Cart/Add All To Cart button for everyone",
     moveShowAlways: "Show Move To Cart/Add All To Cart button to everyone",
     moveShowOnlyLogin: "Show Move To Cart/Add All To Cart button only to login users",
@@ -871,31 +871,31 @@ const english = {
     circleiconOutline: 'Circle outline',
     circleiconSolid: 'Circle solid',
 
-    showCounterHeading: "Show/Hide count of product with Add To Wishlist button",
-    showCounterSubHeading: "You can see here that how many users has added that particuler product in the wishlist",
-    isLoginHeading: "Required login to add wishlist",
-    isLoginSubHeading: "If you want your visitor to force login to add wishlist, please enable login required. Or if you don't, please pause this feature. For this feature, please activate user registration from Shopify settings too",
+    showCounterHeading: "Show/Hide count of product with Add To Registry button",
+    showCounterSubHeading: "You can see here that how many users has added that particuler product in the Registry",
+    isLoginHeading: "Required login to add Registry",
+    isLoginSubHeading: "If you want your visitor to force login to add Registry, please enable login required. Or if you don't, please pause this feature. For this feature, please activate user registration from Shopify settings too",
     createAccountHeading: "Styles for the Create Account button",
-    createAccountSubHeading: "Here your can customize and Style your Create Account button for modal, drawer and page option to view wishlist",
+    createAccountSubHeading: "Here your can customize and Style your Create Account button for modal, drawer and page option to view Registry",
     loginHeading: "Styles for the Login button",
-    loginSubHeading: "Here your can customize and Style your Login button for modal, drawer and page option to view wishlist",
+    loginSubHeading: "Here your can customize and Style your Login button for modal, drawer and page option to view Registry",
     isLoginParaText: "Login or create account text",
 
     // ER W
     // -------------from here new DEFAULT PAGE begins-------------
 
-    showCounterHeading: "Show/Hide count of product with Add To Wishlist button",
-    showCounterSubHeading: "You can see here that how many users has added that particuler product in the wishlist",
+    showCounterHeading: "Show/Hide count of product with Add To Registry button",
+    showCounterSubHeading: "You can see here that how many users has added that particuler product in the Registry",
 
-    dpHeading: "WELCOME TO WISHLIST GURU APP",
-    dpSubHeading: "Get familiar with wishlist guru app",
-    dpGetStarted: "Get started with Wishlist Guru Setup",
-    dpGsParagraph: "Now you can easily customise the app by accessing Dashboard quick links or diving deeper into the left sidebar Menu. Wishlist Guru provides a lot of customised features so feel free to play around with them to match things with your brand. If you can't find anything or need help with SET UP or looking for any custom feature, Please get in touch with us by clicking the REQUEST SETUP button.",
+    dpHeading: "WELCOME TO Registry GURU APP",
+    dpSubHeading: "Get familiar with Gift Registry guru app",
+    dpGetStarted: "Get started with Registry Guru Setup",
+    dpGsParagraph: "Now you can easily customise the app by accessing Dashboard quick links or diving deeper into the left sidebar Menu. Registry Guru provides a lot of customised features so feel free to play around with them to match things with your brand. If you can't find anything or need help with SET UP or looking for any custom feature, Please get in touch with us by clicking the REQUEST SETUP button.",
     dpGoToDashboard: "Go to dashboard",
     dpRequestForm: "Request setup",
 
     announcementHeading: "Announcements",
-    announcementText: "Daily announcements of wishlist guru app",
+    announcementText: "Daily announcements of Registry guru app",
     new: 'new',
     view: "view",
     launchDate: "Launch date",
@@ -903,11 +903,11 @@ const english = {
     announcementValue1: "B2B Solution",
     announcementSubValue1: "We added a module specially for B2B stores which allows data visibility control to store owners where they keep prices hidden or Add to cart functionality hidden for everyone or Guest users. To access this feature Go to General Settings > B2B Settings.",
 
-    announcementValue2: "Wishlist Counter feature",
-    announcementSubValue2: "Now store owners can control if they want to show how many times any product is added to the wishlist by overall users. This will add a counter value next to the Add to wishlist button on the Product detail page. You can access this settings via Button Settings.",
+    announcementValue2: "Registry Counter feature",
+    announcementSubValue2: "Now store owners can control if they want to show how many times any product is added to the Registry by overall users. This will add a counter value next to the Add to Registry button on the Product detail page. You can access this settings via Button Settings.",
 
     announcementValue3: "Multi Language support",
-    announcementSubValue3: "One can easily opt for multi languages for their wishlist which breaks the barriers of language to control and navigate admin panel as well the store front by the store owners in their medium of language chosen. To access this feature Go to General Settings > Language & Translation.",
+    announcementSubValue3: "One can easily opt for multi languages for their Registry which breaks the barriers of language to control and navigate admin panel as well the store front by the store owners in their medium of language chosen. To access this feature Go to General Settings > Language & Translation.",
 
     announcementValue4: "Customize Email Templates",
     announcementSubValue4: "Personalize your email templates effortlessly and take control over the look and design for all email alerts sent to your customers. Now store owners can adjust designs, content, and branding to align with your message, enhancing your communication and engagement with recipients. To access this feature go to General Settings > Email customisations.",
@@ -917,7 +917,7 @@ const english = {
 
 
     fsHeading: "Feature Spotlight",
-    fsText: "Main features of our wishlist app are given below",
+    fsText: "Main features of our Registry app are given below",
     fsb1Button: "View",
     fsb4Button: "Customize now",
 
@@ -939,8 +939,8 @@ const english = {
     langUpgradeSubText: "You can add only two url's here, please upgrade your plan",
     availableInPro: "This feature is available in pro plan",
 
-    deleteAll: "Text for clear wishlist button",
-    deleteAllToast: "Toast message for clear all wishlist",
+    deleteAll: "Text for clear Registry button",
+    deleteAllToast: "Toast message for clear all Registry",
 
     HideActionHeading: "Hide more actions",
     HideActionSubHeading: "Hide various options in Modal and Page",
@@ -955,7 +955,7 @@ const english = {
 
 
     announcementValue6: "Introducing Our New Pro Plan",
-    announcementSubValue6: "Pro is our ultimate wishlist companion. With 5000 wishlist items per month, you can save everything you love in one place. Our B2B solution lets you control what your customers see, Also supporting multi-language features for stores upto 2 different languages ensuring a seamless shopping experience for everyone.",
+    announcementSubValue6: "Pro is our ultimate Registry companion. With 5000 Registry items per month, you can save everything you love in one place. Our B2B solution lets you control what your customers see, Also supporting multi-language features for stores upto 2 different languages ensuring a seamless shopping experience for everyone.",
 
 
     headingFontFamily: "Heading font family",
@@ -974,9 +974,9 @@ const english = {
     emailSentText: "Email sent successfully",
     emailPlaceholder: "Enter recipient email",
 
-    showColCounterHeading: "Show/Hide count of product on collection page with Add To Wishlist icon/button",
-    shareWishlistOptionHeading: "Share entire wishlist",
-    shareWishlistOptionSubHeading: "Share your entire wishlist by inviting anyone with a link, they can view your wishlist without making any edits",
+    showColCounterHeading: "Show/Hide count of product on collection page with Add To Registry icon/button",
+    shareWishlistOptionHeading: "Share entire registry",
+    shareWishlistOptionSubHeading: "Share your entire registry by inviting anyone with a link, they can view your registry without making any edits",
     copyCheckIconText: "Via link",
     facebookCheckIconText: "Facebook",
     whatsappCheckIconText: "WhatsApp",
@@ -987,7 +987,7 @@ const english = {
 
     fbMessengerCheckIconText: "FB-Messenger",
     announcementValue7: "Counter feature on the collection page with icon/button",
-    announcementSubValue7: "We added our counter feature on the collection page also, you can show how many times any product is added to the wishlist by overall users. You can access this settings via Collection Settings Page.",
+    announcementSubValue7: "We added our counter feature on the collection page also, you can show how many times any product is added to the registry by overall users. You can access this settings via Collection Settings Page.",
 
     orText: "Or text for login message",
     continueShoppingLinkHeading: "Link for continue shopping button at modal/drawer/page",
@@ -1019,28 +1019,28 @@ const english = {
     pcAddedSubHeading: "Your promo code:",
 
     /** MULTIWISHLIST **/
-    multiwishlisth1: "Multiple Wishlists",
-    multiwishlisth2: "Enable multiple Wishlist options for your customers to help them organize their choices and name the Wishlist as they want",
-    createWishlistHeading: "Create new wishlist popup heading",
-    createBtn: "Create wishlist button text",
-    saveWishlistBtn: "Save wishlist button text",
+    multiwishlisth1: "Multiple registry",
+    multiwishlisth2: "Enable multiple registry options for your customers to help them organize their choices and name the registry as they want",
+    createWishlistHeading: "Create new registry popup heading",
+    createBtn: "Create registry button text",
+    saveWishlistBtn: "Save registry button text",
     copyHeading: "Copy popup heading text",
-    editWishlistHeading: "Edit wishlist popup text",
+    editWishlistHeading: "Edit registry popup text",
     editBtn: "Edit button text",
     copyBtn: "Copy button text",
     deleteMsg: "Delete popup message",
     deleteYesBtn: "Delete button text for yes",
     deleteNoBtn: "Delete button text for no",
-    clearWishlist: "Clear wishlist popup heading",
+    clearWishlist: "Clear registry popup heading",
     clearWishlistBtn: "Clear button text",
 
-    annMulti: "Multi-Wishlist",
-    annMultiSub: "We are excited to introduce our new multi-wishlist feature! Now, customers can create and manage multiple wishlists, organizing their favorite items in a way that suits them best. Each wishlist can be uniquely named, allowing for a more personalized shopping experience.",
+    annMulti: "Multi-registry",
+    annMultiSub: "We are excited to introduce our new multi-registry feature! Now, customers can create and manage multiple registry, organizing their favorite items in a way that suits them best. Each registry can be uniquely named, allowing for a more personalized shopping experience.",
 
     loginUsers: "Login users",
     guestUsers: "Guest users",
     userTypes: "User Type",
-    shareStatsSubHeading: "Here you can find a detailed report of wishlists shared by users through various social media platforms",
+    shareStatsSubHeading: "Here you can find a detailed report of registry shared by users through various social media platforms",
     url: "Url",
     seeDetails: "See Details",
     statsTab1H1: "Referred Users Detail: Referred Users",

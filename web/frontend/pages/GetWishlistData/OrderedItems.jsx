@@ -1,5 +1,5 @@
-import { AlphaCard, Text, IndexFilters, IndexTable, LegacyCard, Pagination, useSetIndexFiltersMode, IndexFiltersMode, Spinner } from '@shopify/polaris'
 import React from 'react'
+import { Card, Text, IndexFilters, IndexTable, Pagination, useSetIndexFiltersMode, IndexFiltersMode, Spinner } from '@shopify/polaris'
 
 const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCartSelected: sortCartSelected, queryCartValue: queryCartValue, handleFiltersQueryChange: handleFiltersQueryChange, setQueryCartValue: setQueryCartValue, handleFiltersClearAll: handleFiltersClearAll, cartData: cartData, orderedItemsTable: orderedItemsTable, startIndexCartValue: startIndexCartValue, totalRecordsCart: totalRecordsCart, handleSortCartChange: handleSortCartChange, getOrdersPageNo: getOrdersPageNo, handleOrdersPagination, isCartLoading: isCartLoading, hasOrdersPrevious, hasOrdersNext, totalOrderedItems }) => {
     const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
@@ -13,7 +13,7 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
                 <Text variant="headingLg" as="h2">Ordered Items</Text>
                 <p>{myLanguage.userListingText}</p>
 
-                <AlphaCard roundedAbove="sm">
+                <Card roundedAbove="sm">
                     {isCartLoading ?
                         <div style={{ textAlign: 'center' }}><Spinner accessibilityLabel="Spinner example" size="large" />
                         </div>
@@ -24,18 +24,18 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
                                 sortSelected={sortCartSelected}
                                 queryValue={queryCartValue}
                                 queryPlaceholder="Searching in all"
-                                onQueryChange={(value) => { handleFiltersQueryChange(value, "cart") }}
-                                onQueryClear={() => setQueryCartValue('')}
-                                onSort={handleSortCartChange}
-                                cancelAction={{
-                                    onAction: onHandleCancel,
-                                    disabled: false,
-                                    loading: false,
-                                }}
+                                // onQueryChange={(value) => { handleFiltersQueryChange(value, "cart") }}
+                                // onQueryClear={() => setQueryCartValue('')}
+                                // onSort={handleSortCartChange}
+                                // cancelAction={{
+                                //     onAction: onHandleCancel,
+                                //     disabled: false,
+                                //     loading: false,
+                                // }}
                                 tabs={[]}
                                 filters={[]}
-                                onClearAll={() => handleFiltersClearAll("cart")}
-                                mode={mode}
+                                // onClearAll={() => handleFiltersClearAll("cart")}
+                                // mode={mode}
                                 setMode={setMode}
                             />
                             <IndexTable
@@ -43,13 +43,10 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
 
                                 selectable={false}
                                 headings={[
-                                    { title: myLanguage.tableSrno },
                                     { title: "Order Id" },
-                                    { title: myLanguage.productTitle },
-                                    { title: myLanguage.productImage },
-                                    { title: myLanguage.productPrice },
-                                    { title: myLanguage.productQuantity },
-                                    { title: myLanguage.productTotalPrice },
+                                    { title: "Date" },
+                                    { title: "Customer" },
+                                    { title: "Products" },
                                 ]}
                             >
                                 {orderedItemsTable}
@@ -72,7 +69,7 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
                                 />
                             </div>
                         </div>}
-                </AlphaCard>
+                </Card>
             </div>
         </div>
     )

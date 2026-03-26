@@ -6,7 +6,7 @@ import {
     useSetIndexFiltersMode,
     IndexFiltersMode, DatePicker
 } from '@shopify/polaris';
-import { ViewMajor } from '@shopify/polaris-icons';
+import { ViewIcon } from '@shopify/polaris-icons';
 import useAppMetafield from '../../../hooks/useAppMetafield';
 import useApi from '../../../hooks/useApi';
 import useUtilityFunction from '../../../hooks/useUtilityFunction';
@@ -246,7 +246,7 @@ const WishlistItem = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     const viewHandler = async (id) => {
         Navigate({
             pathname: `/GetWishlistData/${id}`,
-            search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all&orderspageno=1`
+            search: `?wishlistitempageno=1&cartitempageno=1&rpr=10&wishlistdata=all`
         })
     }
 
@@ -258,7 +258,7 @@ const WishlistItem = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                 <div className='show-less-text' ><IndexTable.Cell>{email}</IndexTable.Cell></div>
                 <IndexTable.Cell>{user_type}</IndexTable.Cell>
                 <IndexTable.Cell>{extractYear(created_at)}</IndexTable.Cell>
-                <IndexTable.Cell><Button onClick={() => viewHandler(wishlist_user_id)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => viewHandler(wishlist_user_id)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
             </IndexTable.Row>
         ],
     );

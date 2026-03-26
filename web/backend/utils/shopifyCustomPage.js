@@ -126,7 +126,7 @@ shopifyCustomPage.get("/wfGiftRegistry/*", (req, res) => {
         const eventId = pagePath.split("/")[2];
 
         htmlContent = `
-        <div class="wishlist-page-main page-width section">
+        <div class="wishlist-page-main page-width section" style="max-width: 1400px; margin: auto;">
             <h2>Event Page</h2>
             <p>Event ID: ${eventId}</p>
         </div>
@@ -136,7 +136,7 @@ shopifyCustomPage.get("/wfGiftRegistry/*", (req, res) => {
     else if (pagePath === "/find") {
         htmlContent = `<div>
         <div class="wgr-navigationbar"></div>
-        <div class="wishlist-page-main page-width section">
+        <div class="wishlist-page-main page-width section" style="max-width: 1400px; margin: auto;">
 
         <div class="wgr-search-input"></div>
 
@@ -174,7 +174,7 @@ shopifyCustomPage.get("/wfGiftRegistry/*", (req, res) => {
         <div class="wgr-navigationbar"></div>
         <div class="wgr-login-bar"></div>
 
-        <div class="wishlist-page-main page-width section">
+        <div class="wishlist-page-main page-width section" style="max-width: 1400px; margin: auto;">
 
                 <div class="wgr-create-registry"><h2 class="wgr-heading"></h2></div>
 
@@ -210,6 +210,8 @@ shopifyCustomPage.get("/wfGiftRegistry/*", (req, res) => {
     else if (pagePath === "/list") {
         htmlContent = `<div>
         <div class="wgr-navigationbar"></div>
+        <div class="wgr-login-bar"></div>
+
                 <div class="wishlist-page-main page-width section" style="max-width: 1400px; margin: auto;">
 
                 <div class="wgr-profile"></div>  
@@ -249,6 +251,7 @@ shopifyCustomPage.get("/wfGiftRegistry/*", (req, res) => {
         if (req?.query?.id) {
             htmlContent = `<div>
         <div class="wgr-navigationbar"></div>
+        <div class="wgr-owner-info"></div>
             <div class="wishlist-page-main page-width section" style="max-width: 1400px; margin: auto;">
                     <h2 class="shared-page-heading"></h2>
                     <div class="wg-modal-layer">

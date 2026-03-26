@@ -1,7 +1,7 @@
 
 
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { Frame, Page, Button, LegacyCard, IndexTable, Pagination, useIndexResourceState, useSetIndexFiltersMode, IndexFiltersMode, IndexFilters, Text, AlphaCard, Grid, Select, Label } from '@shopify/polaris';
+import { Frame, Page, Button, LegacyCard, IndexTable, Pagination, useIndexResourceState, useSetIndexFiltersMode, IndexFiltersMode, IndexFilters, Text, Card, Select } from '@shopify/polaris';
 
 import SkeletonPage1 from './SkeletonPage1';
 import Swal from "sweetalert2";
@@ -220,7 +220,7 @@ const ViewAllProduct = () => {
             {!isloading ? <SkeletonPage1 /> :
                 <Frame>
                     <Page fullWidth title={myLanguage.mostProductsHeading} subtitle={myLanguage.mostProductsText} backAction={{ onAction: () => history.back() }} >
-                        <AlphaCard>
+                        <Card>
                             <div className='wf-dashboard-box'>
                                 <div className='wf-listingRecord'>
                                     <div className='wf-listingRecord-inner'>
@@ -301,11 +301,11 @@ const ViewAllProduct = () => {
                                     </LegacyCard>
                                 </div>
                             </div>
-                        </AlphaCard>
+                        </Card>
                         {/* <Footer myLanguage={myLanguage} /> */}
 
                         <div className="wf-dashboard-box wf-help-dashboard" style={{ padding: "40px 60px", marginTop: "40px" }}>
-                            <AlphaCard>
+                            <Card>
                                 <div className='custom-margin'>
                                     <Text variant="headingLg" as="h2">{myLanguage.helpHeading}</Text>
                                 </div>
@@ -316,7 +316,7 @@ const ViewAllProduct = () => {
                                     <a style={{ textDecoration: "none" }} href="https://apps.shopify.com/wishlist-guru/reviews" target="_blank"><Button  ><img src={wfHelpAvatar} />   {myLanguage.contactUs} </Button></a>
                                     <a style={{ textDecoration: "none" }} href="https://wishlist-guru.webframez.com/docs/" target="_blank"><Button><img src={wfHelpDoc} />{myLanguage.helpDocs}</Button></a>
                                 </div>
-                            </AlphaCard>
+                            </Card>
                         </div>
                     </Page>
                 </Frame>

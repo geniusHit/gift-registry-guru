@@ -46,7 +46,7 @@ const useAppMetafield = () => {
             const paymentType = plan.planName.split('/')[3];
 
             const PlanId = await getPlanData(planName);
-            let finalId = PlanId.toString();
+            let finalId = PlanId?.toString();
             let myCurrentPlan;
 
             const dataArray = await getAllAppMetafields();

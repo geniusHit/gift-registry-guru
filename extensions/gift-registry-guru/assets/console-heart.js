@@ -10,7 +10,7 @@ var shareModal = document.getElementById("myshareModal");
 var shareModalContent = document.querySelector(".modal-share-content");
 var successDiv = document.querySelector(".successDiv");
 var successInnerDiv = document.querySelector(".successInnerDiv");
-let localData = JSON.parse(localStorage.getItem("wg-local-data")) || [];
+let localData = JSON.parse(localStorage.getItem("wg-local-data"));
 let customButton = localData?.customButton || JSON.parse(heartButton.getAttribute("button-setting"));
 let customLanguage = localData?.customLanguage || JSON.parse(heartButton.getAttribute("language-setting").replace(/~/g, "'"));
 let generalSetting = localData?.generalSetting || JSON.parse(heartButton.getAttribute("general-setting"));
@@ -94,34 +94,34 @@ function onHeaderActionsRender(element) {
 }
 
 // this is for meta conversion
-(function () {
-    if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
-        const pixelScript = document.createElement("script");
-        pixelScript.type = "text/javascript";
-        pixelScript.text = `
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window, document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
+// (function () {
+//     if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
+//         const pixelScript = document.createElement("script");
+//         pixelScript.type = "text/javascript";
+//         pixelScript.text = `
+//         !function(f,b,e,v,n,t,s)
+//         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+//         n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+//         if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+//         n.queue=[];t=b.createElement(e);t.async=!0;
+//         t.src=v;s=b.getElementsByTagName(e)[0];
+//         s.parentNode.insertBefore(t,s)}(window, document,'script',
+//         'https://connect.facebook.net/en_US/fbevents.js');
 
-        fbq('init', '${advanceSetting?.metaPixelApiKey.trim()}');
-        fbq('track', 'PageView');
-    `;
-        document.head.appendChild(pixelScript);
-    }
-})();
+//         fbq('init', '${advanceSetting?.metaPixelApiKey.trim()}');
+//         fbq('track', 'PageView');
+//     `;
+//         document.head.appendChild(pixelScript);
+//     }
+// })();
 
 
 
 let modalDrawerTextColor = generalSetting?.wlTextColor?.color ? generalSetting?.wlTextColor?.color : generalSetting.wlTextColor;
 document.addEventListener("DOMContentLoaded", getCurentPlanSql);
 
-const serverURL = "http://localhost:5000"; // -------------- local
-// const serverURL = "https://understand-accessory-doc-danny.trycloudflare.com"; // -------------- local
+// const serverURL = "http://localhost:5000"; // -------------- local
+const serverURL = "https://arizona-reef-davis-attorney.trycloudflare.com"; // -------------- local
 // const serverURL = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL = 'https://wishlist-guru-api.webframez.com'; // -------------- stagging
 
@@ -189,15 +189,14 @@ if (!wfGetDomain.endsWith("/")) {
 
 //  ---------------- here we are trying to get the data and icon fast ----------------
 (async function () {
-    const isMultiwishlistTrueValue1 = heartButton?.hasAttribute('isMultiwishlistTrue') ? heartButton?.getAttribute('isMultiwishlistTrue') : "no";
-    isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
-    console.log(" ---- optimizing WG 2.O ---- ");
+    // const isMultiwishlistTrueValue1 = heartButton?.hasAttribute('isMultiwishlistTrue') ? heartButton?.getAttribute('isMultiwishlistTrue') : "no";
+    // isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
     // ------- to show the header icon with custom code -------
-    currentPlan > 1 && showCustomHeaderIcon1();
+    showCustomHeaderIcon1();
     showWishlistButtonType();
     // -------to show the collection icon and button with custom code-------
-    currentPlan > 1 && wishlistIcon1();
-    currentPlan > 1 && wishlistButtonForCollection1();
+    wishlistIcon1();
+    wishlistButtonForCollection1();
 })()
 
 document.addEventListener("DOMContentLoaded", loadSavedButtonStyle);
@@ -225,8 +224,8 @@ async function getWgEmail() {
 }
 
 async function getCurentPlanSql() {
-    const isMultiwishlistTrueValue1 = heartButton.hasAttribute('isMultiwishlistTrue') ? heartButton.getAttribute('isMultiwishlistTrue') : "no";
-    isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
+    // const isMultiwishlistTrueValue1 = heartButton.hasAttribute('isMultiwishlistTrue') ? heartButton.getAttribute('isMultiwishlistTrue') : "no";
+    // isMultiwishlistTrue = isMultiwishlistTrueValue1 === "yes" && currentPlan > 3;
     //    ---------- this code will show header and floating icon using plan from metafield.. after we are confirming the plan from DB-------- 
     buttonStyleFxn();
     // if (JSON.parse(heartButton.getAttribute("current-plan")) >= 1) {
@@ -285,20 +284,20 @@ async function getCurentPlanSql() {
         const isVariantwishlistTrueValue = heartButton.hasAttribute('isVariantTrue') ? heartButton.getAttribute('isVariantTrue') : "no";
         isVariantWishlistTrue = isVariantwishlistTrueValue === "yes" && currentPlan > 3;
         buttonStyleFxn();
-        if (isPremiumPlan) {
-            setupIconInterval();
-            setInterval(setupIconInterval, 1000);
-            customIconInterval();
-            setInterval(customIconInterval, 3000);
-            customButtonInterval();
-            setInterval(customButtonInterval, 3000);
-            setupGridInterval();
-            setInterval(setupGridInterval, 1500);
-            if (permanentDomain === 'l-a-girl-cosmetics.myshopify.com') {
-                customButtonIntervalLaGirl();
-                setInterval(customButtonIntervalLaGirl, 3000);
-            }
-        }
+        // if (isPremiumPlan) {
+        setupIconInterval();
+        setInterval(setupIconInterval, 1000);
+        customIconInterval();
+        setInterval(customIconInterval, 3000);
+        customButtonInterval();
+        setInterval(customButtonInterval, 3000);
+        setupGridInterval();
+        setInterval(setupGridInterval, 1500);
+        // if (permanentDomain === 'l-a-girl-cosmetics.myshopify.com') {
+        //     customButtonIntervalLaGirl();
+        //     setInterval(customButtonIntervalLaGirl, 3000);
+        // }
+        // }
 
         // ---------we commented inject code from here because it is runnung twice----------
         // injectWishlistButtonForcely();
@@ -540,13 +539,13 @@ function updateLanguageFxn() {
         searchPlaceholder[wf].placeholder =
             customLanguage.searchBarText || "Search here";
     }
-    if (currentPlan === 1) {
-        var poweredByUpdate = document.querySelectorAll(".powered-by-text");
-        for (var wf = 0; wf < poweredByUpdate.length; wf++) {
-            poweredByUpdate[wf].innerHTML = `${storeFrontDefLang.poweredByText || "Powered by"
-                } <span onclick="goToWebframez()">Wishlist Guru</span>`;
-        }
-    }
+    // if (currentPlan === 1) {
+    //     var poweredByUpdate = document.querySelectorAll(".powered-by-text");
+    //     for (var wf = 0; wf < poweredByUpdate.length; wf++) {
+    //         poweredByUpdate[wf].innerHTML = `${storeFrontDefLang.poweredByText || "Powered by"
+    //             } <span onclick="goToWebframez()">Wishlist Guru</span>`;
+    //     }
+    // }
     if (
         getThemeName?.themeName === "Local" &&
         window.location.pathname === "/apps/wf-gift-registry"
@@ -674,45 +673,45 @@ async function checkCustomCodeProductLaGirl() {
     }
 }
 
-async function wishlistIconLaGirl() {
-    const iconPosition = await checkIconPostion();
-    if (currentPlan >= 2) {
-        const getAllWishlistDiv = document.querySelectorAll(".wf-wishlist-lagirl");
+// async function wishlistIconLaGirl() {
+//     const iconPosition = await checkIconPostion();
+//     if (currentPlan >= 2) {
+//         const getAllWishlistDiv = document.querySelectorAll(".wf-wishlist-lagirl");
 
-        const prependPromisesWi = Array.from(getAllWishlistDiv).map(
-            async (wishlistDiv) => {
-                const selectedId = wishlistDiv.getAttribute("product-id");
-                const selectedProductImgHandle = wishlistDiv.getAttribute("product-img");
-                const selectedProductTitleHandle = wishlistDiv.getAttribute("product-title");
-                const selectedProductHandle = wishlistDiv.getAttribute("product-handle");
-                let addWishlistIcon = document.createElement("div");
-                addWishlistIcon.style.zIndex = "10";
-                addWishlistIcon.style.position = "relative";
-                const { isComboIcon } = checkCollectionIcon();
-                const countData = await isCountOrNot(selectedId, isCollectionCount);
-                const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
-                const matchFound = await checkFound(allWishlistData, selectedId)
-                if (allWishlistData.length > 0 && matchFound) {
-                    addWishlistIcon.innerHTML = `<div class="collection_icon_new_selected "><div onClick="customCodeButtonClickLaGirl(${selectedId},'${selectedProductImgHandle}','${selectedProductTitleHandle}','${selectedProductHandle}')" style="filter: ${colIconSelectedColor}; ${collectionIconSize()}"  class="icon-collection icon-collection-laGirl ${isComboIcon ? iconPosition.iconStyle2 : iconPosition.iconStyle
-                        }"></div></div>${isCollectionCount ? newCountData : ""}`;
-                } else {
-                    addWishlistIcon.innerHTML = `<div class="collection_icon_new "><div style="filter: ${colIconDefaultColor}; ${collectionIconSize()}"  onClick="customCodeButtonClickLaGirl(${selectedId},'${selectedProductImgHandle}','${selectedProductTitleHandle}','${selectedProductHandle}')" class="icon-collection icon-collection-laGirl ${iconPosition.iconStyle}"></div></div>${isCollectionCount ? newCountData : ""}`;
-                }
-                wishlistDiv.innerHTML = addWishlistIcon.innerHTML;
-                isCollectionCount && renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount);
-            }
-        );
-        try {
-            await Promise.all(prependPromisesWi);
-            const allShow = document.querySelectorAll(".wf-wishlist-lagirl");
-            allShow.forEach((wishlistDiv) => {
-                wishlistDiv.style.display = "block";
-            });
-        } catch (error) {
-            console.log("Error occurred:", error);
-        }
-    }
-}
+//         const prependPromisesWi = Array.from(getAllWishlistDiv).map(
+//             async (wishlistDiv) => {
+//                 const selectedId = wishlistDiv.getAttribute("product-id");
+//                 const selectedProductImgHandle = wishlistDiv.getAttribute("product-img");
+//                 const selectedProductTitleHandle = wishlistDiv.getAttribute("product-title");
+//                 const selectedProductHandle = wishlistDiv.getAttribute("product-handle");
+//                 let addWishlistIcon = document.createElement("div");
+//                 addWishlistIcon.style.zIndex = "10";
+//                 addWishlistIcon.style.position = "relative";
+//                 const { isComboIcon } = checkCollectionIcon();
+//                 const countData = await isCountOrNot(selectedId, isCollectionCount);
+//                 const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
+//                 const matchFound = await checkFound(allWishlistData, selectedId)
+//                 if (allWishlistData.length > 0 && matchFound) {
+//                     addWishlistIcon.innerHTML = `<div class="collection_icon_new_selected "><div onClick="customCodeButtonClickLaGirl(${selectedId},'${selectedProductImgHandle}','${selectedProductTitleHandle}','${selectedProductHandle}')" style="filter: ${colIconSelectedColor}; ${collectionIconSize()}"  class="icon-collection icon-collection-laGirl ${isComboIcon ? iconPosition.iconStyle2 : iconPosition.iconStyle
+//                         }"></div></div>${isCollectionCount ? newCountData : ""}`;
+//                 } else {
+//                     addWishlistIcon.innerHTML = `<div class="collection_icon_new "><div style="filter: ${colIconDefaultColor}; ${collectionIconSize()}"  onClick="customCodeButtonClickLaGirl(${selectedId},'${selectedProductImgHandle}','${selectedProductTitleHandle}','${selectedProductHandle}')" class="icon-collection icon-collection-laGirl ${iconPosition.iconStyle}"></div></div>${isCollectionCount ? newCountData : ""}`;
+//                 }
+//                 wishlistDiv.innerHTML = addWishlistIcon.innerHTML;
+//                 isCollectionCount && renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount);
+//             }
+//         );
+//         try {
+//             await Promise.all(prependPromisesWi);
+//             const allShow = document.querySelectorAll(".wf-wishlist-lagirl");
+//             allShow.forEach((wishlistDiv) => {
+//                 wishlistDiv.style.display = "block";
+//             });
+//         } catch (error) {
+//             console.log("Error occurred:", error);
+//         }
+//     }
+// }
 
 async function customCodeButtonClickLaGirl(selectedId, imgHandle, productTitle, productHandle) {
     try {
@@ -820,7 +819,7 @@ async function showLoginPopup(productId) {
         (item) => item.product_id === productId
     );
     if (
-        currentPlan > 2 &&
+        // currentPlan > 2 &&
         !foundItem &&
         isLogin === "" &&
         generalSetting?.createWishlist &&
@@ -1630,7 +1629,7 @@ async function getSharedWishlistData(userId, selectedID) {
             let allData = result.data;
             return allData;
         } else if (result.msg === "private_url") {
-            document.querySelector(".show-shared-wishlist").innerHTML = "This is a private list. You can't access it.";
+            document.querySelector(".show-shared-wishlist").innerHTML = "This is a private registry. Only the owner can access it. Thanks!";
         } else if (result.msg === "password_protected_url") {
             let passwordForm = `<div id="wg-multiWishlistInnerContent" class="wf-password-main-div">
                                     <h3>This is a password-protected wishlist</h3>
@@ -1639,7 +1638,7 @@ async function getSharedWishlistData(userId, selectedID) {
                                         <div class="multiInputDiv">
                                             <input type="text" id="checkPassword" name="checkPassword" placeholder="Enter password" />
                                         </div>
-                                    </div>
+                                    </div>    
                                     <button id="createWishlist" class="cartButtonStyle" type="button"  onclick="wfCheckPassword()">Submit</button>
                                     <p id="mainErrorPara"></p>
                                 </div>`
@@ -1697,7 +1696,7 @@ async function wfCheckPassword() {
             document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong or mismatched id in the url.";
             return;
         }
-        await renderMultiSharedModalContent(arrayList, sharedIdProp);
+        await renderMultiSharedModalContent(arrayList);
     }
 }
 
@@ -1724,68 +1723,250 @@ async function showWishlistButtonType() {
 
     modifiedString = modifiedString?.toLowerCase();
 
-    if (currentPlan >= 1) {
-        if (
-            generalSetting.wlbLocation3 === true &&
-            generalSetting.wlbLocationSelect === "floating-heart-mid-left"
-        ) {
-            let heartDiv = document.getElementById("heart");
-            const div = document.createElement("div");
-            div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false"  onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }"  style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
-                }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
-                };" id="wf-float-heart-mid-left"><div style="filter: ${generalSetting.floatingHeartIconcolor
-                }"  id="heart-icon-mid-left" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
-                } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
-                } "><span></span></div><span class="count-span fi-count"></span></div>`;
-            heartDiv.after(div);
-        } else if (
-            generalSetting.wlbLocation3 === true &&
-            generalSetting.wlbLocationSelect === "floating-heart-mid-right"
-        ) {
-            let heartDiv = document.getElementById("heart");
-            const div = document.createElement("div");
-            div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }"  style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
-                }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
-                };" id="wf-float-heart-mid-right"><div style="filter: ${generalSetting.floatingHeartIconcolor
-                }" id="heart-icon-mid-right" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
-                } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
-                }" ><span> </span></div><span class="count-span fi-count"></span></div>`;
-            heartDiv.after(div);
-        } else if (
-            generalSetting.wlbLocation3 === true &&
-            generalSetting.wlbLocationSelect === "floating-heart-bottom-right"
-        ) {
-            let heartDiv = document.getElementById("heart");
-            const div = document.createElement("div");
-            div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
-                }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
-                };" id="wf-float-heart-bottom-right"><div style="filter: ${generalSetting.floatingHeartIconcolor
-                }" id="heart-icon-bottom-right" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
-                } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
-                }" ><span> </span></div><span class="count-span fi-count"></span></div>`;
-            heartDiv.after(div);
-        } else if (
-            generalSetting.wlbLocation3 === true &&
-            generalSetting.wlbLocationSelect === "floating-heart-bottom-left"
-        ) {
-            let heartDiv = document.getElementById("heart");
-            const div = document.createElement("div");
-            div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }"  style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
-                }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
-                };" id="wf-float-heart-bottom-left"><div  style="filter: ${generalSetting.floatingHeartIconcolor
-                }" id="heart-icon-bottom-left" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
-                } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
-                }" ><span> </span></div><span class="count-span fi-count"></span></div>`;
-            heartDiv.after(div);
-        }
-        if (generalSetting.wlbLocation1 === true) {
-            let wishlistWithIcon = `<a style="position:"relative" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="menu-drawer__menu-item list-menu__item link link--text focus-inset"><div class=" red-heart ${customButton.iconType === "star"
+    // if (currentPlan >= 1) {
+    if (
+        generalSetting.wlbLocation3 === true &&
+        generalSetting.wlbLocationSelect === "floating-heart-mid-left"
+    ) {
+        let heartDiv = document.getElementById("heart");
+        const div = document.createElement("div");
+        div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false"  onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }"  style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
+            }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
+            };" id="wf-float-heart-mid-left"><div style="filter: ${generalSetting.floatingHeartIconcolor
+            }"  id="heart-icon-mid-left" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
+            } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
+            } "><span></span></div><span class="count-span fi-count"></span></div>`;
+        heartDiv.after(div);
+    } else if (
+        generalSetting.wlbLocation3 === true &&
+        generalSetting.wlbLocationSelect === "floating-heart-mid-right"
+    ) {
+        let heartDiv = document.getElementById("heart");
+        const div = document.createElement("div");
+        div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }"  style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
+            }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
+            };" id="wf-float-heart-mid-right"><div style="filter: ${generalSetting.floatingHeartIconcolor
+            }" id="heart-icon-mid-right" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
+            } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
+            }" ><span> </span></div><span class="count-span fi-count"></span></div>`;
+        heartDiv.after(div);
+    } else if (
+        generalSetting.wlbLocation3 === true &&
+        generalSetting.wlbLocationSelect === "floating-heart-bottom-right"
+    ) {
+        let heartDiv = document.getElementById("heart");
+        const div = document.createElement("div");
+        div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
+            }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
+            };" id="wf-float-heart-bottom-right"><div style="filter: ${generalSetting.floatingHeartIconcolor
+            }" id="heart-icon-bottom-right" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
+            } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
+            }" ><span> </span></div><span class="count-span fi-count"></span></div>`;
+        heartDiv.after(div);
+    } else if (
+        generalSetting.wlbLocation3 === true &&
+        generalSetting.wlbLocationSelect === "floating-heart-bottom-left"
+    ) {
+        let heartDiv = document.getElementById("heart");
+        const div = document.createElement("div");
+        div.innerHTML = `<div class="wf-floating-launcher" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }"  style="z-indeX: 99; cursor: pointer; background-color: ${generalSetting.floatingHeartBGcolor
+            }; border-radius: ${generalSetting.floatingBgShape === "circleBG" ? "50%" : "0%"
+            };" id="wf-float-heart-bottom-left"><div  style="filter: ${generalSetting.floatingHeartIconcolor
+            }" id="heart-icon-bottom-left" class="floating-heart ${customButton.iconType === "heart" && "heartICON2"
+            } ${customButton.iconType === "star" && "starICON2"} ${customButton.iconType === "save" && "saveICON2"
+            }" ><span> </span></div><span class="count-span fi-count"></span></div>`;
+        heartDiv.after(div);
+    }
+    if (generalSetting.wlbLocation1 === true) {
+        let wishlistWithIcon = `<a style="position:"relative" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="menu-drawer__menu-item list-menu__item link link--text focus-inset"><div class=" red-heart ${customButton.iconType === "star"
+            ? generalSetting.headerIconType === "fillHeaderIcon"
+                ? "starICON2"
+                : generalSetting.headerIconType === "outlineHeaderIcon"
+                    ? "starICON"
+                    : "starICON"
+            : ""
+            } ${customButton.iconType === "save"
                 ? generalSetting.headerIconType === "fillHeaderIcon"
-                    ? "starICON2"
+                    ? "saveICON2"
                     : generalSetting.headerIconType === "outlineHeaderIcon"
-                        ? "starICON"
-                        : "starICON"
+                        ? "saveICON"
+                        : "saveICON"
                 : ""
+            } ${customButton.iconType === "heart"
+                ? generalSetting.headerIconType === "fillHeaderIcon"
+                    ? "heartICON2"
+                    : generalSetting.headerIconType === "outlineHeaderIcon"
+                        ? "heartICON"
+                        : "heartICON"
+                : ""
+            } "> <span></span></div><span style="position: absolute; top: 5px; right: 25px "class="count-span"></span>${customLanguage?.headerMenuWishlist ||
+            storeFrontDefLang?.headerMenuWishlist || "Wishlist"
+            }</a>`;
+
+        let wishlistDesktopHtml = `<a tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="${getThemeSelector.headerMenuItemClass
+            }">${customLanguage?.headerMenuWishlist ||
+            storeFrontDefLang?.headerMenuWishlist || "Wishlist"
+            }</a>`;
+
+        let wishlistMobileHtml = `<a tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="${getThemeSelector.headerMenuItemMobileClass
+            }">${customLanguage?.headerMenuWishlist ||
+            storeFrontDefLang?.headerMenuWishlist || "Wishlist"
+            }</a>`;
+
+        function wgMenuItemFxn(mediaQuery) {
+            const menuItemMobileClass = `wg-${modifiedString}-menuItem-mobile`;
+            const menuItemDesktopClass = `wg-${modifiedString}-menuItem-desktop`;
+            const desktopElement = document.querySelector(`.${menuItemDesktopClass}`);
+            const mobileElement = document.querySelector(`.${menuItemMobileClass}`);
+            let newMobileElement;
+            if (typeof getThemeSelector.headerMenuItemMobileCreateElement !== "undefined" && typeof getThemeSelector.headerMenuItemMobileCreateElement !== undefined && typeof getThemeSelector.headerMenuItemMobileCreateElement !== "null" && getThemeSelector.headerMenuItemMobileCreateElement !== "") {
+                newMobileElement = document.createElement(getThemeSelector.headerMenuItemMobileCreateElement);
+            } else {
+                newMobileElement = document.createElement("li");
+            }
+            newMobileElement.className = `${menuItemMobileClass} ${getThemeSelector.headerMenuMobileElementClass}`;
+            if (desktopElement) {
+                const computedStyle = window.getComputedStyle(desktopElement);
+                const displayValue = computedStyle.getPropertyValue("display");
+                if (getThemeName?.themeName === "Showcase" || getThemeName?.themeName === "Ella" || getThemeName?.themeName === "Vendy Shopping") {
+                    if (displayValue === "none") {
+                        desktopElement.style.display = "inline-block";
+                    }
+                } else {
+                    if (displayValue === "none") {
+                        desktopElement.style.display = "block";
+                    }
+                }
+            }
+            if (
+                !document.querySelector(`.${menuItemDesktopClass}`) &&
+                getThemeSelector.headerMenuItem.trim() !== ""
+            ) {
+                let menuItemMainElement = document.querySelector(
+                    getThemeSelector.headerMenuItem
+                );
+                if (menuItemMainElement) {
+                    let newCreateDekstopElement;
+                    if (
+                        typeof getThemeSelector.headerMenuItemCreateElement !==
+                        "undefined" &&
+                        getThemeSelector.headerMenuItemCreateElement !== undefined &&
+                        typeof getThemeSelector.headerMenuItemCreateElement !== "null" &&
+                        getThemeSelector.headerMenuItemCreateElement !== ""
+                    ) {
+                        newCreateDekstopElement = document.createElement(
+                            getThemeSelector.headerMenuItemCreateElement
+                        );
+                    } else {
+                        newCreateDekstopElement = document.createElement("li");
+                    }
+                    newCreateDekstopElement.className = `${menuItemDesktopClass} ${getThemeSelector.headerMenuElementClass}`;
+                    newCreateDekstopElement.innerHTML = wishlistDesktopHtml;
+                    if (getThemeSelector.headerMenuElementInsertAfter) {
+                        menuItemMainElement.after(newCreateDekstopElement);
+                    } else {
+                        menuItemMainElement.appendChild(newCreateDekstopElement);
+                    }
+                }
+            }
+            if (mediaQuery.matches) {
+                if (mobileElement) {
+                    const computedStyle = window.getComputedStyle(mobileElement);
+                    const displayValue = computedStyle.getPropertyValue("display");
+                    if (displayValue === "none") {
+                        mobileElement.style.display = "block";
+                    }
+                }
+                if (
+                    getThemeSelector.headerMenuItemMobile !== "" &&
+                    !document.querySelector(`.${menuItemMobileClass}`)
+                ) {
+                    const element = document.querySelector(`.${menuItemDesktopClass}`);
+                    if (element) {
+                        element.style.display = "none";
+                    }
+                    var mainMobileSelector = document.querySelector(
+                        getThemeSelector.headerMenuItemMobile
+                    );
+                    if (mainMobileSelector) {
+                        newMobileElement.innerHTML =
+                            getThemeName?.themeName === "Ella" ||
+                                getThemeName?.themeName === "Vendy Shopping"
+                                ? wishlistWithIcon
+                                : wishlistMobileHtml;
+                        if (getThemeSelector.headerMenuMobileInsertAfter) {
+                            mainMobileSelector.after(newMobileElement);
+                        } else {
+                            mainMobileSelector.appendChild(newMobileElement);
+                        }
+                    }
+                }
+
+                if (permanentDomain === "luxapolish.myshopify.com") {
+                    let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-mobile');
+                    if (targetDiv.length > 0) {
+                        targetDiv.forEach((element, index) => {
+                            if (index > 0) {
+                                element.remove();
+                            }
+                        });
+                        let appendToDiv = document.querySelector('.localization-selectors');
+                        if (appendToDiv) {
+                            appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
+                        }
+                    }
+                }
+            }
+        }
+        mediaQuery.addEventListener("change", wgMenuItemFxn);
+        wgMenuItemFxn(mediaQuery);
+        if (permanentDomain === "luxapolish.myshopify.com") {
+            let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-mobile');
+            if (targetDiv.length > 0) {
+                targetDiv.forEach((element, index) => {
+                    if (index > 0) {
+                        element.remove();
+                    }
+                });
+                let appendToDiv = document.querySelector('.localization-selectors');
+                if (appendToDiv) {
+                    appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
+                }
+            }
+        }
+    }
+    if (generalSetting.wlbLocation2 === true) {
+        if (getThemeName?.themeName === "Local") {
+            var elements = document.querySelectorAll(
+                ".header-actions:not(:empty).header-actions--show-search"
+            );
+            let mobileHeader = document.querySelector(
+                `.wg-local-headerIcon-mobile`
+            );
+            if (mobileHeader) {
+                mobileHeader.style.order = "2";
+            }
+            elements.forEach(function (element) {
+                element.style.alignItems = "center";
+            });
+        } else if (getThemeName?.themeName === "Combine") {
+            const checkcombineele = document.querySelector(
+                ".header__top .area--cart"
+            );
+            checkcombineele.style.gridArea = "inherit";
+        }
+
+        function headerIconFxn(mediaQuery) {
+            const headerIconDesktopClass = `wg-${modifiedString}-headerIcon-desktop`;
+            const headerIconMobileClass = `wg-${modifiedString}-headerIcon-mobile`;
+            const iconAppend = `<div tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="header-heart-position ${getThemeSelector.headerHeartIconMobileClass
+                }" > <div class="red-heart  ${customButton.iconType === "star"
+                    ? generalSetting.headerIconType === "fillHeaderIcon"
+                        ? "starICON2"
+                        : generalSetting.headerIconType === "outlineHeaderIcon"
+                            ? "starICON"
+                            : "starICON"
+                    : ""
                 } ${customButton.iconType === "save"
                     ? generalSetting.headerIconType === "fillHeaderIcon"
                         ? "saveICON2"
@@ -1800,462 +1981,280 @@ async function showWishlistButtonType() {
                             ? "heartICON"
                             : "heartICON"
                     : ""
-                } "> <span></span></div><span style="position: absolute; top: 5px; right: 25px "class="count-span"></span>${customLanguage?.headerMenuWishlist ||
-                storeFrontDefLang?.headerMenuWishlist || "Wishlist"
-                }</a>`;
-
-            let wishlistDesktopHtml = `<a tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="${getThemeSelector.headerMenuItemClass
-                }">${customLanguage?.headerMenuWishlist ||
-                storeFrontDefLang?.headerMenuWishlist || "Wishlist"
-                }</a>`;
-
-            let wishlistMobileHtml = `<a tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="${getThemeSelector.headerMenuItemMobileClass
-                }">${customLanguage?.headerMenuWishlist ||
-                storeFrontDefLang?.headerMenuWishlist || "Wishlist"
-                }</a>`;
-
-            function wgMenuItemFxn(mediaQuery) {
-                const menuItemMobileClass = `wg-${modifiedString}-menuItem-mobile`;
-                const menuItemDesktopClass = `wg-${modifiedString}-menuItem-desktop`;
-                const desktopElement = document.querySelector(`.${menuItemDesktopClass}`);
-                const mobileElement = document.querySelector(`.${menuItemMobileClass}`);
-                let newMobileElement;
-                if (typeof getThemeSelector.headerMenuItemMobileCreateElement !== "undefined" && typeof getThemeSelector.headerMenuItemMobileCreateElement !== undefined && typeof getThemeSelector.headerMenuItemMobileCreateElement !== "null" && getThemeSelector.headerMenuItemMobileCreateElement !== "") {
-                    newMobileElement = document.createElement(getThemeSelector.headerMenuItemMobileCreateElement);
-                } else {
-                    newMobileElement = document.createElement("li");
+                } "  ><span></span> </div>   <span class="count-span"> </span> </div>`;
+            const element = document.querySelector(`.${headerIconDesktopClass}`);
+            if (element) {
+                const computedStyle = window.getComputedStyle(element);
+                const displayValue = computedStyle.getPropertyValue("display");
+                if (displayValue === "none") {
+                    element.style.display = "block";
                 }
-                newMobileElement.className = `${menuItemMobileClass} ${getThemeSelector.headerMenuMobileElementClass}`;
-                if (desktopElement) {
-                    const computedStyle = window.getComputedStyle(desktopElement);
-                    const displayValue = computedStyle.getPropertyValue("display");
-                    if (getThemeName?.themeName === "Showcase" || getThemeName?.themeName === "Ella" || getThemeName?.themeName === "Vendy Shopping") {
-                        if (displayValue === "none") {
-                            desktopElement.style.display = "inline-block";
-                        }
-                    } else {
-                        if (displayValue === "none") {
-                            desktopElement.style.display = "block";
-                        }
-                    }
-                }
-                if (
-                    !document.querySelector(`.${menuItemDesktopClass}`) &&
-                    getThemeSelector.headerMenuItem.trim() !== ""
-                ) {
-                    let menuItemMainElement = document.querySelector(
-                        getThemeSelector.headerMenuItem
+            }
+            let mobileHeader = document.querySelector(`.${headerIconMobileClass}`);
+            if (mobileHeader) {
+                mobileHeader.style.display = "none";
+            }
+
+            if (getThemeSelector.headerHeartElementInsertAfter) {
+                if (!document.querySelector(`.${headerIconDesktopClass}`)) {
+                    let headerMainIconElement = document.querySelector(
+                        getThemeSelector.headerHeartIcon
                     );
-                    if (menuItemMainElement) {
-                        let newCreateDekstopElement;
-                        if (
-                            typeof getThemeSelector.headerMenuItemCreateElement !==
-                            "undefined" &&
-                            getThemeSelector.headerMenuItemCreateElement !== undefined &&
-                            typeof getThemeSelector.headerMenuItemCreateElement !== "null" &&
-                            getThemeSelector.headerMenuItemCreateElement !== ""
-                        ) {
-                            newCreateDekstopElement = document.createElement(
-                                getThemeSelector.headerMenuItemCreateElement
-                            );
-                        } else {
-                            newCreateDekstopElement = document.createElement("li");
-                        }
-                        newCreateDekstopElement.className = `${menuItemDesktopClass} ${getThemeSelector.headerMenuElementClass}`;
-                        newCreateDekstopElement.innerHTML = wishlistDesktopHtml;
-                        if (getThemeSelector.headerMenuElementInsertAfter) {
-                            menuItemMainElement.after(newCreateDekstopElement);
-                        } else {
-                            menuItemMainElement.appendChild(newCreateDekstopElement);
-                        }
-                    }
-                }
-                if (mediaQuery.matches) {
-                    if (mobileElement) {
-                        const computedStyle = window.getComputedStyle(mobileElement);
-                        const displayValue = computedStyle.getPropertyValue("display");
-                        if (displayValue === "none") {
-                            mobileElement.style.display = "block";
-                        }
-                    }
-                    if (
-                        getThemeSelector.headerMenuItemMobile !== "" &&
-                        !document.querySelector(`.${menuItemMobileClass}`)
-                    ) {
-                        const element = document.querySelector(`.${menuItemDesktopClass}`);
-                        if (element) {
-                            element.style.display = "none";
-                        }
-                        var mainMobileSelector = document.querySelector(
-                            getThemeSelector.headerMenuItemMobile
-                        );
-                        if (mainMobileSelector) {
-                            newMobileElement.innerHTML =
-                                getThemeName?.themeName === "Ella" ||
-                                    getThemeName?.themeName === "Vendy Shopping"
-                                    ? wishlistWithIcon
-                                    : wishlistMobileHtml;
-                            if (getThemeSelector.headerMenuMobileInsertAfter) {
-                                mainMobileSelector.after(newMobileElement);
-                            } else {
-                                mainMobileSelector.appendChild(newMobileElement);
-                            }
-                        }
-                    }
-
-                    if (permanentDomain === "luxapolish.myshopify.com") {
-                        let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-mobile');
-                        if (targetDiv.length > 0) {
-                            targetDiv.forEach((element, index) => {
-                                if (index > 0) {
-                                    element.remove();
-                                }
-                            });
-                            let appendToDiv = document.querySelector('.localization-selectors');
-                            if (appendToDiv) {
-                                appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
-                            }
-                        }
-                    }
-                }
-            }
-            mediaQuery.addEventListener("change", wgMenuItemFxn);
-            wgMenuItemFxn(mediaQuery);
-            if (permanentDomain === "luxapolish.myshopify.com") {
-                let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-mobile');
-                if (targetDiv.length > 0) {
-                    targetDiv.forEach((element, index) => {
-                        if (index > 0) {
-                            element.remove();
-                        }
-                    });
-                    let appendToDiv = document.querySelector('.localization-selectors');
-                    if (appendToDiv) {
-                        appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
-                    }
-                }
-            }
-        }
-        if (generalSetting.wlbLocation2 === true) {
-            if (getThemeName?.themeName === "Local") {
-                var elements = document.querySelectorAll(
-                    ".header-actions:not(:empty).header-actions--show-search"
-                );
-                let mobileHeader = document.querySelector(
-                    `.wg-local-headerIcon-mobile`
-                );
-                if (mobileHeader) {
-                    mobileHeader.style.order = "2";
-                }
-                elements.forEach(function (element) {
-                    element.style.alignItems = "center";
-                });
-            } else if (getThemeName?.themeName === "Combine") {
-                const checkcombineele = document.querySelector(
-                    ".header__top .area--cart"
-                );
-                checkcombineele.style.gridArea = "inherit";
-            }
-
-            function headerIconFxn(mediaQuery) {
-                const headerIconDesktopClass = `wg-${modifiedString}-headerIcon-desktop`;
-                const headerIconMobileClass = `wg-${modifiedString}-headerIcon-mobile`;
-                const iconAppend = `<div tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="header-heart-position ${getThemeSelector.headerHeartIconMobileClass
-                    }" > <div class="red-heart  ${customButton.iconType === "star"
-                        ? generalSetting.headerIconType === "fillHeaderIcon"
-                            ? "starICON2"
-                            : generalSetting.headerIconType === "outlineHeaderIcon"
-                                ? "starICON"
-                                : "starICON"
-                        : ""
-                    } ${customButton.iconType === "save"
-                        ? generalSetting.headerIconType === "fillHeaderIcon"
-                            ? "saveICON2"
-                            : generalSetting.headerIconType === "outlineHeaderIcon"
-                                ? "saveICON"
-                                : "saveICON"
-                        : ""
-                    } ${customButton.iconType === "heart"
-                        ? generalSetting.headerIconType === "fillHeaderIcon"
-                            ? "heartICON2"
-                            : generalSetting.headerIconType === "outlineHeaderIcon"
-                                ? "heartICON"
-                                : "heartICON"
-                        : ""
-                    } "  ><span></span> </div>   <span class="count-span"> </span> </div>`;
-                const element = document.querySelector(`.${headerIconDesktopClass}`);
-                if (element) {
-                    const computedStyle = window.getComputedStyle(element);
-                    const displayValue = computedStyle.getPropertyValue("display");
-                    if (displayValue === "none") {
-                        element.style.display = "block";
-                    }
-                }
-                let mobileHeader = document.querySelector(`.${headerIconMobileClass}`);
-                if (mobileHeader) {
-                    mobileHeader.style.display = "none";
-                }
-
-                if (getThemeSelector.headerHeartElementInsertAfter) {
-                    if (!document.querySelector(`.${headerIconDesktopClass}`)) {
-                        let headerMainIconElement = document.querySelector(
-                            getThemeSelector.headerHeartIcon
-                        );
-                        if (headerMainIconElement) {
-                            let createNewElementDiv;
-                            if (
-                                typeof getThemeSelector.headerHeartIconCreateElement !==
-                                "undefined" &&
-                                typeof getThemeSelector.headerHeartIconCreateElement !==
-                                "null" &&
-                                getThemeSelector.headerHeartIconCreateElement !== undefined &&
-                                getThemeSelector.headerHeartIconCreateElement !== ""
-                            ) {
-                                createNewElementDiv = document.createElement(
-                                    getThemeSelector.headerHeartIconCreateElement
-                                );
-                            } else {
-                                createNewElementDiv = document.createElement("div");
-                            }
-                            createNewElementDiv.className = `${headerIconDesktopClass} ${getThemeSelector.headerHeartElementClass} `;
-                            createNewElementDiv.innerHTML = iconAppend;
-                            // headerMainIconElement.after(createNewElementDiv);
-
-                            if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cart !== "") {
-                                let insertRightafterCart = document.querySelector(getThemeSelector?.cart);
-                                insertRightafterCart?.after(createNewElementDiv);
-                            } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cart !== "") {
-
-
-
-                                // if (getThemeName.themeName === "Boost") {
-                                //     let insertBeforeCartElements = document.querySelectorAll(getThemeSelector?.cart);
-                                //     insertBeforeCartElements.forEach(insertBeforeCart => {
-                                //         insertBeforeCart.before(createNewElementDiv.cloneNode(true));
-                                //     });
-                                // } else {
-                                let insertBeforeCart = document.querySelector(getThemeSelector?.cart);
-                                insertBeforeCart?.before(createNewElementDiv);
-                                // }
-
-                            } else {
-                                headerMainIconElement?.after(createNewElementDiv);
-                            }
-
-                        }
-                    }
-                } else {
-                    if (
-                        !document.querySelector(`.${headerIconDesktopClass}`) &&
-                        getThemeSelector.headerHeartIcon !== ""
-                    ) {
-                        let headerMainIconElement = document.querySelector(
-                            getThemeSelector.headerHeartIcon
-                        );
-
-                        if (headerMainIconElement) {
-                            let createNewElementDiv;
-                            if (
-                                typeof getThemeSelector.headerHeartIconCreateElement !==
-                                "undefined" &&
-                                typeof getThemeSelector.headerHeartIconCreateElement !==
-                                "null" &&
-                                typeof getThemeSelector.headerHeartIconCreateElement !==
-                                undefined &&
-                                getThemeSelector.headerHeartIconCreateElement !== ""
-                            ) {
-                                createNewElementDiv = document.createElement(
-                                    getThemeSelector.headerHeartIconCreateElement
-                                );
-                            } else {
-                                createNewElementDiv = document.createElement("div");
-                            }
-                            createNewElementDiv.className = `${headerIconDesktopClass} ${getThemeSelector.headerHeartElementClass}`;
-                            createNewElementDiv.innerHTML = iconAppend;
-
-                            // headerMainIconElement.appendChild(createNewElementDiv);
-                            if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cart !== "") {
-
-                                if (getThemeName.themeName === "Prestige") {
-                                    let insertRightafterCart = document.querySelector(getThemeSelector?.cart);
-                                    insertRightafterCart?.after(createNewElementDiv);
-                                } else {
-                                    const insertRightafterCartList = document.querySelectorAll(getThemeSelector?.cart);
-                                    insertRightafterCartList.forEach((element) => {
-                                        element.after(createNewElementDiv.cloneNode(true));
-                                    });
-                                }
-
-
-                            } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cart !== "") {
-
-
-                                // if (getThemeName.themeName === "Boost") {
-                                //     let insertBeforeCartElements = document.querySelectorAll(getThemeSelector?.cart);
-                                //     insertBeforeCartElements.forEach(insertBeforeCart => {
-                                //         insertBeforeCart.before(createNewElementDiv.cloneNode(true));
-                                //     });
-                                // } else {
-
-                                let insertBeforeCart = document.querySelector(getThemeSelector?.cart);
-                                insertBeforeCart?.before(createNewElementDiv);
-                                // }
-
-                            } else {
-                                headerMainIconElement?.appendChild(createNewElementDiv);
-                            }
-
-                        }
-                    }
-                }
-                if (mediaQuery.matches) {
-                    let mobileHeader = document.querySelector(
-                        `.${headerIconMobileClass}`
-                    );
-                    if (mobileHeader) {
-                        mobileHeader.style.display = "block";
-                    }
-                    if (
-                        getThemeSelector.headerHeartIconMobile &&
-                        !document.querySelector(`.${headerIconMobileClass}`)
-                    ) {
-                        const className = headerIconDesktopClass;
-                        const element = document.querySelector(
-                            `.${headerIconDesktopClass}`
-                        );
-                        if (element) {
-                            element.style.display = "none";
-                        }
-                        let getSelector = document.querySelector(
-                            getThemeSelector.headerHeartIconMobile
-                        );
+                    if (headerMainIconElement) {
                         let createNewElementDiv;
                         if (
-                            typeof getThemeSelector.headerHeartIconMobileCreateElement !==
+                            typeof getThemeSelector.headerHeartIconCreateElement !==
                             "undefined" &&
-                            typeof getThemeSelector.headerHeartIconMobileCreateElement !==
+                            typeof getThemeSelector.headerHeartIconCreateElement !==
                             "null" &&
-                            getThemeSelector.headerHeartIconMobileCreateElement !==
-                            undefined &&
-                            getThemeSelector.headerHeartIconMobileCreateElement !== ""
+                            getThemeSelector.headerHeartIconCreateElement !== undefined &&
+                            getThemeSelector.headerHeartIconCreateElement !== ""
                         ) {
                             createNewElementDiv = document.createElement(
-                                getThemeSelector.headerHeartIconMobileCreateElement
+                                getThemeSelector.headerHeartIconCreateElement
                             );
                         } else {
                             createNewElementDiv = document.createElement("div");
                         }
-                        createNewElementDiv.className = `${headerIconMobileClass} ${getThemeSelector.headerHeartMobileElementClass}`;
+                        createNewElementDiv.className = `${headerIconDesktopClass} ${getThemeSelector.headerHeartElementClass} `;
                         createNewElementDiv.innerHTML = iconAppend;
-                        if (getThemeSelector.headerHeartMobileInsertAfter) {
-                            // getSelector.after(createNewElementDiv);
-                            if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cartMobile !== "") {
-                                let insertRightafterCart = document.querySelector(getThemeSelector?.cartMobile);
-                                insertRightafterCart?.after(createNewElementDiv);
-                            } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cartMobile !== "") {
+                        // headerMainIconElement.after(createNewElementDiv);
 
-                                let insertBeforeCart = document.querySelector(getThemeSelector?.cartMobile);
-                                insertBeforeCart?.before(createNewElementDiv);
+                        if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cart !== "") {
+                            let insertRightafterCart = document.querySelector(getThemeSelector?.cart);
+                            insertRightafterCart?.after(createNewElementDiv);
+                        } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cart !== "") {
 
 
-                            } else {
-                                getSelector?.after(createNewElementDiv);
-                            }
+
+                            // if (getThemeName.themeName === "Boost") {
+                            //     let insertBeforeCartElements = document.querySelectorAll(getThemeSelector?.cart);
+                            //     insertBeforeCartElements.forEach(insertBeforeCart => {
+                            //         insertBeforeCart.before(createNewElementDiv.cloneNode(true));
+                            //     });
+                            // } else {
+                            let insertBeforeCart = document.querySelector(getThemeSelector?.cart);
+                            insertBeforeCart?.before(createNewElementDiv);
+                            // }
 
                         } else {
-                            // getSelector.appendChild(createNewElementDiv);
-                            if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cartMobile !== "") {
-                                let insertRightafterCart = document.querySelector(getThemeSelector?.cartMobile);
+                            headerMainIconElement?.after(createNewElementDiv);
+                        }
+
+                    }
+                }
+            } else {
+                if (
+                    !document.querySelector(`.${headerIconDesktopClass}`) &&
+                    getThemeSelector.headerHeartIcon !== ""
+                ) {
+                    let headerMainIconElement = document.querySelector(
+                        getThemeSelector.headerHeartIcon
+                    );
+
+                    if (headerMainIconElement) {
+                        let createNewElementDiv;
+                        if (
+                            typeof getThemeSelector.headerHeartIconCreateElement !==
+                            "undefined" &&
+                            typeof getThemeSelector.headerHeartIconCreateElement !==
+                            "null" &&
+                            typeof getThemeSelector.headerHeartIconCreateElement !==
+                            undefined &&
+                            getThemeSelector.headerHeartIconCreateElement !== ""
+                        ) {
+                            createNewElementDiv = document.createElement(
+                                getThemeSelector.headerHeartIconCreateElement
+                            );
+                        } else {
+                            createNewElementDiv = document.createElement("div");
+                        }
+                        createNewElementDiv.className = `${headerIconDesktopClass} ${getThemeSelector.headerHeartElementClass}`;
+                        createNewElementDiv.innerHTML = iconAppend;
+
+                        // headerMainIconElement.appendChild(createNewElementDiv);
+                        if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cart !== "") {
+
+                            if (getThemeName.themeName === "Prestige") {
+                                let insertRightafterCart = document.querySelector(getThemeSelector?.cart);
                                 insertRightafterCart?.after(createNewElementDiv);
-                            } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cartMobile !== "") {
-                                let insertBeforeCart = document.querySelector(getThemeSelector?.cartMobile);
-                                insertBeforeCart?.before(createNewElementDiv);
                             } else {
-                                getSelector?.appendChild(createNewElementDiv);
+                                const insertRightafterCartList = document.querySelectorAll(getThemeSelector?.cart);
+                                insertRightafterCartList.forEach((element) => {
+                                    element.after(createNewElementDiv.cloneNode(true));
+                                });
                             }
 
+
+                        } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cart !== "") {
+
+
+                            // if (getThemeName.themeName === "Boost") {
+                            //     let insertBeforeCartElements = document.querySelectorAll(getThemeSelector?.cart);
+                            //     insertBeforeCartElements.forEach(insertBeforeCart => {
+                            //         insertBeforeCart.before(createNewElementDiv.cloneNode(true));
+                            //     });
+                            // } else {
+
+                            let insertBeforeCart = document.querySelector(getThemeSelector?.cart);
+                            insertBeforeCart?.before(createNewElementDiv);
+                            // }
+
+                        } else {
+                            headerMainIconElement?.appendChild(createNewElementDiv);
                         }
+
                     }
-                    if (permanentDomain === "luxapolish.myshopify.com") {
-                        let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-desktop');
-                        if (targetDiv.length > 0) {
-                            targetDiv.forEach((element, index) => {
-                                if (index > 0) {
-                                    element.remove();
-                                }
-                            });
-                            let appendToDiv = document.querySelector('.localization-selectors');
-                            if (appendToDiv) {
-                                appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
+                }
+            }
+            if (mediaQuery.matches) {
+                let mobileHeader = document.querySelector(
+                    `.${headerIconMobileClass}`
+                );
+                if (mobileHeader) {
+                    mobileHeader.style.display = "block";
+                }
+                if (
+                    getThemeSelector.headerHeartIconMobile &&
+                    !document.querySelector(`.${headerIconMobileClass}`)
+                ) {
+                    const className = headerIconDesktopClass;
+                    const element = document.querySelector(
+                        `.${headerIconDesktopClass}`
+                    );
+                    if (element) {
+                        element.style.display = "none";
+                    }
+                    let getSelector = document.querySelector(
+                        getThemeSelector.headerHeartIconMobile
+                    );
+                    let createNewElementDiv;
+                    if (
+                        typeof getThemeSelector.headerHeartIconMobileCreateElement !==
+                        "undefined" &&
+                        typeof getThemeSelector.headerHeartIconMobileCreateElement !==
+                        "null" &&
+                        getThemeSelector.headerHeartIconMobileCreateElement !==
+                        undefined &&
+                        getThemeSelector.headerHeartIconMobileCreateElement !== ""
+                    ) {
+                        createNewElementDiv = document.createElement(
+                            getThemeSelector.headerHeartIconMobileCreateElement
+                        );
+                    } else {
+                        createNewElementDiv = document.createElement("div");
+                    }
+                    createNewElementDiv.className = `${headerIconMobileClass} ${getThemeSelector.headerHeartMobileElementClass}`;
+                    createNewElementDiv.innerHTML = iconAppend;
+                    if (getThemeSelector.headerHeartMobileInsertAfter) {
+                        // getSelector.after(createNewElementDiv);
+                        if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cartMobile !== "") {
+                            let insertRightafterCart = document.querySelector(getThemeSelector?.cartMobile);
+                            insertRightafterCart?.after(createNewElementDiv);
+                        } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cartMobile !== "") {
+
+                            let insertBeforeCart = document.querySelector(getThemeSelector?.cartMobile);
+                            insertBeforeCart?.before(createNewElementDiv);
+
+
+                        } else {
+                            getSelector?.after(createNewElementDiv);
+                        }
+
+                    } else {
+                        // getSelector.appendChild(createNewElementDiv);
+                        if (generalSetting?.headerIconPosition === "right" && getThemeSelector?.cartMobile !== "") {
+                            let insertRightafterCart = document.querySelector(getThemeSelector?.cartMobile);
+                            insertRightafterCart?.after(createNewElementDiv);
+                        } else if (generalSetting?.headerIconPosition === "left" && getThemeSelector?.cartMobile !== "") {
+                            let insertBeforeCart = document.querySelector(getThemeSelector?.cartMobile);
+                            insertBeforeCart?.before(createNewElementDiv);
+                        } else {
+                            getSelector?.appendChild(createNewElementDiv);
+                        }
+
+                    }
+                }
+                if (permanentDomain === "luxapolish.myshopify.com") {
+                    let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-desktop');
+                    if (targetDiv.length > 0) {
+                        targetDiv.forEach((element, index) => {
+                            if (index > 0) {
+                                element.remove();
                             }
+                        });
+                        let appendToDiv = document.querySelector('.localization-selectors');
+                        if (appendToDiv) {
+                            appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
                         }
                     }
                 }
-                headerIconStyle();
             }
             headerIconStyle();
-            mediaQuery.addEventListener("change", headerIconFxn);
-            headerIconFxn(mediaQuery);
-            if (permanentDomain === "luxapolish.myshopify.com") {
-                let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-desktop');
-                if (targetDiv.length > 0) {
-                    targetDiv.forEach((element, index) => {
-                        if (index > 0) {
-                            element.remove();
-                        }
-                    });
-                    let appendToDiv = document.querySelector('.localization-selectors');
-                    if (appendToDiv) {
-                        appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
+        }
+        headerIconStyle();
+        mediaQuery.addEventListener("change", headerIconFxn);
+        headerIconFxn(mediaQuery);
+        if (permanentDomain === "luxapolish.myshopify.com") {
+            let targetDiv = document.querySelectorAll('.wg-prestige-headerIcon-desktop');
+            if (targetDiv.length > 0) {
+                targetDiv.forEach((element, index) => {
+                    if (index > 0) {
+                        element.remove();
                     }
+                });
+                let appendToDiv = document.querySelector('.localization-selectors');
+                if (appendToDiv) {
+                    appendToDiv.insertAdjacentElement('afterend', targetDiv[0]);
                 }
             }
         }
-
-
-        if (currentPlan > 1) {
-            if (generalSetting.paidWlbLocation === "yes") {
-                // let getCustomDiv = document.querySelector(".custom-wishlist-icon");
-                const customDivs = document.querySelectorAll(".custom-wishlist-icon");
-                customDivs.forEach((getCustomDiv) => {
-                    // if (getCustomDiv !== null) {
-                    if (getCustomDiv && getCustomDiv.innerHTML.trim() === "") {
-
-                        let iconType = getCustomDiv.getAttribute("wishlist-type");
-                        // console.log("hhhh ... ", iconType)
-                        if (iconType === "text") {
-                            getCustomDiv.innerHTML = `<a tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" >${customLanguage?.headerMenuWishlist || storeFrontDefLang?.headerMenuWishlist || "Wishlist"}</a>`
-                        } else {
-                            getCustomDiv.innerHTML = `<div tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="header-heart-position ${getThemeSelector.headerHeartIconMobileClass
-                                }" > <div class="red-heart  ${customButton.iconType === "star"
-                                    ? generalSetting.headerIconType === "fillHeaderIcon"
-                                        ? "starICON2"
-                                        : generalSetting.headerIconType === "outlineHeaderIcon"
-                                            ? "starICON"
-                                            : "starICON"
-                                    : ""
-                                } ${customButton.iconType === "save"
-                                    ? generalSetting.headerIconType === "fillHeaderIcon"
-                                        ? "saveICON2"
-                                        : generalSetting.headerIconType === "outlineHeaderIcon"
-                                            ? "saveICON"
-                                            : "saveICON"
-                                    : ""
-                                } ${customButton.iconType === "heart"
-                                    ? generalSetting.headerIconType === "fillHeaderIcon"
-                                        ? "heartICON2"
-                                        : generalSetting.headerIconType === "outlineHeaderIcon"
-                                            ? "heartICON"
-                                            : "heartICON"
-                                    : ""
-                                } "  ><span></span> </div>   <span class="count-span"> </span> </div>`;
-                        }
-                    }
-                })
-            }
-        }
-        headerIconStyle();
     }
+
+
+    if (currentPlan > 1) {
+        if (generalSetting.paidWlbLocation === "yes") {
+            // let getCustomDiv = document.querySelector(".custom-wishlist-icon");
+            const customDivs = document.querySelectorAll(".custom-wishlist-icon");
+            customDivs.forEach((getCustomDiv) => {
+                // if (getCustomDiv !== null) {
+                if (getCustomDiv && getCustomDiv.innerHTML.trim() === "") {
+
+                    let iconType = getCustomDiv.getAttribute("wishlist-type");
+                    // console.log("hhhh ... ", iconType)
+                    if (iconType === "text") {
+                        getCustomDiv.innerHTML = `<a tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" >${customLanguage?.headerMenuWishlist || storeFrontDefLang?.headerMenuWishlist || "Wishlist"}</a>`
+                    } else {
+                        getCustomDiv.innerHTML = `<div tabindex="0" role="button" aria-haspopup="dialog" aria-controls="wishlist-dialog" aria-expanded="false" onClick="heartButtonHandle()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); heartButtonHandle(); }" class="header-heart-position ${getThemeSelector.headerHeartIconMobileClass
+                            }" > <div class="red-heart  ${customButton.iconType === "star"
+                                ? generalSetting.headerIconType === "fillHeaderIcon"
+                                    ? "starICON2"
+                                    : generalSetting.headerIconType === "outlineHeaderIcon"
+                                        ? "starICON"
+                                        : "starICON"
+                                : ""
+                            } ${customButton.iconType === "save"
+                                ? generalSetting.headerIconType === "fillHeaderIcon"
+                                    ? "saveICON2"
+                                    : generalSetting.headerIconType === "outlineHeaderIcon"
+                                        ? "saveICON"
+                                        : "saveICON"
+                                : ""
+                            } ${customButton.iconType === "heart"
+                                ? generalSetting.headerIconType === "fillHeaderIcon"
+                                    ? "heartICON2"
+                                    : generalSetting.headerIconType === "outlineHeaderIcon"
+                                        ? "heartICON"
+                                        : "heartICON"
+                                : ""
+                            } "  ><span></span> </div>   <span class="count-span"> </span> </div>`;
+                    }
+                }
+            })
+        }
+    }
+    headerIconStyle();
+    // }
 }
 
 function showCustomHeaderIcon1() {
@@ -2384,9 +2383,6 @@ async function handleSearchData(event) {
 async function wgrHandleSearch(event) {
     const searchValue = event.target.value.trim().toLowerCase();
 
-    console.log("searchValue --- ", searchValue)
-
-
 }
 
 
@@ -2432,7 +2428,8 @@ const showCountAll = async () => {
         getMultiwishlistData("")
     ]);
     multiArray = multiData
-    const totalObjects = await getCount(list);
+    // const totalObjects = await getCount(list);
+    const totalObjects = list?.length || 0;
 
     if (generalSetting?.hideHeaderCounter === "no" || generalSetting?.hideHeaderCounter === undefined) {
         const countHtml = `<span class="show-count"><b>${totalObjects}</b></span>`;
@@ -2652,81 +2649,81 @@ function addWishlistDescription() {
 }
 
 async function heartButtonHandle() {
-    if (currentPlan >= 1) {
-        // -------adding heading text to the modal-------
-        let addModalHeading = document.querySelectorAll(".modal-heading");
-        if (addModalHeading.length > 0) {
-            for (let wf = 0; wf < addModalHeading.length; wf++) {
-                addModalHeading[wf].innerHTML = `${customLanguage?.modalHeadingText}`;
-            }
+    // if (currentPlan >= 1) {
+    // -------adding heading text to the modal-------
+    let addModalHeading = document.querySelectorAll(".modal-heading");
+    if (addModalHeading.length > 0) {
+        for (let wf = 0; wf < addModalHeading.length; wf++) {
+            addModalHeading[wf].innerHTML = `${customLanguage?.modalHeadingText}`;
         }
-        // --------- add wishlist description-------
-        addWishlistDescription();
-        const checkArrayList = allWishlistData;
-        const hasItems = checkArrayList.some(obj =>
-            Object.values(obj).some(list => list.length > 0)
-        );
-        let loaderr = document.querySelectorAll(".show-title");
-        for (let wf = 0; wf < loaderr.length; wf++) {
-            if (loaderr[wf].innerHTML === "") {
-                loaderr[wf].innerHTML = `<div class="loader-css" ><span></span></div>`;
-            }
-            else if (loaderr[wf].innerHTML.includes('drawer-cart-empty') && hasItems) {
-                loaderr[wf].innerHTML = `<div class="loader-css" ><span></span></div>`;
-            }
-        }
-        // if (generalSetting.wishlistDisplay === "drawer") {
-        //     document.querySelector(".drawer-main").innerHTML = `<div class="loader-css" ><span></span></div>`;
-        // }
-        if (currentPlan > 1) {
-            let poweredByText = document.querySelectorAll(".powered-by-text");
-            for (let wf = 0; wf < poweredByText.length; wf++) {
-                poweredByText[wf].innerHTML = "";
-            }
-        }
-
-        // if (generalSetting.wishlistDisplay === "modal") {
-        //     document.body.style.overflow = "hidden";
-        //     document.body.classList.add('wf-hide-scroll');
-        //     wishlistStyleFxn();
-        //     modalWF.style.display = "block";
-        //     document.querySelector(".modal-page-auth").style.display = "block";
-        //     document.querySelector(".grid-outer-main").style.display = "flex";
-        //     document.getElementById("wg-modal-inner-content").style.display = "block";
-        //     document.getElementById("wg-isLogin-modal").style.display = "none";
-        //     document.querySelector(".searchData input").value = "";
-        //     spanWF.onclick = function () {
-        //         const scrollToTop = document.querySelectorAll('.wishlist-modal-box, .wg-modal'); // Select all matching elements
-        //         scrollToTop.forEach(element => {
-        //             element.scrollTop = 0;
-        //         })
-        //         modalWF.style.display = "none";
-        //         document.querySelector(".searchData input").value = "";
-        //         // document.body.style.overflow = "auto";
-        //         removeScrollFromBody();
-        //         removeClassFromBody();
-        //     };
-        //     pageTypeFunction();
-        // } else if (generalSetting.wishlistDisplay === "page") {
-        wishlistStyleFxn();
-        window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
-        // } else if (generalSetting.wishlistDisplay === "drawer") {
-        //     if (currentPlan > 1) {
-        //         document.body.style.overflow = "hidden";
-        //         document.querySelector(".sidenav").style.transform = "translateX(0%)";
-        //         document.querySelector(".overlayy").style.height = "100vh";
-        //         document.querySelector(".swlb-div").style.display = "flex";
-        //         document.querySelector(".drawer-main").style.display = "block";
-        //         document.querySelector(".drawer-button-div").style.display = "block";
-        //         document.getElementById("wg-isLogin-drawer").style.display = "none";
-        //         renderDrawerContentFxn();
-        //     } else {
-        //         alertContent(`Your plan subscription is out of service, Please Contact site administrator`);
-        //     }
-        // } else {
-        //     window.location = `${wfGetDomain}apps/wg-wishlist`;
-        // }
     }
+    // --------- add wishlist description-------
+    addWishlistDescription();
+    const checkArrayList = allWishlistData;
+    const hasItems = checkArrayList.some(obj =>
+        Object.values(obj).some(list => list.length > 0)
+    );
+    let loaderr = document.querySelectorAll(".show-title");
+    for (let wf = 0; wf < loaderr.length; wf++) {
+        if (loaderr[wf].innerHTML === "") {
+            loaderr[wf].innerHTML = `<div class="loader-css" ><span></span></div>`;
+        }
+        else if (loaderr[wf].innerHTML.includes('drawer-cart-empty') && hasItems) {
+            loaderr[wf].innerHTML = `<div class="loader-css" ><span></span></div>`;
+        }
+    }
+    // if (generalSetting.wishlistDisplay === "drawer") {
+    //     document.querySelector(".drawer-main").innerHTML = `<div class="loader-css" ><span></span></div>`;
+    // }
+    if (currentPlan > 1) {
+        let poweredByText = document.querySelectorAll(".powered-by-text");
+        for (let wf = 0; wf < poweredByText.length; wf++) {
+            poweredByText[wf].innerHTML = "";
+        }
+    }
+
+    // if (generalSetting.wishlistDisplay === "modal") {
+    //     document.body.style.overflow = "hidden";
+    //     document.body.classList.add('wf-hide-scroll');
+    //     wishlistStyleFxn();
+    //     modalWF.style.display = "block";
+    //     document.querySelector(".modal-page-auth").style.display = "block";
+    //     document.querySelector(".grid-outer-main").style.display = "flex";
+    //     document.getElementById("wg-modal-inner-content").style.display = "block";
+    //     document.getElementById("wg-isLogin-modal").style.display = "none";
+    //     document.querySelector(".searchData input").value = "";
+    //     spanWF.onclick = function () {
+    //         const scrollToTop = document.querySelectorAll('.wishlist-modal-box, .wg-modal'); // Select all matching elements
+    //         scrollToTop.forEach(element => {
+    //             element.scrollTop = 0;
+    //         })
+    //         modalWF.style.display = "none";
+    //         document.querySelector(".searchData input").value = "";
+    //         // document.body.style.overflow = "auto";
+    //         removeScrollFromBody();
+    //         removeClassFromBody();
+    //     };
+    //     pageTypeFunction();
+    // } else if (generalSetting.wishlistDisplay === "page") {
+    wishlistStyleFxn();
+    window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
+    // } else if (generalSetting.wishlistDisplay === "drawer") {
+    //     if (currentPlan > 1) {
+    //         document.body.style.overflow = "hidden";
+    //         document.querySelector(".sidenav").style.transform = "translateX(0%)";
+    //         document.querySelector(".overlayy").style.height = "100vh";
+    //         document.querySelector(".swlb-div").style.display = "flex";
+    //         document.querySelector(".drawer-main").style.display = "block";
+    //         document.querySelector(".drawer-button-div").style.display = "block";
+    //         document.getElementById("wg-isLogin-drawer").style.display = "none";
+    //         renderDrawerContentFxn();
+    //     } else {
+    //         alertContent(`Your plan subscription is out of service, Please Contact site administrator`);
+    //     }
+    // } else {
+    //     window.location = `${wfGetDomain}apps/wg-wishlist`;
+    // }
+    // }
 }
 
 async function updateQuantity(event, product_id, user_id) {
@@ -2780,9 +2777,6 @@ async function updateQuantity2(event) {
     const parent = event.target.parentNode;
     const inputField = parent.querySelector(".quant-update");
     if (!inputField) return;
-
-
-    console.log("FFFF --- ", inputField)
 
     const isPlusQuant = event.target.classList.contains("quant-plus");
     const isMinusQuant = event.target.classList.contains("quant-minus");
@@ -3594,7 +3588,9 @@ function goToCreateRegistry() {
 
 
 function wgrAddNavigationSection() {
-    document.querySelector('.wgr-navigationbar').innerHTML = `
+    const navBar = document.querySelector('.wgr-navigationbar');
+    if (!navBar) return; // stop if element does not exist
+    navBar.innerHTML = `
                 <div class="wgr-nav-main">
                     <a href="/apps/wf-gift-registry/list" class="wgr-nav-link">My List</a>
                     <a href="/apps/wf-gift-registry/create" class="wgr-nav-link">Create</a>
@@ -3607,7 +3603,6 @@ function wgrAddNavigationSection() {
         }
     });
 }
-
 
 function wgrAddLoginSection() {
     document.querySelector('.wgr-login-bar').innerHTML = `
@@ -3625,32 +3620,33 @@ function wgrAddLoginSection() {
 
 async function wgrListingPageTypeFunction() {
     // showing loader 
-
     // console.log("allWishlistData ---- ", allWishlistData)
 
     wgrAddNavigationSection();
 
-    // loader---css
-    document.querySelector(".wgr-listing").innerHTML = `<div class="loader-css" ><span> </span></div>`
+    if (customerEmail) {
 
-    document.querySelector(".wgr-heading").innerHTML = "List of registry";
-    let customerName = heartButton.getAttribute("customer-name") || "";
-    // let profileDiv = document.querySelector(".wgr-profile");
-    // profileDiv.innerHTML = `<div class="profile-main">Name: ${customerName}</div>`;
+        // loader---css
+        document.querySelector(".wgr-listing").innerHTML = `<div class="loader-css" ><span> </span></div>`
 
-    let listingDiv = document.querySelector(".wgr-listing");
+        document.querySelector(".wgr-heading").innerHTML = "List of registry";
+        let customerName = heartButton.getAttribute("customer-name") || "";
+        // let profileDiv = document.querySelector(".wgr-profile");
+        // profileDiv.innerHTML = `<div class="profile-main">Name: ${customerName}</div>`;
+
+        let listingDiv = document.querySelector(".wgr-listing");
 
 
-    if (allWishlistData.length === 0) {
-        // listingDiv.innerHTML = `<span>Currently there is no registry. Please create one</span><button onclick="goToCreateRegistry()" >Create registry</button>`
+        if (allWishlistData.length === 0) {
+            // listingDiv.innerHTML = `<span>Currently there is no registry. Please create one</span><button onclick="goToCreateRegistry()" >Create registry</button>`
 
-        listingDiv.innerHTML = `There is currently no registry. Please create your first registry by <a href="/apps/wf-gift-registry/create" >clicking here</a>.`
+            listingDiv.innerHTML = `There is currently no registry. Please create your first registry by <a href="/apps/wf-gift-registry/create" >clicking here</a>.`
 
-    } else {
-        listingDiv.innerHTML = `${allWishlistData.map(data => {
-            console.log("data = ", data)
-            const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
-            return `
+        } else {
+
+            listingDiv.innerHTML = `${allWishlistData.map(data => {
+                const listName = Object.keys(data).find(key => !["id", "description", "urlType", "password"].includes(key));
+                return `
                                 <div class="wgr-listing-row">
                                                 <div class="wishlist-modal-all"> 
                                                 <div class="wf-multi-Wish-heading">
@@ -3672,17 +3668,27 @@ async function wgrListingPageTypeFunction() {
                                             </div>
 
                                             <div class="wgr-description" onclick="redirectToSingleWishlist22('${listName}')">
-                                                <b>Description:</b><span>${data.description}</span>
+                                                <b>Description: </b><span>${data.description}</span>
                                             </div>
                                 </div>
                                 `;
-        }).join("")}`;
-    }
+            }).join("")}`;
+        }
 
 
-    const elm = document.querySelector('.show-title');
-    if (elm) {
-        elm.style.display = 'none';
+        const elm = document.querySelector('.show-title');
+        if (elm) {
+            elm.style.display = 'none';
+        }
+
+    } else {
+        document.querySelector('.wgr-login-bar').innerHTML = `
+                                <div class="wgr-login-create">
+                                    <h3>Wishlist Guru Registry</h3>
+                                    <span>Log in or create an account so you can create registries, share them with people, track your gifts, and more.</span>
+                                    <a href ="/account">${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}</a> ${customLanguage?.orText || storeFrontDefLang.orText} <a href="/account/register"> ${customLanguage?.createAccountAnchor || storeFrontDefLang.createAccountAnchor}</a>
+                                </div>`
+
     }
 
 }
@@ -3691,8 +3697,10 @@ function redirectToSingleWishlist22(key) {
     // console.log("key --- ", key);
     // console.log("REDIRECTING TO THE LIST ITEMSSSSSSSSSSSSSSSSSSS");
     // console.log("allWishlistData ------- ", allWishlistData)
-    document.querySelector(".wgr-heading").innerHTML = `Items in registry -- ${key} <button class="wf-back-btn" onclick="wfBackToList()">Back</button>`;
-    document.querySelector(".show-title").innerHTML = `<div class="loader-css" ><span> </span></div>`
+    document.querySelector(".wgr-heading").innerHTML = `Registry: ${key} 
+    <button class="wf-back-btn" onclick="wfBackToList()">Back</button>    
+    `;
+    document.querySelector(".show-title").innerHTML = `<div class="loader-css"><span> </span></div>`
     const elm1 = document.querySelector('.wgr-listing');
     if (elm1) {
         elm1.style.display = 'none';
@@ -3749,8 +3757,9 @@ async function wgrCreateRegistryForm() {
                         <select name="wishlistUrlType" id="wishlistUrlType" onchange="handleUrlTypeChange()">
                             <option value="" disabled selected>Share url type</option>
                             <option value="public">Public</option>
+                         ${currentPlan > 1 ? `
                             <option value="private">Private</option>
-                            <option value="password-protected">Password protected</option>
+                            <option value="password-protected">Password protected</option>` : ""}
                         </select>
                         <input type="password" id="wishlistUrlPassword" placeholder="Enter password" style="display:none;" />
                         <div style="display:flex;gap: 10px;">
@@ -3774,6 +3783,7 @@ async function wgrCreateRegistryForm() {
                 </div>
                 <p id="mainErrorPara"></p>
             </div>`
+
     } else {
         wgrAddLoginSection();
     }
@@ -3822,7 +3832,7 @@ async function redirectToSingleWishlist(singleWishlist, singleUser = "", wishlis
     // console.log("allllll ", allWishlistData)
     // console.log("singleUser --- ", singleUser)
 
-    if (allWishlistData[0].userId === Number(singleUser)) {
+    if (allWishlistData[0]?.userId === Number(singleUser)) {
         // const elm2 = document.querySelector('.show-title');
         // if (elm2) {
         //     elm2.style.display = 'block';
@@ -3970,7 +3980,7 @@ function wgrShowFilteredData(dataArray, inputValue) {
                         </div>
                 ${dataArray.map(data => {
             return `<div class="wgr-listing-row" onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
-                                            <div class="wishlist-modal-all">
+                                            <div class="wishlist-modal-all"> 
                                                 <div class="wf-multi-Wish-heading">
                                                         <div class="wf-multi-Wish-content" >
                                                                 <b>Registry:</b><span data-key="${data.wishlist_name}">${data.wishlist_name}</span> 
@@ -3985,7 +3995,7 @@ function wgrShowFilteredData(dataArray, inputValue) {
                                                 </div>
                                             </div>
                                             <div class="wgr-description">
-                                                <b>Description:</b><span>${data.wishlist_description}</span>
+                                                <b>Description: </b><span>${data.wishlist_description}</span>
                                             </div>
                                 </div>
                                 `;
@@ -4081,7 +4091,7 @@ function renderPublicRegistries(publicData, page = 1) {
 
                 <div class="wgr-description"
                     onclick="redirectToSingleWishlist('${data.wishlist_id}', '${data.wishlist_user_id}', '${data.wishlist_name}')">
-                    <b>Description:</b>
+                    <b>Description: </b>
                     <span>${data.wishlist_description || ''}</span>
                 </div>
             </div>
@@ -4239,7 +4249,7 @@ async function pageTypeFunction() {
             const arrayList = await getDataFromSql();
             // : getWishlistByKey(await getDataFromSql(), "favourites");
             // console.log("1111111111111----------")
-            await renderMultiModalContentFxn(arrayList)
+            // await renderMultiModalContentFxn(arrayList)
         } else {
             // commenting for stopping the auto rendering
             // checkPlanForMulti("multi")
@@ -4347,18 +4357,23 @@ async function wfGetMetaObjectData(handle) {
 
 // ----------recreated with promises.all----------
 
-async function renderMultiModalContentFxn(arrayList) {
-
-    console.log("arrayList --- ", arrayList)
+async function renderMultiModalContentFxn(arrayList, filterType = "all") {
     shareWishlistFXN();
     // updateCustomerData();
     if (arrayList.length === 0) {
         // await disableShare(arrayList, ".share-div")
-        let emptyList = `<div class="wishlist-modal-box wf-empty-multiwishlist" data-key="favourites"><h4 class="drawer-cart-empty" > ${customLanguage.noMoreItem} </h4> <a class="a-main" href="${`${wfGetDomain}${generalSetting?.continueShoppingLink}` || `${wfGetDomain}collections/all`}"> <div class="cartButtonStyle"> ${customLanguage.continueShopping || storeFrontDefLang.continueShopping} </div> </a></div>`;
+        let emptyList = `<div class="wishlist-modal-box wf-empty-multiwishlist" data-key="favourites"><h4 class="drawer-cart-empty" > ${customLanguage.noMoreItem} iiiiii</h4> <a class="a-main" href="${`${wfGetDomain}${generalSetting?.continueShoppingLink}` || `${wfGetDomain}collections/all`}"> <div class="cartButtonStyle"> ${customLanguage.continueShopping || storeFrontDefLang.continueShopping} </div> </a></div>`;
 
         document.querySelectorAll(".show-title").forEach((el) => (el.innerHTML = emptyList));
         return
     }
+
+    // document.querySelector(".grid-outer-main")?.style.display = "block";
+    // const elg = document.querySelector(".grid-outer-main");
+    // if (elg) {
+    //     elg.style.display = "flex";
+    // }
+
     // await disableShare(arrayList, ".share-div")
     const modalHeading = document.querySelector(".modal-heading");
     modalHeading.style.color = modalDrawerTextColor;
@@ -4379,13 +4394,15 @@ async function renderMultiModalContentFxn(arrayList) {
         let keyId = item[Object.keys(item)[1]];
         let items = item[key];
 
-        wishlistBody += `<div class="wf-multi-Wish-heading">
+        if (window.location.href.includes("wf-gift-registry?id")) {
+        } else {
+            wishlistBody += `<div class="wf-multi-Wish-heading">
                                                     <div class="wf-multi-Wish-content">
                                                             <span class="wg-arrow-up" onclick="toggleWishlistBox('${key.replace(/'/g, "\\'")}')"></span>
                                                             <div>
-                                                                <div class="wg-leftalign"><b>Registry:</b><span data-key="${key}">${key}</span></div> 
-                                                                <div class="wg-leftalign"><b>Description:</b><span>${item.description}</span></div>
-                                                                <div class="wg-leftalign"><b>Url:</b><span>${item?.urlType?.replace(/-/g, " ")?.replace(/\b\w/g, (c) => c.toUpperCase())}</span></div>
+                                                                <div class="wg-leftalign"><b>Registry: </b><span data-key="${key}">${key}</span></div> 
+                                                                <div class="wg-leftalign"><b>Description: </b><span>${item.description}</span></div>
+                                                                <div class="wg-leftalign"><b>Url: </b><span>${item?.urlType?.replace(/-/g, " ")?.replace(/\b\w/g, (c) => c.toUpperCase())}</span></div>
                                                             </div>
                                                     </div>
 
@@ -4401,6 +4418,7 @@ async function renderMultiModalContentFxn(arrayList) {
                                                         </span>
                                                     </div>
                                             </div>`;
+        }
 
         if (items.length === 0) {
             wishlistBody += `<div class="wishlist-modal-box wf-empty-multiwishlist" data-key="${key}">
@@ -4411,12 +4429,17 @@ async function renderMultiModalContentFxn(arrayList) {
                             </div>`;
             continue;
         }
+
+        const elg = document.querySelector(".grid-outer-main");
+        if (elg) {
+            elg.style.display = "flex";
+        }
+
+
         wishlistBody += `<div class="wishlist-modal-box ${addNewClass}" data-key="${key}">`
 
         let loadingItemsCount = document.querySelectorAll(".modal-button-div");
-
-        // console.log("items ------ ", items);
-
+        let hasVisibleItem = false;
         // Array of fetch promises
         let fetchPromises = items.map(async (data, itemIndex) => {
             let response = null;
@@ -4453,7 +4476,20 @@ async function renderMultiModalContentFxn(arrayList) {
         })
 
         let results = await Promise.all(fetchPromises);
-        results.forEach(async ({ data, foundVariant, hasTag, responseStatus, variantDataResponse, itemIndex }) => {
+
+        // results.forEach(async ({ data, foundVariant, hasTag, responseStatus, variantDataResponse, itemIndex }) => {
+        for (const { data, foundVariant, hasTag, responseStatus, variantDataResponse, itemIndex } of results) {
+
+            if (filterType === "still_need" && data.items_purchased >= data.quantity) {
+                continue;
+            }
+            if (filterType === "fulfilled" && data.quantity > data.items_purchased) {
+                continue;
+            }
+            if (filterType === "sold_out" && foundVariant?.available) {
+                continue;
+            }
+            hasVisibleItem = true;
 
             function wfGetImage() {
                 let imageUrl = isVariantWishlistTrue === true && currentPlan >= 4 ? foundVariant?.featured_image !== null ? foundVariant?.featured_image?.src : variantDataResponse?.featured_image : variantDataResponse?.featured_image
@@ -4474,18 +4510,25 @@ async function renderMultiModalContentFxn(arrayList) {
                     ? changeMoney(foundVariant?.compare_at_price)
                     : null;
                 const salePrice = changeMoney(foundVariant?.price);
-                let currentNewPrice = foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
-                    ? `<div class="wf-sale-price">${actualPrice}</div> 
+
+                let currentNewPrice =
+                    foundVariant?.available === false ?
+                        `<div class="wf-sale-price">${actualPrice}</div> 
+                        <div class="wf-discount-price">${salePrice}</div>
+                        <span class="Polaris-Sale-Text--root Polaris-Text--bodySm">
+                            Sold out</span>`
+                        :
+                        foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
+                            ? `<div class="wf-sale-price">${actualPrice}</div> 
                         <div class="wf-discount-price">${salePrice}</div>
                         <span class="Polaris-Sale-Text--root Polaris-Text--bodySm">
                             ${customLanguage.saleText || storeFrontDefLang.saleText}</span>`
-                    : salePrice;
+                            : salePrice;
+
 
                 const modifiedString = data.title
                     .replace(/'/g, "/wg-sgl")
                     .replace(/"/g, "/wg-dbl");
-
-                console.log("key 0000 ---- ", key)
 
                 const variantNAME = currentPlan >= 4 ? foundVariant?.name ? foundVariant?.name : data.title : data.title;
                 const variantData = variantArray.length > 0 ? variantArray.join(" / ") : "";
@@ -4527,7 +4570,7 @@ async function renderMultiModalContentFxn(arrayList) {
                     }?variant=${data.variant_id}">${(variantNAME && variantNAME.includes("(")) ? variantNAME.replace(/\((.*?)\)/, `</span><br><span class="wg-2">$1</span>`).replace(/^/, '<span class="wg-1">') : `<span>${variantNAME}</span>`}</a></h3>
 
                     ${isVariantWishlistTrue === true ? "" : `<p class="product-selected-variants" style="color: ${modalDrawerTextColor};">${variantData}</p>`}
-                    ${isPrice ? `<div class="product-option-price">${currentNewPrice}</div>` : ""}
+                    ${isPrice ? `<div class="product-option-price">${currentNewPrice}</div>` : ""}  
 
                      ${(isVariantWishlistTrue === true && isMoveToCart) &&
                         // addSelectOptionInGrid(data.handle, itemIndex, foundVariant, variantData)
@@ -4564,6 +4607,7 @@ async function renderMultiModalContentFxn(arrayList) {
                          </div>`
                         : ""}
 
+                        <p class="product-selected-variants">Items Purchased: ${data.items_purchased}</p>
                         ${isQuantity
                         ? `<div class="quantity-div">
                             ${foundVariant?.available
@@ -4582,7 +4626,7 @@ async function renderMultiModalContentFxn(arrayList) {
                                     />
                                     <div class="quant-plus" onClick="updateQuantity(event, ${data.product_id}, ${data.wishlist_id})">+</div>
                                 </div>`
-                            : `<div class="quantity-minus-plus drawerDisableClass">
+                            : `Update Quantity: <div class="quantity-minus-plus drawerDisableClass">
                                     <div class="drawerDisableClass">-</div>
                                     <span class="drawerDisableClass" data-quant="${data.quantity}">${data.quantity}</span>
                                     <div class="drawerDisableClass">+</div>
@@ -4591,8 +4635,7 @@ async function renderMultiModalContentFxn(arrayList) {
                         </div>`
                         : ""
                     }
-                
-                 
+
                     </div>
                 </div>`;
 
@@ -4633,13 +4676,42 @@ async function renderMultiModalContentFxn(arrayList) {
                                     <span>Something is wrong with this product</span>
                                 </div>`
             }
-        })
-        wishlistBody += `</div>`
+        }
+
+
+        // --------------- this is to show the no item left when we choose tabs --------------- 
+        if (!hasVisibleItem) {
+            wishlistBody += `<div class="wf-empty-filter">
+                                <h4>0 Items</h4>
+                            </div>`;
+        }
+
+
+        wishlistBody += `</div>
+        
+        <div class="wgr-add-more-products">
+            <a class="a-main" href="${`${wfGetDomain}${generalSetting?.continueShoppingLink}` || `${wfGetDomain}collections/all`}"> 
+                <div class="cartButtonStyle">Add more products</div> 
+            </a>
+        </div>
+        
+        
+        `
     }
     wishlistBody += "</div><div class='wg-no-match-found'></div>";
-    document.querySelectorAll(".show-title").forEach((el) => (el.innerHTML = wishlistBody));
+
+
+    let ffff = document.querySelector(".show-shared-wishlist");
+    if (ffff) {
+        ffff.innerHTML = wishlistBody;
+    } else {
+        document.querySelectorAll(".show-title").forEach((el) => (el.innerHTML = wishlistBody));
+    }
+
+
     document.querySelectorAll(".modal-button-div").forEach(div => div.innerHTML = ``);
     modalButtonFxn();
+
     if (currentPlan >= 2) {
         fxnAfterItemsLoadedOfWishlist();
     }
@@ -4652,13 +4724,20 @@ async function editWishlist(event, item) {
     let editData = JSON.parse(item);
     let editWishlistName = Object.keys(JSON.parse(item))[0];
 
-    let urlTypeOption = [
+    let urlTypeOption = currentPlan > 1 ? [
         { name: "Public", value: "public" },
         { name: "Private", value: "private" },
         { name: "Password protected", value: "password-protected" },
-    ];
+    ]
+        :
+        [
+            { name: "Public", value: "public" },
+            // { name: "Private", value: "private" },
+            // { name: "Password protected", value: "password-protected" },
+        ];
+
     tagsArray = JSON.parse(editData.data.tags);
-    document.querySelector(".wgr-heading").innerHTML = `Edit registry info <button class="wf-back-btn" onclick="wgrListingPageTypeFunction()()">Back</button>`;
+    document.querySelector(".wgr-heading").innerHTML = `Edit registry info <button class="wf-back-btn" onclick="wgrListingPageTypeFunction()">Back</button>`;
     const autoFillRegistryData = `<div class="multiWishCreate wgr-registry-form">
                                             <input type="text" id="wf-editWishlistName" name="wishlistName" placeholder="Enter registry name" value="${editWishlistName || ""}" />
 
@@ -4945,7 +5024,6 @@ async function wfqChangeSelect(event, index, handle, value, prevValue, gridIndex
 
 function shareSingleWishlist(event, key, userId = "") {
     // key = key.trim().replaceAll(" ", "%20");/
-    console.log("key = ", key)
     event.stopPropagation();
     openShareWishlistModal(key, userId);
 }
@@ -5286,11 +5364,7 @@ async function renderDrawerContentFxn() {
                             isMoveToCart
                                 ? `<div class="movecart-button">
                             ${foundVariant?.available
-                                    ? hasTag
-                                        ? `<div id="viewItem${data.variant_id}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
-                                        View Item
-                                      </div>`
-                                        : `<div id="addItemToCart${data.variant_id}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex1}', ${productOptionString})">
+                                    ? `<div id="addItemToCart${data.variant_id}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex1}', ${productOptionString})">
                                         ${customLanguage.addToCart}
                                       </div>`
                                     : `<div class="cartButtonStyle wg-out-of-stock" style="cursor: not-allowed; opacity: 0.8">
@@ -5398,51 +5472,43 @@ async function drawerButtonDiv() {
 }
 
 async function modalButtonFxn() {
-    const { isMoveToCart } = await showButtons();
-    const totalObjects = await getCount(allWishlistData);
-    const shouldRender = allWishlistData.length > 0;
+    // const { isMoveToCart } = await showButtons();
+    // const totalObjects = await getCount(allWishlistData);
+    // const shouldRender = allWishlistData.length > 0;
 
-    //  ${shouldRender ? `
-    //                 <div class="vcb-width wg-clearwishlist">
-    //                     <div onclick="clearAllWishlist()" class="cartButtonStyle addAllToCartButton">
-    //                         ${customLanguage.clearAllWishlist || storeFrontDefLang.clearAllWishlist}
-    //                     </div>  
+
+    // const buttonContent = `
+    //     <div class="modal-button-div">
+    //         ${isMoveToCart && totalObjects > 0 ? `
+    //             <div class="vcb-width wg-addalltocart">
+    //                 <div onclick="addAllToCart()" class="cartButtonStyle addAllToCartButton">
+    //                     ${customLanguage.addAllToCart}
     //                 </div>
-    //             ` : ""}
+    //             </div>
+    //         ` : ""}
+    //         ${isMoveToCart ?
+    //         `<div class="vcb-width wg-viewcart">
+    //             <a style="text-decoration: none;" href="${wfGetDomain}cart">
+    //                 <div class="cartButtonStyle">${customLanguage.viewCart}</div>
+    //             </a>
+    //         </div>`: ""}
 
+    //         ${(generalSetting.shareWishlistToAdmin === "yes" && currentPlan >= 4) ?
+    //         `<div class="vcb-width wg-share-to-admin">
+    //                 <div onclick="shareWishlistToAdmin()" class="cartButtonStyle addAllToCartButton">
+    //                     ${customLanguage?.shareToAdminButton || storeFrontDefLang?.shareToAdminButton || "Share wishlist to admin"}
+    //                 </div>
+    //             </div>` : ""}
 
-    const buttonContent = `
-        <div class="modal-button-div">
-            ${isMoveToCart && totalObjects > 0 ? `
-                <div class="vcb-width wg-addalltocart">
-                    <div onclick="addAllToCart()" class="cartButtonStyle addAllToCartButton">
-                        ${customLanguage.addAllToCart}
-                    </div>
-                </div>
-            ` : ""}
-            ${isMoveToCart ?
-            `<div class="vcb-width wg-viewcart">
-                <a style="text-decoration: none;" href="${wfGetDomain}cart">
-                    <div class="cartButtonStyle">${customLanguage.viewCart}</div>
-                </a>
-            </div>`: ""}
+    //             ${(permanentDomain === "b2b-botane.myshopify.com") ?
+    //         `<button id="downloadAllProductsButton" class="wg-download-csv"> <span class="download-csv-icon"></span> Download Complete Masterdata</button>` : ""}
 
-            ${(generalSetting.shareWishlistToAdmin === "yes" && currentPlan >= 4) ?
-            `<div class="vcb-width wg-share-to-admin">
-                    <div onclick="shareWishlistToAdmin()" class="cartButtonStyle addAllToCartButton">
-                        ${customLanguage?.shareToAdminButton || storeFrontDefLang?.shareToAdminButton || "Share wishlist to admin"}
-                    </div>
-                </div>` : ""}
+    //     </div>`;
+    // document.querySelectorAll(".modal-button-div").forEach(div => div.innerHTML = buttonContent);
 
-                ${(permanentDomain === "b2b-botane.myshopify.com") ?
-            `<button id="downloadAllProductsButton" class="wg-download-csv"> <span class="download-csv-icon"></span> Download Complete Masterdata</button>` : ""}
-
-        </div>`;
-    document.querySelectorAll(".modal-button-div").forEach(div => div.innerHTML = buttonContent);
-
-    if (!isMoveToCart && generalSetting.shareWishlistToAdmin !== "yes") {
-        document.querySelector(".modal-button-div").style.display = "none";
-    }
+    // if (!isMoveToCart && generalSetting.shareWishlistToAdmin !== "yes") {
+    //     document.querySelector(".modal-button-div").style.display = "none";
+    // }
 }
 
 function wgDownloadCsv() {
@@ -5775,6 +5841,9 @@ async function sharedPageFunction() {
         return;
     }
 
+    let localUser = Number(allWishlistData[0]?.userId);
+    let urlUser = Number(sharedIdProp);
+
     let dcryptedSharedName = "";
     try {
         dcryptedSharedName = atob(sharedName);
@@ -5785,12 +5854,9 @@ async function sharedPageFunction() {
 
     await Conversion(dcryptedSharedName, sharedIdProp, "reload");
     let allData = await getSharedWishlistData(sharedId, selectedID);
-
-    console.log("allData --- ", allData)
-
+    localStorage.setItem("wg-shared-list", JSON.stringify(allData));
     // --------add the heading of page---------
     document.querySelector(".modal-heading").innerHTML = customLanguage?.modalHeadingText || storeFrontDefLang?.modalHeadingText;
-
     // --------- add wishlist description-------
     addWishlistDescription();
     const arrayList = getFirstKeyArrayById(allData, selectedID);
@@ -5799,16 +5865,88 @@ async function sharedPageFunction() {
         document.querySelector(".show-shared-wishlist").innerHTML = "Wrong url or the wrong or mismatched id in the url.";
         return;
     }
-    await renderMultiSharedModalContent(arrayList, sharedIdProp)
+
+    if (localUser === urlUser) {
+        createTabsInSharedRegistry(arrayList, "wgr-own-list");
+        renderMultiModalContentFxn(arrayList);
+    } else {
+        createTabsInSharedRegistry(arrayList, "wgr-other-list");
+        await renderMultiSharedModalContent(arrayList);
+    }
+
 };
 
 function getFirstKeyArrayById(array, id) {
-
     id = Number(id);
     const found = array.find(obj => obj.id === id);
-    console.log("found ---- ", found)
     return found ? [found] : [];
 }
+
+function createTabsInSharedRegistry(arrayList, newClass = "wgr-own-list") {
+    const ownerData = arrayList[0];
+    const registryName = Object.keys(ownerData).find(
+        key => Array.isArray(ownerData[key])
+    );
+    let ownerDataStructurised = `<div class="registry-card">
+                                    <div class="registry-left">
+                                        <div class="registry-details">
+                                        <h1 class="registry-title">${registryName}</h1>
+                                        <div class="registry-meta">
+                                            <span>EVENT TYPE: <strong>${ownerData.data.eventType}</strong></span>
+                                            <span>EVENT DATE: <strong>${ownerData.data.eventDate}</strong></span>
+                                        </div>
+                                        <div class="registry-name">REGISTRANT NAME: <strong>${ownerData.data.firstName} ${ownerData.data.lastName}</strong></div>
+                                        <blockquote class="registry-description">${ownerData.description}</blockquote>
+                                        </div>
+                                    </div>
+                                    <div class="registry-right">
+                                        <div class="registry-stats">
+                                        <div class="stat">
+                                            <span class="number">${ownerData[registryName]?.length || 0}</span>
+                                            <span class="label">Items</span>
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="stat">
+                                        <span class="delete-main-icon wf-share-icon" style="display: flex;" onclick="shareSingleWishlist(event, '${ownerData.id}')">
+                                            <div class="img_test"><span></span></div> Share
+                                        </span>
+                                    </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    
+                                <div class="tabs">
+                                    <div class="tab-buttons ${newClass}">
+                                        <button class="tab-btn active" data-tab="all">All</button>
+                                        <button class="tab-btn" data-tab="still_need">Still need</button>
+                                        <button class="tab-btn" data-tab="fulfilled">Fulfilled</button>
+                                        <button class="tab-btn" data-tab="sold_out">Sold out</button>
+                                    </div>
+                                </div>`
+    let getOwnerDiv = document.querySelector(".wgr-owner-info");
+    if (getOwnerDiv) {
+        getOwnerDiv.innerHTML = ownerDataStructurised
+    }
+}
+
+
+document.addEventListener("click", function (e) {
+    if (!e.target.classList.contains("tab-btn")) return;
+
+    const parent = e.target.closest(".tabs");
+    parent.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+    e.target.classList.add("active");
+
+    let theSharedArrayFromLocal = JSON.parse(localStorage.getItem("wg-shared-list")) || [];
+    let filterType = e.target.dataset.tab;
+
+    if (document.querySelector(".wgr-other-list")) {
+        renderMultiSharedModalContent(theSharedArrayFromLocal, filterType);
+    } else {
+        renderMultiModalContentFxn(theSharedArrayFromLocal, filterType);
+    }
+
+});
 
 
 
@@ -6273,7 +6411,7 @@ function getFirstKeyArrayById(array, id) {
 // }
 
 
-async function renderMultiSharedModalContent(arrayList, sharedId) {
+async function renderMultiSharedModalContent(arrayList, filterType = "all") {
     if (currentPlan > 1) {
         let poweredByText = document.querySelectorAll(".powered-by-text");
         for (let wf = 0; wf < poweredByText.length; wf++) {
@@ -6283,25 +6421,25 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
     renderViewAs();
     const { isPrice, isQuantity, isMoveToCart } = await showButtons();
 
-    document.querySelector(".show-shared-wishlist").innerHTML = `<div class="loader-css" ><span></span></div>`;
+    // document.querySelector(".show-shared-wishlist").innerHTML = `<div class="loader-css" ><span></span></div>`;
 
     document.querySelector(".wishlist-page-main.page-width").style.color = modalDrawerTextColor;
     // document.querySelector(".wishlist-page-main.page-width").style.textAlign = generalSetting.wlTextAlign;
 
-    const headingElement = document.querySelector(".shared-page-heading");
-    if (headingElement) {
-        headingElement.innerHTML = `${customLanguage.sharedPageHeading}`;
-        headingElement.style.textAlign = generalSetting.wlTextAlign;
-        headingElement.style.color = modalDrawerTextColor;
-    }
+    // const headingElement = document.querySelector(".shared-page-heading");
+    // if (headingElement) {
+    //     headingElement.innerHTML = `${customLanguage.sharedPageHeading}`;
+    //     headingElement.style.textAlign = generalSetting.wlTextAlign;
+    //     headingElement.style.color = modalDrawerTextColor;
+    // }
 
-    if (!customerEmail) {
-        if ((generalSetting?.hideLoginText === false || generalSetting?.hideLoginText === undefined || generalSetting?.hideLoginText === "")) {
-            document.querySelector(".shared-page-auth").innerHTML = `${customLanguage?.loginTextForWishlist || storeFrontDefLang.loginTextForWishlist} <a href ="/account">${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}</a> ${customLanguage?.orText || storeFrontDefLang?.loginTextAnchor} <a href="/account/register"> ${customLanguage?.createAccountAnchor || customLanguage?.createAccountAnchor}</a> ${customLanguage?.createAccountEndingText || ""}`;
-        }
-        document.querySelector(".shared-page-auth").style.textAlign = generalSetting.wlTextAlign;
-        document.querySelector(".shared-page-auth").style.color = modalDrawerTextColor;
-    }
+    // if (!customerEmail) {
+    //     if ((generalSetting?.hideLoginText === false || generalSetting?.hideLoginText === undefined || generalSetting?.hideLoginText === "")) {
+    //         document.querySelector(".shared-page-auth").innerHTML = `${customLanguage?.loginTextForWishlist || storeFrontDefLang.loginTextForWishlist} <a href ="/account">${customLanguage?.loginTextAnchor || storeFrontDefLang?.loginTextAnchor}</a> ${customLanguage?.orText || storeFrontDefLang?.loginTextAnchor} <a href="/account/register"> ${customLanguage?.createAccountAnchor || customLanguage?.createAccountAnchor}</a> ${customLanguage?.createAccountEndingText || ""}`;
+    //     }
+    //     document.querySelector(".shared-page-auth").style.textAlign = generalSetting.wlTextAlign;
+    //     document.querySelector(".shared-page-auth").style.color = modalDrawerTextColor;
+    // }
 
     document.querySelectorAll(`.gridText`).forEach((el) => el.innerHTML = `${customLanguage.textForGridIcon}`);
 
@@ -6312,8 +6450,6 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
     // buttonStyleFxn();
     const wishlistData = await getDataFromSql()
     const addNewClass = `wishlist-modal-${gridCount}`;
-
-    console.log("wishlistData --- ", wishlistData)
 
     // if (arrayList.length === 0) {
     //     document.querySelector(".show-shared-wishlist").innerHTML = "There is item or the wrong url";
@@ -6329,40 +6465,66 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
         let item = arrayList[itemIndex];
         let key = Object.keys(item)[0];
         let items = item[key];
-        console.log("item.id = ", item.id)
 
-        wishlistBody += `<div class="wf-multi-Wish-heading">
-                          <div class="wf-multi-Wish-content">
-                         ${hideArrow === "" ? `<span class="wg-arrow-up" onclick="toggleWishlistBox('${key.replace(/'/g, "\\'")}')"></span>` : ``}
-                            <b>Registry: </b><span data-key="${key}">${key}</span> 
-                            <b>Description: </b><span>${item?.description}</span>
-                          </div>
+        // wishlistBody += `<div class="wf-multi-Wish-heading">
+        //                   <div class="wf-multi-Wish-content">
+        //                  ${hideArrow === "" ? `<span class="wg-arrow-up" onclick="toggleWishlistBox('${key.replace(/'/g, "\\'")}')"></span>` : ``}
+        //                     <b>Registry: </b><span data-key="${key}">${key}</span> 
+        //                     <b>Description: </b><span>${item?.description}</span>
+        //                   </div>
 
-                        <div class="single-wishist">
-                            <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${item.id}', '${item.userId}')">
-                                <div class="img_test"><span></span></div>
-                            </span>
-                        </div>
+        //                 <div class="single-wishist">
+        //                     <span class="delete-main-icon" onclick="shareSingleWishlist(event, '${item.id}', '${item.userId}')">
+        //                         <div class="img_test"><span></span></div>
+        //                     </span>
+        //                 </div>
 
-                      </div>`;
+        //               </div>`;
+
 
         if (items.length === 0) {
             wishlistBody += `<div class="wishlist-modal-box wf-empty-multiwishlist" data-key="${key}">
-                              <h4 class="drawer-cart-empty">${customLanguage.noMoreItem}</h4>
-                              <a class="a-main" href="${`${wfGetDomain}${generalSetting?.continueShoppingLink}` || `${wfGetDomain}collections/all`}">
-                                  <div class="cartButtonStyle">${customLanguage?.addProductButtonText || storeFrontDefLang?.addProductButtonText}</div>
-                              </a>
+                              <h4 class="drawer-cart-empty">There is no item in this registry</h4>
                           </div>`;
             continue;
         }
+
+        // document.querySelector(".grid-outer-main")?.style.display = "block";
+        const elg = document.querySelector(".grid-outer-main");
+        if (elg) {
+            elg.style.display = "flex";
+        }
+
 
         wishlistBody += `<div class="wishlist-modal-box ${addNewClass}" data-key="${key}">`
 
         // console.log("items --- ", items)
 
+        let hasVisibleItem = false;
+
         let promises = items.map(async (data, itemIndex) => {
 
-            console.log("data --- ", data)
+            // if (filterType === "all") {
+            // } else if (filterType === "still_need") {
+            //     if (data.items_purchased >= data.quantity) {
+            //         return null;
+            //     }
+            // } else if (filterType === "fulfilled") {
+            //     if (data.quantity > data.items_purchased) {
+            //         return null;
+            //     }
+            // }
+
+            // if (filterType === "still_need" && data.items_purchased >= data.quantity) {
+            //     return null;
+            // }
+            // if (filterType === "fulfilled" && data.quantity > data.items_purchased) {
+            //     return null;
+            // }
+            // hasVisibleItem = true;
+
+
+
 
             let response;
             let jsonData;
@@ -6386,6 +6548,24 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                     hasTag = jsonData?.tags?.includes("wg_pdp") || false;
                 }
             }
+
+
+
+
+            if (filterType === "still_need" && data.items_purchased >= data.quantity) {
+                return null;
+            }
+            if (filterType === "fulfilled" && data.quantity > data.items_purchased) {
+                return null;
+            }
+            if (filterType === "sold_out" && foundVariant?.available) {
+                return null;
+            }
+
+            hasVisibleItem = true;
+
+
+
 
             if (response.ok) {
                 const variantArray = [
@@ -6423,6 +6603,9 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                     ?.replace(/"/g, "/wg-dbl");
 
                 const variantNAME = permanentDomain === 'l-a-girl-cosmetics.myshopify.com' ? data.title : currentPlan >= 4 ? foundVariant?.name : data.title;
+
+                const removeVariant = variantNAME.includes(" - ") ? variantNAME.split(" - ")[0] : variantNAME;
+
                 const variantData = variantArray.length > 0 ? variantArray.join(" / ") : "";
                 const priceToDb = foundVariant?.compare_at_price && foundVariant?.compare_at_price > foundVariant?.price
                     ? foundVariant?.price
@@ -6439,7 +6622,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                 <div class="product-content-sec">
                   <h3 class="title11">
                     
-                      ${(variantNAME && variantNAME.includes("(")) ? variantNAME.replace(/\((.*?)\)/, `</span><br><span class="wg-2">$1</span>`).replace(/^/, '<span class="wg-1">') : `<span>${variantNAME}</span>`}
+                      ${(removeVariant && removeVariant.includes("(")) ? removeVariant.replace(/\((.*?)\)/, `</span><br><span class="wg-2">$1</span>`).replace(/^/, '<span class="wg-1">') : `<span>${removeVariant}</span>`}
                     
                   </h3>
                 <p class="product-selected-variants" style="color: ${modalDrawerTextColor};">${variantData}</p>
@@ -6455,19 +6638,10 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                         Has: <span class="wg-item-has">${data.items_purchased}</span>
                     </div>
 
-
-
-
-
-
-
-
-
-
 <div class="quantity-div">
                             ${foundVariant?.available
                         ? `
-                                Update Quantity: <div class="quantity-minus-plus">
+                                Quantity: <div class="quantity-minus-plus">
                                     <div class="quant-minus" onClick="updateQuantity2(event)">-</div>
                                     <input 
                                         type="text" 
@@ -6499,11 +6673,7 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
                         isMoveToCart
                             ? `<div class="movecart-button">
                             ${foundVariant?.available
-                                ? hasTag
-                                    ? `<div id="viewItem${itemIndex}" class="cartButtonStyle" onClick="viewItem('${data.handle}')">
-                                        View Item
-                                      </div>`
-                                    : `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex}', ${data.id} )">
+                                ? `<div id="addItemToCart${itemIndex}" class="cartButtonStyle" onClick="addToCartWf(event, ${data.variant_id}, ${data.wishlist_id}, ${data.product_id}, '${modifiedString}', ${priceToDb}, '${data.image}', '${data.handle}', '${itemIndex}', ${data.id} )">
                                         ${customLanguage.addToCart}
                                       </div>`
                                 : `<div class="cartButtonStyle wg-out-of-stock" style="cursor: not-allowed; opacity: 0.8">
@@ -6545,6 +6715,14 @@ async function renderMultiSharedModalContent(arrayList, sharedId) {
             }
         })
         await Promise.all(promises);
+
+        // --------------- this is to show the no item left when we choose tabs --------------- 
+        if (!hasVisibleItem) {
+            wishlistBody += `<div class="wf-empty-filter">
+                                <h4>0 Items</h4>
+                            </div>`;
+        }
+
         wishlistBody += `</div>`
     }
 
@@ -6993,7 +7171,6 @@ async function refreshCart() {
                     // Remove parentheses but keep the number for homeCount
                     let newString = newCount.textContent.replace(/\((\d+)\)/g, "$1");
                     homeCount.textContent = newString;
-                    console.log(newString);
                 }
             }
             if (window.FoxTheme?.a11y?.trapFocus) {
@@ -7533,15 +7710,15 @@ async function addToCartWf(
 
 
     // --------to track meta adds on the add-to-cart button-------- 
-    if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
-        fbq('trackCustom', 'WG-addToCart', {
-            content_ids: [productId],
-            content_name: title,
-            content_type: 'product',
-            // value: price,
-            // currency: wfCurData
-        });
-    }
+    // if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
+    //     fbq('trackCustom', 'WG-addToCart', {
+    //         content_ids: [productId],
+    //         content_name: title,
+    //         content_type: 'product',
+    //         // value: price,
+    //         // currency: wfCurData
+    //     });
+    // }
 
     const currentHTML = event.target.innerHTML;
     // console.log("currentHTML ", currentHTML);
@@ -8139,48 +8316,48 @@ async function cartFunction(data, alertValue = true) {
 async function wishlistIcon() {
     // console.log("im original fxn ---but commented--- ")
     const iconPosition = await checkIconPostion();
-    if (currentPlan >= 2) {
-        const getAllWishlistDiv = document.querySelectorAll(".wf-wishlist");
+    // if (currentPlan >= 2) {
+    const getAllWishlistDiv = document.querySelectorAll(".wf-wishlist");
 
-        const prependPromisesWi = Array.from(getAllWishlistDiv).map(
-            async (wishlistDiv) => {
-                const selectedId = wishlistDiv.getAttribute("product-id");
-                const selectedProductHandle = wishlistDiv.getAttribute("product-handle");
-                const selectedVariantId = wishlistDiv.getAttribute("variant-id");
+    const prependPromisesWi = Array.from(getAllWishlistDiv).map(
+        async (wishlistDiv) => {
+            const selectedId = wishlistDiv.getAttribute("product-id");
+            const selectedProductHandle = wishlistDiv.getAttribute("product-handle");
+            const selectedVariantId = wishlistDiv.getAttribute("variant-id");
 
-                let addWishlistIcon = document.createElement("div");
-                addWishlistIcon.style.zIndex = "10";
-                addWishlistIcon.style.position = "relative";
+            let addWishlistIcon = document.createElement("div");
+            addWishlistIcon.style.zIndex = "10";
+            addWishlistIcon.style.position = "relative";
 
-                const { isComboIcon } = checkCollectionIcon();
-                const countData = await isCountOrNot(selectedId, isCollectionCount);
+            const { isComboIcon } = checkCollectionIcon();
+            const countData = await isCountOrNot(selectedId, isCollectionCount);
 
-                const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
+            const newCountData = onlyTextButton ? `<div class="wf-product-count">${countData}</div>` : countData;
 
-                const matchFound = await checkFound(allWishlistData, selectedId, selectedVariantId)
+            const matchFound = await checkFound(allWishlistData, selectedId, selectedVariantId)
 
-                if (allWishlistData.length > 0 && matchFound) {
-                    addWishlistIcon.innerHTML = `<div class="collection_icon_new_selected "><div onClick="customCodeButtonClick(event, ${selectedId},'${selectedProductHandle}', '${selectedVariantId}')" style="filter: ${colIconSelectedColor}; ${collectionIconSize()}"  class="icon-collection ${isComboIcon ? iconPosition.iconStyle2 : iconPosition.iconStyle
-                        }"></div></div>${isCollectionCount ? newCountData : ""}`;
-                } else {
-                    addWishlistIcon.innerHTML = `<div class="collection_icon_new "><div style="filter: ${colIconDefaultColor}; ${collectionIconSize()}"  onClick="customCodeButtonClick(event, ${selectedId},'${selectedProductHandle}', '${selectedVariantId}')" class="icon-collection ${iconPosition.iconStyle}"></div></div>${isCollectionCount ? newCountData : ""}`;
-                }
-                wishlistDiv.innerHTML = addWishlistIcon.innerHTML;
-
-                isCollectionCount && renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount);
+            if (allWishlistData.length > 0 && matchFound) {
+                addWishlistIcon.innerHTML = `<div class="collection_icon_new_selected "><div onClick="customCodeButtonClick(event, ${selectedId},'${selectedProductHandle}', '${selectedVariantId}')" style="filter: ${colIconSelectedColor}; ${collectionIconSize()}"  class="icon-collection ${isComboIcon ? iconPosition.iconStyle2 : iconPosition.iconStyle
+                    }"></div></div>${isCollectionCount ? newCountData : ""}`;
+            } else {
+                addWishlistIcon.innerHTML = `<div class="collection_icon_new "><div style="filter: ${colIconDefaultColor}; ${collectionIconSize()}"  onClick="customCodeButtonClick(event, ${selectedId},'${selectedProductHandle}', '${selectedVariantId}')" class="icon-collection ${iconPosition.iconStyle}"></div></div>${isCollectionCount ? newCountData : ""}`;
             }
-        );
+            wishlistDiv.innerHTML = addWishlistIcon.innerHTML;
 
-        try {
-            await Promise.all(prependPromisesWi);
-            const allShow = document.querySelectorAll(".wf-wishlist");
-            allShow.forEach((wishlistDiv) => {
-                wishlistDiv.style.display = "block";
-            });
-        } catch (error) {
-            console.log("Error occurred:", error);
+            isCollectionCount && renderCollectionTextColor(matchFound ? "added" : "removed", selectedId, isCollectionCount);
         }
+    );
+
+    try {
+        await Promise.all(prependPromisesWi);
+        const allShow = document.querySelectorAll(".wf-wishlist");
+        allShow.forEach((wishlistDiv) => {
+            wishlistDiv.style.display = "block";
+        });
+    } catch (error) {
+        console.log("Error occurred:", error);
     }
+    // }
 }
 
 async function wishlistIcon1() {
@@ -8339,97 +8516,97 @@ async function customIconAddedRemoveToWishlist(selectedId, matchinOrNot, selecte
 
 /**SHORT CODE FOR COLLECTION ---- BUTTON **/
 async function wishlistButtonForCollection() {
-    if (currentPlan >= 2) {
-        const getAllButtonCollection = document.querySelectorAll(".wf-wishlist-button");
-        const prependPromises = [];
-        const maxConcurrentRequests = 10; // Limit concurrent requests
-        const addToWishlistCache = new Map(); // Cache for addToWishlist API results
-        const addedToWishlistCache = new Map(); // Cache for alreadyAddedToWishlist API results
-        let activeRequests = 0;
+    // if (currentPlan >= 2) {
+    const getAllButtonCollection = document.querySelectorAll(".wf-wishlist-button");
+    const prependPromises = [];
+    const maxConcurrentRequests = 10; // Limit concurrent requests
+    const addToWishlistCache = new Map(); // Cache for addToWishlist API results
+    const addedToWishlistCache = new Map(); // Cache for alreadyAddedToWishlist API results
+    let activeRequests = 0;
 
-        // Throttling function to manage API requests
-        async function throttleApiCall(apiFunction, cache, ...args) {
-            const [productId] = args;
-            // Return cached result if available
-            if (cache.has(productId)) {
-                return cache.get(productId);
-            }
-            // Throttle if active requests hit the limit
-            while (activeRequests >= maxConcurrentRequests) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            activeRequests++;
-            try {
-                const result = await apiFunction(...args);
-                cache.set(productId, result); // Cache result by product ID
-                return result;
-            } finally {
-                activeRequests--;
-            }
+    // Throttling function to manage API requests
+    async function throttleApiCall(apiFunction, cache, ...args) {
+        const [productId] = args;
+        // Return cached result if available
+        if (cache.has(productId)) {
+            return cache.get(productId);
         }
-
-        for (const wishlistButtonDiv of getAllButtonCollection) {
-            const selectedId = wishlistButtonDiv.getAttribute("product-id");
-            const selectedProductHandle = wishlistButtonDiv.getAttribute("product-handle");
-            const selectedVariantId = wishlistButtonDiv.getAttribute("variant-id");
-            wishlistButtonDiv.style.width = renderWidth(isCollectionCount);
-            let addWishlistButton = document.createElement("div");
-            addWishlistButton.style.zIndex = "10";
-            addWishlistButton.style.position = "relative";
-            wishlistButtonDiv.style.display = "none";
-            // Fetch data with throttling and caching
-            const addToWishlistData = await throttleApiCall(renderButtonAddToWishlist, addToWishlistCache, selectedId, isCollectionCount, "load");
-            const alreadyAddedToWishlistData = await throttleApiCall(renderButtonAddedToWishlist, addedToWishlistCache, selectedId, isCollectionCount, "load");
-            const matchFound = await checkFound(allWishlistData, selectedId, selectedVariantId);
-            // Conditionally set inner HTML based on matchFound
-            addWishlistButton.innerHTML = matchFound
-                ? `<div class="button-collection">${alreadyAddedToWishlistData}</div>`
-                : `<div class="button-collection">${addToWishlistData}</div>`;
-
-            wishlistButtonDiv.innerHTML = addWishlistButton.innerHTML;
-            // console.log("CCCC -- ", isCollectionCount)
-            renderCustomButtonBorder(matchFound ? "added" : "removed", selectedId, isCollectionCount);
-            wishlistButtonDiv.onclick = () => {
-                buttonColectionClick(selectedId, selectedProductHandle, selectedVariantId);
-            };
-            prependPromises.push(Promise.resolve());
+        // Throttle if active requests hit the limit
+        while (activeRequests >= maxConcurrentRequests) {
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
-        await Promise.all(prependPromises);
-        document.querySelectorAll(".wf-wishlist-button").forEach((wishlistDiv) => {
-            wishlistDiv.style.display = "flex";
-        });
-        collectionIconSize();
+        activeRequests++;
+        try {
+            const result = await apiFunction(...args);
+            cache.set(productId, result); // Cache result by product ID
+            return result;
+        } finally {
+            activeRequests--;
+        }
     }
+
+    for (const wishlistButtonDiv of getAllButtonCollection) {
+        const selectedId = wishlistButtonDiv.getAttribute("product-id");
+        const selectedProductHandle = wishlistButtonDiv.getAttribute("product-handle");
+        const selectedVariantId = wishlistButtonDiv.getAttribute("variant-id");
+        wishlistButtonDiv.style.width = renderWidth(isCollectionCount);
+        let addWishlistButton = document.createElement("div");
+        addWishlistButton.style.zIndex = "10";
+        addWishlistButton.style.position = "relative";
+        wishlistButtonDiv.style.display = "none";
+        // Fetch data with throttling and caching
+        const addToWishlistData = await throttleApiCall(renderButtonAddToWishlist, addToWishlistCache, selectedId, isCollectionCount, "load");
+        const alreadyAddedToWishlistData = await throttleApiCall(renderButtonAddedToWishlist, addedToWishlistCache, selectedId, isCollectionCount, "load");
+        const matchFound = await checkFound(allWishlistData, selectedId, selectedVariantId);
+        // Conditionally set inner HTML based on matchFound
+        addWishlistButton.innerHTML = matchFound
+            ? `<div class="button-collection">${alreadyAddedToWishlistData}</div>`
+            : `<div class="button-collection">${addToWishlistData}</div>`;
+
+        wishlistButtonDiv.innerHTML = addWishlistButton.innerHTML;
+        // console.log("CCCC -- ", isCollectionCount)
+        renderCustomButtonBorder(matchFound ? "added" : "removed", selectedId, isCollectionCount);
+        wishlistButtonDiv.onclick = () => {
+            buttonColectionClick(selectedId, selectedProductHandle, selectedVariantId);
+        };
+        prependPromises.push(Promise.resolve());
+    }
+    await Promise.all(prependPromises);
+    document.querySelectorAll(".wf-wishlist-button").forEach((wishlistDiv) => {
+        wishlistDiv.style.display = "flex";
+    });
+    collectionIconSize();
+    // }
 }
 
 async function wishlistButtonForCollection1() {
-    if (currentPlan >= 2) {
-        const getAllButtonCollection = document.querySelectorAll(".wf-wishlist-button");
-        for (const wishlistButtonDiv of getAllButtonCollection) {
-            const selectedId = wishlistButtonDiv.getAttribute("product-id");
-            // const selectedProductHandle = wishlistButtonDiv.getAttribute("product-handle");
-            const selectedVariantId = wishlistButtonDiv.getAttribute("variant-id");
-            wishlistButtonDiv.style.width = renderWidth(false);
+    // if (currentPlan >= 2) {
+    const getAllButtonCollection = document.querySelectorAll(".wf-wishlist-button");
+    for (const wishlistButtonDiv of getAllButtonCollection) {
+        const selectedId = wishlistButtonDiv.getAttribute("product-id");
+        // const selectedProductHandle = wishlistButtonDiv.getAttribute("product-handle");
+        const selectedVariantId = wishlistButtonDiv.getAttribute("variant-id");
+        wishlistButtonDiv.style.width = renderWidth(false);
 
-            let addWishlistButton = document.createElement("div");
-            addWishlistButton.style.zIndex = "10";
-            addWishlistButton.style.position = "relative";
-            wishlistButtonDiv.style.display = "none";
-            // Fetch data with throttling and caching
-            const addToWishlistData = await renderButtonAddToWishlist(selectedId, false, "load");
-            const alreadyAddedToWishlistData = await renderButtonAddedToWishlist(selectedId, false, "load");
-            const matchFound = await checkFound(allWishlistData, selectedId, selectedVariantId);
-            // Conditionally set inner HTML based on matchFound
-            addWishlistButton.innerHTML = matchFound
-                ? `<div class="button-collection">${alreadyAddedToWishlistData}</div>`
-                : `<div class="button-collection">${addToWishlistData}</div>`;
+        let addWishlistButton = document.createElement("div");
+        addWishlistButton.style.zIndex = "10";
+        addWishlistButton.style.position = "relative";
+        wishlistButtonDiv.style.display = "none";
+        // Fetch data with throttling and caching
+        const addToWishlistData = await renderButtonAddToWishlist(selectedId, false, "load");
+        const alreadyAddedToWishlistData = await renderButtonAddedToWishlist(selectedId, false, "load");
+        const matchFound = await checkFound(allWishlistData, selectedId, selectedVariantId);
+        // Conditionally set inner HTML based on matchFound
+        addWishlistButton.innerHTML = matchFound
+            ? `<div class="button-collection">${alreadyAddedToWishlistData}</div>`
+            : `<div class="button-collection">${addToWishlistData}</div>`;
 
-            wishlistButtonDiv.innerHTML = addWishlistButton.innerHTML;
-        }
-        document.querySelectorAll(".wf-wishlist-button").forEach((wishlistDiv) => {
-            wishlistDiv.style.display = "flex";
-        });
+        wishlistButtonDiv.innerHTML = addWishlistButton.innerHTML;
     }
+    document.querySelectorAll(".wf-wishlist-button").forEach((wishlistDiv) => {
+        wishlistDiv.style.display = "flex";
+    });
+    // }
 }
 
 
@@ -9056,6 +9233,7 @@ const wgGridCss = `
     background-color: ${generalSetting?.modalLayerBgColor};
     border-radius: ${generalSetting.gridBorderRadius}px;
     padding: 20px;
+    margin: 10px 0px;
 }
 
 .wfq-select-box select,
@@ -9143,6 +9321,7 @@ ${(generalSetting?.clearBtnStyleActive === "yes") ?
         .searchData-main2 .cartButtonStyle,
         .modalContainer .cartButtonStyle,
         #wg-multiWishlist_div .cartButtonStyle,
+        .wgr-registry-form .cartButtonStyle,
         .a-main .cartButtonStyle {
             background-color: ${customButton.cartButtonStyle.hover.bgColor};
             color: ${customButton.cartButtonStyle.hover.textColor};
@@ -9153,6 +9332,7 @@ ${(generalSetting?.clearBtnStyleActive === "yes") ?
         .searchData-main2 .cartButtonStyle:hover,
         .modalContainer .cartButtonStyle:hover,
         #wg-multiWishlist_div .cartButtonStyle:hover,
+        .wgr-registry-form .cartButtonStyle:hover,
         .a-main .cartButtonStyle:hover {
             background-color: ${customButton.cartButtonStyle.bgColor};
             color: ${customButton.cartButtonStyle.textColor};
@@ -9752,6 +9932,21 @@ function buttonStyleFxn() {
         };
         }
 
+
+        #wg-modal-inner-content .wgr-reg-listing {
+            background-color: ${generalSetting?.modalLayerBgColor};
+            border-radius: ${generalSetting.gridBorderRadius}px;
+            padding: 20px; 
+            margin-bottom: 10px;      
+        }
+
+        .wgr-registry-form {
+            background-color: ${generalSetting?.modalLayerBgColor};
+            border-radius: ${generalSetting.gridBorderRadius}px;
+            padding: 20px; 
+            margin-bottom: 10px; 
+        }
+
         .wishlist-page-main .modal-page-auth, 
         .wishlist-page-main .shared-page-auth,
         .wishlist-page-main .show-title .product-selected-variants, 
@@ -10311,17 +10506,17 @@ async function SqlFunction(product) {
         // console.log("create user ---- ", result)
 
         // // --------to track meta adds on the add-to-cart button-------- 
-        if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
-            if (result?.isAdded === "yes") {
-                fbq('trackCustom', 'WG-addToWishlist', {
-                    content_ids: [product.productId],
-                    content_name: product.title,
-                    content_type: 'product',
-                    // value: product.price,
-                    // currency: wfCurData
-                });
-            }
-        }
+        // if (advanceSetting?.metaPixelApiKey?.trim() && currentPlan >= 3) {
+        //     if (result?.isAdded === "yes") {
+        //         fbq('trackCustom', 'WG-addToWishlist', {
+        //             content_ids: [product.productId],
+        //             content_name: product.title,
+        //             content_type: 'product',
+        //             // value: product.price,
+        //             // currency: wfCurData
+        //         });
+        //     }
+        // }
 
         const prevToken = localStorage.getItem("wg-token");
         const newToken = result?.token;
@@ -11129,8 +11324,6 @@ async function createShareWishlistLink(singleWishlist = "", userId = "") {
         });
         const result = await response.json();
         const getID = userId !== "" ? userId : result.data?.[0]?.id;
-        console.log("getId = ", getID)
-        console.log("singleWishlist = ", singleWishlist)
 
         if (!getID) throw new Error("User ID not found");
         const encryptedEmail = btoa(getID);
@@ -12315,6 +12508,8 @@ async function executeMe2(wishName, wishDescrp, wishUrlType, wishUrlPassword = "
     if (result.msg === "wishlist created successfully") {
         wgrCreateRegistryForm();
         window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
+    } else if (result.msg === "registry limit crossed") {
+        alertContent("Limit crossed for creating the registry");
     }
 
 }
@@ -12545,10 +12740,6 @@ function handleUrlTypeChange() {
 function editHandleUrlTypeChange(preValue = "") {
     const selectVal = document.getElementById("wf-wishlistUrlType").value;
     const passwordInput = document.getElementById("wishlistUrlPassword");
-
-    console.log("selectVal ---- ", selectVal)
-    console.log("passwordInput ---- ", passwordInput)
-    console.log("preValue ---- ", preValue)
 
     if (selectVal === "password-protected") {
         passwordInput.style.display = "block";
@@ -12866,8 +13057,6 @@ async function yesDelete(key) {
     if (result.msg === "wishlist deleted successfuly") {
 
         await getDataFromSql();
-
-        console.log("HTis is")
         getMultiWishlistDiv.style.display = "none";
 
         wgrListingPageTypeFunction();
@@ -13217,7 +13406,7 @@ async function clearDefaultWishlist(idArray, proIdArray) {
                 const proId = injectCoderr.getAttribute("data-product-id")
                 const isProId = proId && /^\d+$/.test(proId)
                 let matchFound = false;
-                if (isProId && currentPlan >= 2) {
+                if (isProId) {
                     matchFound = await checkFound(allWishlistData, proId)
                     await checkCounterData(proId, !matchFound && "remove");
                     proId && injectButtonAddedRemoveWishlist(proId, matchFound)
@@ -13227,7 +13416,7 @@ async function clearDefaultWishlist(idArray, proIdArray) {
                 }
                 proIdArray.forEach(async (id) => {
                     const matchFound2 = await checkFound(allWishlistData, id);
-                    if (currentPlan >= 2 && !matchFound2) {
+                    if (!matchFound2) {
                         await checkCollectionCounterData(id, "remove");
                         collectionIcon(id, matchFound2)
                         customIconAddedRemoveToWishlist(id, matchFound2);
@@ -13582,11 +13771,9 @@ function wgGetProductOptions() {
 
 
 (function addHiddenProperty() {
-    console.log("IM running the addHiddenProperty function")
 
     const params = new URLSearchParams(window.location.search);
     if (params.get("by") === "wgr") {
-        console.log("URL contains by=wgr");
 
         let hiddenInput = document.createElement("input");
         hiddenInput.type = "hidden";

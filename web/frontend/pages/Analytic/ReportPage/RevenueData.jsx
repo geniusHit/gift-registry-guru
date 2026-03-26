@@ -7,7 +7,7 @@ import {
     IndexFiltersMode, DatePicker
 } from '@shopify/polaris';
 import Swal from "sweetalert2";
-import { ViewMajor } from '@shopify/polaris-icons';
+import { ViewIcon } from '@shopify/polaris-icons';
 import useAppMetafield from '../../../hooks/useAppMetafield';
 import useApi from '../../../hooks/useApi';
 import useUtilityFunction from '../../../hooks/useUtilityFunction';
@@ -223,7 +223,7 @@ const RevenueData = ({ myLanguage, requestBody, selectedValue, selectedOption, o
                 <IndexTable.Cell>{extractedDate(created_at)}</IndexTable.Cell>
 
                 {/* <IndexTable.Cell><img src={image} alt='image' height="40px" width="40px" /></IndexTable.Cell> */}
-                <IndexTable.Cell><Button onClick={() => viewHandler(wishlist_user_id)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => viewHandler(wishlist_user_id)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
 
             </IndexTable.Row>
         ],

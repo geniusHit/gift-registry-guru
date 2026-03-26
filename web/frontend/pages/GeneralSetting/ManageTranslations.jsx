@@ -1,5 +1,5 @@
 import React from 'react'
-import { AlphaCard, Select, Text, TextField } from '@shopify/polaris';
+import { Card, Select, Text, TextField } from '@shopify/polaris';
 import SingleFieldController from '../../hooks/useSingleFieldController';
 
 const LanguageSwitcher = ({ data }) => {
@@ -15,7 +15,7 @@ const LanguageSwitcher = ({ data }) => {
         <>
             <div className='wf-style-wishbtn'>
                 <div style={{ position: "relative" }} id="language-section">
-                    <AlphaCard>
+                    <Card>
                         {
                             language_id === null &&
                             <>
@@ -64,12 +64,12 @@ const LanguageSwitcher = ({ data }) => {
                                     setSaveBar(true);
                             }} />}
                         </SingleFieldController>
-                    </AlphaCard>
+                    </Card>
                 </div>
             </div>
 
             <div className='wf-style-wishbtn'>
-                <AlphaCard>
+                <Card>
                     <Text variant="headingMd" as="h2">{myLanguage.wishlistModalMain}</Text>
 
                     <SingleFieldController name="modalHeadingText" control={control} isRequired className='custom-margin' >
@@ -334,11 +334,11 @@ const LanguageSwitcher = ({ data }) => {
                         }} />}
                     </SingleFieldController>
 
-                </AlphaCard>
+                </Card>
             </div>
 
             <div className='wf-style-wishbtn'>
-                <AlphaCard>
+                <Card>
                     <Text variant="headingMd" as="h2">{myLanguage.sharableLinkMain}</Text>
 
                     <SingleFieldController name="sharableLinkModalHeading" control={control} isRequired className='custom-margin'>
@@ -354,12 +354,12 @@ const LanguageSwitcher = ({ data }) => {
                                 setSaveBar(true);
                         }} />}
                     </SingleFieldController>
-                </AlphaCard>
+                </Card>
 
             </div>
 
             <div className='wf-style-wishbtn'>
-                <AlphaCard>
+                <Card>
                     <Text variant="headingMd" as="h2">{myLanguage.sharedWishlistPageMain}</Text>
 
                     <SingleFieldController name="sharedPageHeading" control={control} isRequired className='custom-margin'>
@@ -403,12 +403,12 @@ const LanguageSwitcher = ({ data }) => {
                                 setSaveBar(true);
                         }} />}
                     </SingleFieldController>
-                </AlphaCard>
+                </Card>
             </div>
 
             <div className='wf-style-wishbtn'>
                 <div className={`${currentPlan >= 4 ? "" : "disableEverything under-premium"} `} >
-                    <AlphaCard>
+                    <Card>
                         <Text variant="headingMd" as="h2">{myLanguage.shareWishlistViaEmail}</Text>
 
                         <SingleFieldController name="shareWishlistByEmailButton" control={control} isRequired className='custom-margin'>
@@ -482,7 +482,7 @@ const LanguageSwitcher = ({ data }) => {
                                     setSaveBar(true);
                             }} />}
                         </SingleFieldController>
-                    </AlphaCard>
+                    </Card>
                 </div>
             </div>
 

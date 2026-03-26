@@ -1,6 +1,6 @@
-import { Button, Frame, Modal, VerticalStack, Select, TextField, ButtonGroup, Page, Card, AlphaCard, Grid, LegacyCard, Text } from '@shopify/polaris';
+import { Button, Select, TextField, Page, Card, Text } from '@shopify/polaris';
 import React, { useEffect, useState } from "react";
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import useApi from '../hooks/useApi';
 import useUtilityFunction from '../hooks/useUtilityFunction';
 import useSwal from "../hooks/useSwal"
@@ -107,42 +107,42 @@ const RequestFormModal = ({ storeAdminEmail, storeDomain }) => {
                     title={myLanguage.contactPageHeading}
                     subtitle={myLanguage.contactPageText}>
                     <div className='wf-style-wishbtn'>
-                        <AlphaCard >
+                        <Card >
                             <form onSubmit={handleSubmit(finalhandleSubmit)} >
                                 {/* {/ <div className='alpha-main-div'> /} */}
                                 <div className='developer-form-box'>
                                     <div className='developer-faq-column'>
-                                        <AlphaCard>
+                                        <Card>
                                             <Text variant='headingMd' as='h2' >{myLanguage.cpFAQ} </Text>
                                             <a href="https://wishlist-guru.webframez.com/faq/" target="_blank">{myLanguage.cpViewFAQ}</a>
-                                        </AlphaCard>
+                                        </Card>
 
-                                        <AlphaCard>
+                                        <Card>
                                             <Text variant='headingMd' as='h2' >{myLanguage.cpDeveloperFAQ} </Text>
                                             <a href="https://wishlist-guru.webframez.com/docs/" target="_blank">{myLanguage.cpDeveloperDocs}</a>
-                                        </AlphaCard>
+                                        </Card>
 
-                                        {/* <AlphaCard>
+                                        {/* <Card>
                                             <Text variant="headingMd" as="h2">{myLanguage.cpPostHeading}</Text>
                                             <p>{myLanguage.cpPostText}</p>
                                             <div className='enable-app'>
                                                 <a href="https://apps.shopify.com/wishlist-guru/reviews#modal-show=WriteReviewModal" target="_blank"> {myLanguage.cpPostButton}</a>
 
                                             </div>
-                                        </AlphaCard> */}
+                                        </Card> */}
 
-                                        <AlphaCard>
+                                        <Card>
                                             <Text variant="headingMd" as="h2">{myLanguage.cpPostHeading}</Text>
                                             <p>{myLanguage.cpPostText} <span onClick={goToSupppportMail} style={{ cursor: "pointer", textDecoration: "underline", fontWeight: "bold" }}>support@webframez.com</span> {myLanguage.cpPostText2}</p>
 
                                             {/* <div className='enable-app'>
                                                 <a href="https://apps.shopify.com/wishlist-guru/reviews#modal-show=WriteReviewModal" target="_blank"> {myLanguage.cpPostButton}</a>
                                             </div> */}
-                                        </AlphaCard>
+                                        </Card>
 
                                     </div>
                                     <div className='request-form-column'>
-                                        <AlphaCard>
+                                        <Card>
                                             <Text variant='headingMd' as='h2' >{myLanguage.cpRequestForm}</Text>
 
 
@@ -220,11 +220,11 @@ const RequestFormModal = ({ storeAdminEmail, storeDomain }) => {
                                             <div className='request-button-submit'>
                                                 <Button submit >{myLanguage.cpSubmit}</Button>
                                             </div>
-                                        </AlphaCard>
+                                        </Card>
                                     </div>
                                 </div>
                             </form>
-                        </AlphaCard>
+                        </Card>
                     </div >
                     <WebframezApps myLanguage={myLanguage} />
                     <div style={{ marginTop: "40px" }}>

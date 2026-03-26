@@ -1,4 +1,4 @@
-import { Frame, Page, Tabs, IndexTable, Button, Text } from '@shopify/polaris';
+import { Frame, Page, Tabs, IndexTable } from '@shopify/polaris';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useUtilityFunction from '../../hooks/useUtilityFunction';

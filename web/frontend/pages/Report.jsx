@@ -1,14 +1,14 @@
 
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
-    Frame, Page, Spinner, LegacyCard, IndexTable, Pagination, useIndexResourceState, Button, Modal, Text, Icon, AlphaCard, Grid, Select,
+    Frame, Page, LegacyCard, IndexTable, Pagination, useIndexResourceState, Button, Modal, Text, Icon, Card, Select,
     IndexFilters,
     useSetIndexFiltersMode,
 } from '@shopify/polaris';
 import SkeletonPage1 from './SkeletonPage1';
 import Swal from "sweetalert2";
-import { DeleteMajor } from '@shopify/polaris-icons';
-import { ViewMajor } from '@shopify/polaris-icons';
+import { DeleteIcon } from '@shopify/polaris-icons';
+import { ViewIcon } from '@shopify/polaris-icons';
 import useAppMetafield from '../hooks/useAppMetafield';
 import useApi from '../hooks/useApi';
 import useUtilityFunction from '../hooks/useUtilityFunction';
@@ -337,12 +337,12 @@ const Report = () => {
                 <div className='show-less-text' ><IndexTable.Cell>{email}</IndexTable.Cell></div>
                 <IndexTable.Cell>{user_type}</IndexTable.Cell>
                 <IndexTable.Cell>{item_count}</IndexTable.Cell>
-                <IndexTable.Cell><Button onClick={() => handleChange(email, shop_name)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => handleChange(email, shop_name)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
                 <IndexTable.Cell>{cart_count}</IndexTable.Cell>
-                <IndexTable.Cell><Button onClick={() => handleCartChange(email, shop_name)}><Icon source={ViewMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => handleCartChange(email, shop_name)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
                 <IndexTable.Cell>{extractYear(created_at)}</IndexTable.Cell>
                 <IndexTable.Cell>{extractYear(updated_at)}</IndexTable.Cell>
-                <IndexTable.Cell><Button onClick={() => deleteUserHandle(id, wishlist_user_id)}><Icon source={DeleteMajor} color="base" /></Button></IndexTable.Cell>
+                <IndexTable.Cell><Button onClick={() => deleteUserHandle(id, wishlist_user_id)}><Icon source={DeleteIcon} color="base" /></Button></IndexTable.Cell>
             </IndexTable.Row>
         ],
     );
@@ -475,7 +475,7 @@ const Report = () => {
             {!isloading ? <SkeletonPage1 /> :
                 <Frame>
                     <Page fullWidth title={myLanguage.reportPageMainHeading} subtitle={myLanguage.reportPageMainText} >
-                        <AlphaCard>
+                        <Card>
                             <div className='wf-dashboard-box'>
                                 <div className='wf-listingRecord'>
                                     <div className='wf-listingRecord-inner'>
@@ -620,12 +620,12 @@ const Report = () => {
                                     </Modal.Section>
                                 </Modal>
                             </div>
-                        </AlphaCard>
+                        </Card>
                         {/* <div style={{ marginTop: "40px" }}>
                             <Footer myLanguage={myLanguage} />
                         </div> */}
                         <div className="wf-dashboard-box wf-help-dashboard" style={{ padding: "40px 60px", marginTop: "40px" }}>
-                            <AlphaCard>
+                            <Card>
                                 <div className='custom-margin'>
                                     <Text variant="headingLg" as="h2">{myLanguage.helpHeading}</Text>
                                 </div>
@@ -636,7 +636,7 @@ const Report = () => {
                                     <a style={{ textDecoration: "none" }} href="https://apps.shopify.com/wishlist-guru/reviews" target="_blank"><Button  ><img src={wfHelpAvatar} />   {myLanguage.contactUs} </Button></a>
                                     <a style={{ textDecoration: "none" }} href="https://wishlist-guru.webframez.com/docs/" target="_blank"><Button><img src={wfHelpDoc} />{myLanguage.helpDocs}</Button></a>
                                 </div>
-                            </AlphaCard>
+                            </Card>
                         </div>
                     </Page>
                 </Frame>

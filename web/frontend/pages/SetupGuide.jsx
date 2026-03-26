@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, Page, Tabs, Button, LegacyCard, Select, Spinner, Badge, Toast, Frame } from '@shopify/polaris';
+import { Text, Page, Button, LegacyCard, Select, Spinner, Badge, Toast, Frame } from '@shopify/polaris';
 import ColGif from '../assets/collection.gif'
 import SkeletonPage1 from './SkeletonPage1';
 import useAppMetafield from '../hooks/useAppMetafield';

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import useAppMetafield from '../../hooks/useAppMetafield';
 import SkeletonPage1 from '../SkeletonPage1';
-import { AlphaCard, Collapsible, Frame, Page, Text, RadioButton, TextField } from '@shopify/polaris';
+import { Collapsible, Frame, Page, Text, RadioButton, TextField } from '@shopify/polaris';
 import SaveBar from '../SaveBar';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
 import { useForm } from 'react-hook-form';

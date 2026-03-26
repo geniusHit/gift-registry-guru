@@ -1,5 +1,5 @@
-import { useForm, Controller, useWatch } from "react-hook-form";
-import { AlphaCard, Toast, Grid, Page, Text, Checkbox, Select, RadioButton, Frame, Icon, TextField, Collapsible } from '@shopify/polaris'
+import { useForm } from "react-hook-form";
+import { Card, Toast, Page, Text, Select, RadioButton, Frame, TextField, Collapsible } from '@shopify/polaris'
 import React, { useEffect, useMemo, useCallback } from 'react'
 import useAppMetafield from '../hooks/useAppMetafield';
 import useUtilityFunction from '../hooks/useUtilityFunction';
@@ -20,14 +20,12 @@ import saveBlank from '../assets/saveBlank.svg'
 import saveSolid from '../assets/saveSolid.svg'
 import saveOutlineBlank from '../assets/saveOutlineBlank.svg'
 import saveOutlineSolid from '../assets/saveOutlineSolid.svg'
-import saveOutlineSolid11 from '../assets/saveOutlineSolid.svg'
 import starBlank from '../assets/starBlank.svg'
 import starSolid from '../assets/starSolid.svg'
 import starOutlineBlank from '../assets/starOutlineBlank.svg'
 import starOutlineSolid from '../assets/starOutlineSolid.svg'
 import collectionCopyIcon from '../assets/copy-icon.svg'
 import Footer from "./Footer";
-import { useAuthenticatedFetch } from "../hooks";
 import { Link } from "react-router-dom";
 
 
@@ -364,7 +362,7 @@ const CollectionSetting = () => {
                                 <div className="wf-dashboard-box-inner">
                                     <div className="Polaris-Box wf-collection-IconBtn">
                                         {/* <div className="wf-collection-inner"> */}
-                                        <div id='quick-add-icon-section' className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
+                                        <div id='quick-add-icon-section' >
                                             <Text variant="headingMd" as="h2">{myLanguage.collectionIconHeading1}</Text>
                                             <p style={{ marginBottom: "20px" }}>{myLanguage.collectionIconSubHeading1}</p>
                                             <div className="first-icon">
@@ -430,9 +428,9 @@ const CollectionSetting = () => {
 
                                 <div className="wf-dashboard-box-inner wf-pickWishlist-collection">
                                     <div className="Polaris-Box">
-                                        <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"} `}  >
+                                        <div  >
                                             {checkIconStyle === "heart" &&
-                                                <AlphaCard>
+                                                <Card>
                                                     <div id='quick-add-icon-section' style={{ marginBottom: "20px" }} >
                                                         <Text variant="headingMd" as="h2">{myLanguage.collectionIconHeading}</Text>
                                                         <p>{myLanguage.collectionIconHeading}</p>
@@ -499,12 +497,12 @@ const CollectionSetting = () => {
 
                                                         </div>
                                                     </div>
-                                                </AlphaCard>
+                                                </Card>
                                             }
 
 
                                             {checkIconStyle === "star" &&
-                                                <AlphaCard>
+                                                <Card>
                                                     <div className="pb-10">
                                                         <Text variant="headingMd" as="h2">{myLanguage.collectionIconHeading}</Text>
                                                         <p>{myLanguage.collectionIconHeading}</p>
@@ -567,12 +565,12 @@ const CollectionSetting = () => {
                                                             <div className="less-visible">{myLanguage.circleiconSolid}</div>
                                                         </div>
                                                     </div>
-                                                </AlphaCard>
+                                                </Card>
                                             }
 
 
                                             {checkIconStyle === "save" &&
-                                                <AlphaCard>
+                                                <Card>
                                                     <div className="pb-10">
                                                         <Text variant="headingMd" as="h2">{myLanguage.collectionIconHeading}</Text>
                                                         <p>{myLanguage.collectionIconHeading}</p>
@@ -638,7 +636,7 @@ const CollectionSetting = () => {
                                                             <div className="less-visible">{myLanguage.circleiconSolid}</div>
                                                         </div>
                                                     </div>
-                                                </AlphaCard>
+                                                </Card>
                                             }
                                         </div>
                                     </div>
@@ -646,9 +644,9 @@ const CollectionSetting = () => {
 
                                 <div className="wf-dashboard-box-inner">
                                     <div className="Polaris-Box">
-                                        <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"} myColorPicker`} >
+                                        <div className={`myColorPicker`} >
                                             <div className="endColorPicker " >
-                                                <AlphaCard>
+                                                <Card>
                                                     <Text variant="headingMd" as="h2">{myLanguage.collectionIconSettingHeading}</Text>
 
 
@@ -697,7 +695,7 @@ const CollectionSetting = () => {
                                                             <ColorPickerController control={control} controllerName={`iconSelectedBgColor`} id={`iconSelectedBgColor`} label={myLanguage.collectionIconSelectedBgColor} setSaveBar={setSaveBar} />
                                                         </div>
                                                     </div>
-                                                </AlphaCard>
+                                                </Card>
                                             </div>
                                         </div>
                                     </div>
@@ -707,69 +705,68 @@ const CollectionSetting = () => {
                             </div>
 
 
-                            {/* <div className="wf-dashboard-box wf-style-wishbtn" style={{ marginBottom: "40px" }}>
+                            <div className="wf-dashboard-box wf-style-wishbtn" style={{ marginBottom: "40px" }}>
                                 <div className=' wishlist-ui-grid2'>
-                                    <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
+                                    <div  >
                                         <div className='custom-margin'>
                                             <Text variant="headingMd" as="h2">{myLanguage.showColCounterHeading}</Text>
                                             <p>{myLanguage.showCounterSubHeading}</p>
                                         </div>
-                                        {currentPlan >= 2 &&
-                                            <>
-                                                <div className='custom-range-input'>
-                                                    <div className="first-icon">
-                                                        <SingleController name="collectionShowCount" control={control}  >
-                                                            {({ field }) =>
-                                                                <RadioButton
-                                                                    value={field.value}
-                                                                    label={myLanguage.countBtnSetting1}
-                                                                    checked={field.value === "increaseNdecrease" && true}
-                                                                    onChange={() => {
-                                                                        field.onChange("increaseNdecrease"),
-                                                                            setSaveBar(true);
-                                                                    }}
-                                                                />
-                                                            }
-                                                        </SingleController>
-                                                    </div>
-                                                    <div className="first-icon">
-
-                                                        <SingleController name="collectionShowCount" control={control}  >
-                                                            {({ field }) =>
-                                                                <RadioButton
-                                                                    value={field.value}
-                                                                    label={myLanguage.countBtnSetting2}
-                                                                    checked={field.value === "increaseNdisable" && true}
-                                                                    onChange={() => {
-                                                                        field.onChange("increaseNdisable"),
-                                                                            setSaveBar(true);
-                                                                    }}
-                                                                />
-                                                            }
-                                                        </SingleController>
-                                                    </div>
-                                                    <div className="first-icon">
-                                                        <SingleController name="collectionShowCount" control={control}  >
-                                                            {({ field }) =>
-                                                                <RadioButton
-                                                                    value={field.value}
-                                                                    label={myLanguage.countBtnSetting3}
-                                                                    checked={field.value === "no" && true}
-                                                                    onChange={() => {
-                                                                        field.onChange("no"),
-                                                                            setSaveBar(true);
-                                                                    }}
-                                                                />
-                                                            }
-                                                        </SingleController>
-                                                    </div>
+                                        <>
+                                            <div className='custom-range-input'>
+                                                <div className="first-icon">
+                                                    <SingleController name="collectionShowCount" control={control}  >
+                                                        {({ field }) =>
+                                                            <RadioButton
+                                                                value={field.value}
+                                                                label={myLanguage.countBtnSetting1}
+                                                                checked={field.value === "increaseNdecrease" && true}
+                                                                onChange={() => {
+                                                                    field.onChange("increaseNdecrease"),
+                                                                        setSaveBar(true);
+                                                                }}
+                                                            />
+                                                        }
+                                                    </SingleController>
                                                 </div>
+                                                <div className="first-icon">
 
-                                            </>
-                                        }
+                                                    <SingleController name="collectionShowCount" control={control}  >
+                                                        {({ field }) =>
+                                                            <RadioButton
+                                                                value={field.value}
+                                                                label={myLanguage.countBtnSetting2}
+                                                                checked={field.value === "increaseNdisable" && true}
+                                                                onChange={() => {
+                                                                    field.onChange("increaseNdisable"),
+                                                                        setSaveBar(true);
+                                                                }}
+                                                            />
+                                                        }
+                                                    </SingleController>
+                                                </div>
+                                                <div className="first-icon">
+                                                    <SingleController name="collectionShowCount" control={control}  >
+                                                        {({ field }) =>
+                                                            <RadioButton
+                                                                value={field.value}
+                                                                label={myLanguage.countBtnSetting3}
+                                                                checked={field.value === "no" && true}
+                                                                onChange={() => {
+                                                                    field.onChange("no"),
+                                                                        setSaveBar(true);
+                                                                }}
+                                                            />
+                                                        }
+                                                    </SingleController>
+                                                </div>
+                                            </div>
+
+                                        </>
+
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
 
 
 
@@ -783,7 +780,7 @@ const CollectionSetting = () => {
                                     <div className="Polaris-Box">
                                         <div id='quick-add-icon-section' className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
 
-                                            <AlphaCard>
+                                            <Card>
                                                 <Text variant="headingMd" as="h2">{myLanguage.collectionIconQuickViewHeading}</Text>
                                                 <p style={{ marginBottom: "20px" }}>{myLanguage.collectionIconQuickViewSubHeading}</p>
 
@@ -1159,7 +1156,7 @@ const CollectionSetting = () => {
                                                         </SingleController>
                                                     </Collapsible>
                                                 </div>
-                                            </AlphaCard>
+                                            </Card>
                                         </div>
                                     </div>
                                 </div>
@@ -1167,11 +1164,11 @@ const CollectionSetting = () => {
 
 
 
-                            {/* <div className="wf-dashboard-box wf-style-wishbtn">
+                            <div className="wf-dashboard-box wf-style-wishbtn">
                                 <div className="wf-dashboard-box-inner">
                                     <div className="Polaris-Box wf-collection-IconBtn">
                                         <div className="wf-collection-inner">
-                                            <div id='quick-add-icon-section' className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
+                                            <div id='quick-add-icon-section' >
                                                 <Text variant="headingMd" as="h2">{myLanguage.collectionHeading1}</Text>
                                                 <p style={{ marginBottom: "20px" }}>{myLanguage.collectionHeadingText1}</p>
                                                 <Text variant="headingMd" as="h2">{myLanguage.collectionIconEx}</Text>
@@ -1202,7 +1199,7 @@ const CollectionSetting = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
 
                             <div style={{ marginTop: "40px" }}>
                                 <Footer myLanguage={myLanguage} />

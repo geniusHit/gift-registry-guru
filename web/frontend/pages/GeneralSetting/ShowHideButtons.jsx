@@ -3,7 +3,7 @@ import useAppMetafield from '../../hooks/useAppMetafield';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
 import { useForm } from 'react-hook-form';
 import SkeletonPage1 from '../SkeletonPage1';
-import { Frame, Page, AlphaCard, RadioButton, Text } from '@shopify/polaris';
+import { Frame, Page, RadioButton, Text } from '@shopify/polaris';
 import SaveBar from '../SaveBar';
 import Swal from 'sweetalert2';
 import loaderGif from "../loaderGreen.gif";

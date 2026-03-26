@@ -35,6 +35,22 @@ export default function detectThemeName(themeName, filter, customSettings) {
 
         // ------------------- Icons-----------------------
 
+        // gridElement = ".card-wrapper.product-card-wrapper, li.splide__slide,.grid__item,.boost-sd__fallback-product-item, .product-grid .grid__item, .edps-card-wrapper, .products-list .products-list__grid-item, .pf-slide, .product_card, .swiper-slide, .mixed-content-grid__item";
+        // appendIcon = ".card-wrapper.product-card-wrapper .card__inner, .boost-sd__fallback-product-item, .product-grid .grid__item .card__media .media, .edps-card-wrapper .product-single__media:not(.hddn-thmb), li.splide__slide > a, .products-list .products-list__grid-item .product-card__media .product-card__media-container, .multicolumn-card__image-wrapper .media, .pf-media-slider .pf-slide-main-media:first-child, .ft_img img, .swiper-slide > div > div, .mixed-content-grid__item .card-gallery slideshow-component";
+        // afterIcon = false
+        // appendIconCheck = false
+        // buttonPrependBeforeElemnt = false
+        // productLink = "a"
+        // beforeIcon = true
+
+
+        // gridElement = "product-slide .swiper-wrapper product-slide-item, .grid product-card, .grid stone-card, .grid__item";
+        // appendIcon = "product-slide .swiper-wrapper product-slide-item div[data-variable='productImage'], .grid product-card div[data-variable='productImage'], .aspect-square";
+        // afterIcon = false
+        // appendIconCheck = false
+        // buttonPrependBeforeElemnt = false
+        // productLink = "a"
+
         gridElement = ".card-wrapper.product-card-wrapper, li.splide__slide,.grid__item,.boost-sd__fallback-product-item, .product-grid .grid__item, .edps-card-wrapper, .products-list .products-list__grid-item, .pf-slide, .product_card, .swiper-slide, .mixed-content-grid__item";
         appendIcon = ".card-wrapper.product-card-wrapper .card__inner, .boost-sd__fallback-product-item, .product-grid .grid__item .card__media .media, .edps-card-wrapper .product-single__media:not(.hddn-thmb), li.splide__slide > a, .products-list .products-list__grid-item .product-card__media .product-card__media-container, .multicolumn-card__image-wrapper .media, .pf-media-slider .pf-slide-main-media:first-child, .ft_img img, .swiper-slide > div > div, .mixed-content-grid__item .card-gallery slideshow-component";
         afterIcon = false
@@ -3460,8 +3476,11 @@ export default function detectThemeName(themeName, filter, customSettings) {
         // buttonPrependBeforeElemnt = false
         // productLink = 'a';
 
-        gridElement = '.ProductItem ,product-card.product-card,.CollectionMain .ProductItem, .product-list .product-card, .owl-stage .owl-item, .limespot-recommendation-box-carousel-shelf .limespot-recommendation-box-item, .product-card-template--25363297173827__product_grid_quickbuy_mLgax4';
-        appendIcon = '.product-new-grid-items ,.ProductItem__Wrapper ,.product-card__figure, .owl-stage .owl-item .evm-ws-image-wrapper, .ls-link, .product-wishlist-template--25363297173827__product_grid_quickbuy_mLgax4';
+        // gridElement = '.ProductItem ,product-card.product-card,.CollectionMain .ProductItem, .product-list .product-card, .owl-stage .owl-item, .limespot-recommendation-box-carousel-shelf .limespot-recommendation-box-item, .product-card-template--25363297173827__product_grid_quickbuy_mLgax4';
+        // appendIcon = '.product-new-grid-items ,.ProductItem__Wrapper ,.product-card__figure, .owl-stage .owl-item .evm-ws-image-wrapper, .ls-link, .product-wishlist-template--25363297173827__product_grid_quickbuy_mLgax4';
+
+        gridElement = '.ProductItem ,product-card.product-card,.CollectionMain .ProductItem, .product-list .product-card, .owl-stage .owl-item, .limespot-recommendation-box-carousel-shelf .limespot-recommendation-box-item, .product-card-template--25363297173827__product_grid_quickbuy_mLgax4, .a1p_grid-wrapper article';
+        appendIcon = '.product-new-grid-items ,.ProductItem__Wrapper ,.product-card__figure, .owl-stage .owl-item .evm-ws-image-wrapper, .ls-link, .product-wishlist-template--25363297173827__product_grid_quickbuy_mLgax4, .a1p_grid-wrapper article > a';
         afterIcon = false
         appendIconCheck = false
         buttonPrependBeforeElemnt = false

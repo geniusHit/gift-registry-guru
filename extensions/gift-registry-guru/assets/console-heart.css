@@ -588,7 +588,7 @@ button#shareListBtn,
 
 
 .wf-back-btn {
-    position: absolute;
+    /* position: absolute;
     right: 0;
     cursor: pointer;
     font-size: 18px;
@@ -596,7 +596,14 @@ button#shareListBtn,
     color: #555;
     padding: 4px 10px;
     border-radius: 4px;
-    background-color: #f2f2f2;
+    background-color: #f2f2f2; */
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    background: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
 }
 
 .wf-back-btn:hover {
@@ -610,7 +617,8 @@ button#shareListBtn,
 }
 
 .wgr-reg-listing .wg-arrow-up,
-.wgr-reg-listing .single-wishist {
+.wgr-reg-listing .wf-edit-icon,
+.wgr-reg-listing .wf-delete-icon {
     display: none !important;
 }
 
@@ -627,6 +635,77 @@ button#shareListBtn,
 .wgr-search-result .wf-edit-icon,
 .wgr-search-result .wf-delete-icon {
     display: none !important;
+}
+
+
+/* for registry info */
+.registry-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #FAFAFA;
+    padding: 10px 60px;
+}
+
+.registry-left {
+    display: flex;
+    gap: 20px;
+}
+
+.registry-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* for tabs */
+.tabs {
+    margin-top: 10px;
+    padding: 0px 60px;
+    margin-bottom: 10px;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    border-bottom: 2px solid black;
+    font-weight: 600;
+    background-color: #FAFAFA;
+}
+
+.tab-panel {
+    display: none;
+    padding: 15px 0;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.wf-share-icon {
+    cursor: pointer;
+}
+
+.stat .img_test {
+    height: 18px;
+    width: 18px;
+}
+
+
+.wgr-add-more-products {
+    max-width: max-content;
+    margin: 0 auto;
 }
 
 
@@ -689,6 +768,10 @@ button#shareListBtn,
 .wg-trending-grid-3,
 .wishlist-modal-3:not(.wf-empty-multiwishlist) {
     grid-template-columns: repeat(3, 1fr);
+}
+
+.wf-empty-multiwishlist {
+    justify-content: center;
 }
 
 .wg-trending-grid-4,
@@ -2209,7 +2292,9 @@ html[dir="rtl"] #wg-myModal1 .wg-modal-content1 .close1 {
 #wg-myModal .wg-modal-content .show-title .copy-multiwishlist-icon,
 #wg-myModal .wg-modal-content .show-title .deleteIcon,
 .wishlist-page-main .show-title .copy-multiwishlist-icon,
-.wishlist-page-main .show-title .deleteIcon {
+.wishlist-page-main .show-shared-wishlist .copy-multiwishlist-icon,
+.wishlist-page-main .show-title .deleteIcon,
+.wishlist-page-main .show-shared-wishlist .deleteIcon {
     /* background: url(delete.svg) center/18px no-repeat; */
     background: url(wgDelete.svg)center/16px no-repeat;
     filter: brightness(0) saturate(100%);
@@ -2224,7 +2309,8 @@ html[dir="rtl"] #wg-myModal1 .wg-modal-content1 .close1 {
 
 #wg-myModal .wg-modal-content .show-title .copy-multiwishlist-icon,
 .copy-drawer-multi-icon,
-.wishlist-page-main .show-title .copy-multiwishlist-icon {
+.wishlist-page-main .show-title .copy-multiwishlist-icon,
+.wishlist-page-main .show-shared-wishlist .copy-multiwishlist-icon {
     background: url(copy-icon-main.svg) center/18px no-repeat;
 }
 
@@ -2235,6 +2321,20 @@ html[dir="rtl"] #wg-myModal1 .wg-modal-content1 .close1 {
     display: block;
     text-decoration: none;
     min-width: 160px;
+}
+
+.registry-meta {
+    display: flex;
+    gap: 15px;
+}
+
+.a-main {
+    text-decoration: none;
+    min-width: 160px;
+}
+
+.grid-outer-main {
+    display: none;
 }
 
 #mySidenav.sidenav .drawer-table .drawer-row.wf-empty-multiwishlist {
@@ -3357,15 +3457,16 @@ span.drawerDisableClass {
 }
 
 .wgr-login-create {
-    background-color: #787878;
+    background-color: #dedede;
     padding: 45px;
     text-align: center;
+    margin: 50px 0px;
 }
 
 .wgr-search-result,
 .wgr-listing {
     background: #f8f8f8;
-    padding: 10px;
+    padding: 2px 10px 10px 10px;
     margin: 20px 0px;
     border-radius: 10px;
 }
@@ -3399,7 +3500,7 @@ span.drawerDisableClass {
 }
 
 .wgr-registry-form {
-    padding: 0 100px;
+    padding: 30px 60px;
     text-align: left;
 }
 
@@ -3408,6 +3509,8 @@ span.drawerDisableClass {
     margin-bottom: 10px;
     width: 100%;
     padding: 10px;
+    background-color: transparent !important;
+    border: 1px solid;
 }
 
 .wgr-registry-form textarea {
@@ -3415,6 +3518,8 @@ span.drawerDisableClass {
     width: 100%;
     padding: 10px;
     font-family: 'Assistant', sans-serif;
+    background-color: transparent !important;
+    border: 1px solid;
 }
 
 .wgr-registry-form select {
@@ -3422,6 +3527,8 @@ span.drawerDisableClass {
     margin-bottom: 10px;
     width: 100%;
     height: 40px !important;
+    background-color: transparent !important;
+    border: 1px solid;
 }
 
 .wgr-address {
@@ -3432,6 +3539,7 @@ span.drawerDisableClass {
 .wgr-edit-cross {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .wgr-edit-cross h3:nth-child(2) {
@@ -3454,15 +3562,11 @@ span.drawerDisableClass {
 .wgr-edit-cross button {
     width: 160px;
     height: 36px;
+    border-radius: 5px;
+    border: 1px solid;
+    cursor: pointer;
+    background-color: #cecece;
 }
-
-
-
-
-
-
-
-
 
 
 .wgr-nav-main {
@@ -3590,8 +3694,9 @@ span.drawerDisableClass {
     border-radius: 8px;
 }
 
-
-
+.stat .wf-share-icon {
+    align-items: center;
+}
 
 @media screen and (max-width: 1199px) {
     .wg-ella-headerIcon-desktop .header-heart-position {
