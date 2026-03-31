@@ -23,6 +23,8 @@ let wfCurrencyType = heartButton.getAttribute("currency-format");
 let currencyType = wfCurrencyType?.substring(0, wfCurrencyType?.indexOf("{{")).trim();
 let wfCurData = heartButton.getAttribute("cur-data");
 
+console.log("heartButton = ", heartButton)
+
 // let currencyType = wfCurrencyType?.substring(0, wfCurrencyType?.indexOf("{{")).trim();
 const getFontFamily = heartButton.getAttribute("get-font-family")?.replace(/^"(.*)"$/, "$1") ?? null;
 let getFontFamilyFallback = heartButton.getAttribute("get-font-family-fallback");
@@ -120,8 +122,8 @@ function onHeaderActionsRender(element) {
 let modalDrawerTextColor = generalSetting?.wlTextColor?.color ? generalSetting?.wlTextColor?.color : generalSetting.wlTextColor;
 document.addEventListener("DOMContentLoaded", getCurentPlanSql);
 
-// const serverURL = "http://localhost:5000"; // -------------- local
-const serverURL = "https://arizona-reef-davis-attorney.trycloudflare.com"; // -------------- local
+const serverURL = "http://localhost:5000"; // -------------- local
+// const serverURL = "https://perceived-superb-legislative-normally.trycloudflare.com"; // -------------- local
 // const serverURL = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL = 'https://wishlist-guru-api.webframez.com'; // -------------- stagging
 
@@ -232,13 +234,18 @@ async function getCurentPlanSql() {
     //     await Promise.all([showWishlistButtonType(), showCountAll()]);
     // }
 
+    console.log("permanentDomain = ", permanentDomain)
+    console.log("wfGetDomain = ", wfGetDomain)
+    console.log("shopDomain = ", shopDomain)
+
     try {
         const response = await fetch(`${serverURL}/get-current-plan-sql`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "wg-api-key": getWgApiKey(),
-                "wg-user": await getWgEmail(),
+                // "wg-user": await getWgEmail(),
+                "wg-user": customerEmail,
             },
             body: JSON.stringify({
                 shopName: permanentDomain,
@@ -247,6 +254,7 @@ async function getCurentPlanSql() {
             }),
         });
         const result = await response.json();
+        console.log("result = ", result)
 
         if (result?.planData.length > 0) {
             const prevToken = localStorage.getItem("wg-token");

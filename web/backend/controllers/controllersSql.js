@@ -2617,6 +2617,7 @@ export const getCurrentPlanSql = async (req, res) => {
     const wfGetDomain = req.body.wfGetDomain;
     const normalDomain = req.body.normalDomain;
     const customerEmail = req.headers["wg-user"];
+    console.log("customerEmail = ", customerEmail)
     try {
         const userIdQuery = `
             SELECT id 
@@ -5575,9 +5576,6 @@ export const getWishlistUsersData = async (req, res) => {
             endDate2 = (endDate2.toISOString()).split("T")[0];
         }
         shopName = req.body?.shopName;
-        console.log("req.body = ", req.body)
-        console.log("startDate = ", startDate)
-        console.log("endDate2 = ", endDate2)
 
         if (req.body.checkStatusInItem === true) {
             query += `AND created_at >= "${req.body.startDate}" AND CAST(created_at as DATE) <= "${req.body.endDate}"`;
@@ -6281,7 +6279,30 @@ function capitalizeFirstLetter(string) {
 }
 
 
+export const getOrders = async (req, res) => {
+    try {
+        const { shopName, registryId } = req.body
+        console.log("req.body = ", req.body)
 
+        let [orderedItems] = await database.query(`
+            SELECT cr.order_id, cr.date, cr.name, cr.email, cr.wishlist_id, cr.title, cr.price, cr.quantity, cr.image
+            FROM cart_record AS cr
+            JOIN wishlist 
+            ON wishlist.wishlist_id = cr.wishlist_id
+            JOIN wishlist_users 
+            ON wishlist_users.id = wishlist.wishlist_user_id
+            WHERE wishlist_users.shop_name='${shopName}'
+            AND wishlist.wishlist_id=${registryId};
+        `)
+
+        res.send(orderedItems)
+    }
+    catch (error) {
+        console.error("Error:", error);
+        logger.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+}
 
 // export const updateRegistry = async (req, res) => {
 //     try {
@@ -6315,26 +6336,6 @@ export const updateRegistry = async (req, res) => {
     catch (err) {
         console.err("Error : ", err)
         res.status(500).send("Updating registry failed");
-    }
-}
-
-export const getOrders = async (req, res) => {
-    try {
-        const shop = req.params.shop;
-
-        const [orders] = database.query(`SELECT cr.order_id, cr.date, cr.name, cr.email, cr.wishlist_id, cr.title, cr.price, cr.quantity, cr.image
-FROM cart_record AS cr
-JOIN wishlist 
-  ON wishlist.wishlist_id = cr.wishlist_id
-JOIN wishlist_users 
-  ON wishlist_users.id = wishlist.wishlist_user_id
-WHERE wishlist_users.shop_name='${shop}';
-        `)
-
-        res.send(orders)
-    }
-    catch (err) {
-        console.log("Error : ", err)
     }
 }
 

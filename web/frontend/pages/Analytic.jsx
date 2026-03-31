@@ -572,7 +572,7 @@ export default function Analytic() {
         } else {
             const selectedValue2 = await checkCurrentSelectedValue(selectedValue)
             navigate({
-                pathname: "/Analytic/UserReport",
+                pathname: "/Analytic/ReportPage",
                 search: `?pagenumber=1&selectedData=${selectedValue2.label}&rpr=10`
             })
         }

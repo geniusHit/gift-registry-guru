@@ -406,7 +406,7 @@ const LanguageSwitcher = ({ data }) => {
                 </Card>
             </div>
 
-            <div className='wf-style-wishbtn'>
+            {/* <div className='wf-style-wishbtn'>
                 <div className={`${currentPlan >= 4 ? "" : "disableEverything under-premium"} `} >
                     <Card>
                         <Text variant="headingMd" as="h2">{myLanguage.shareWishlistViaEmail}</Text>
@@ -484,7 +484,7 @@ const LanguageSwitcher = ({ data }) => {
                         </SingleFieldController>
                     </Card>
                 </div>
-            </div>
+            </div> */}
 
 
 
@@ -579,7 +579,7 @@ const LanguageSwitcher = ({ data }) => {
                 </div>
             </div>
 
-            <div className='wf-style-wishbtn'>
+            {/* <div className='wf-style-wishbtn'>
                 <div className={`${currentPlan >= 3 ? "" : "disableEverything under-premium"} `} >
                     <Text variant="headingMd" as="h2">{myLanguage.trendingSectionMainHeading}</Text>
 
@@ -590,8 +590,7 @@ const LanguageSwitcher = ({ data }) => {
                         }} />}
                     </SingleFieldController>
                 </div>
-            </div>
-
+            </div> */}
         </>
     )
 }

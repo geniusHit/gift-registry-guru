@@ -94,7 +94,7 @@ const WishlistUiBasic = ({ myLanguage, control, watchAllFields, setSaveBar, curr
                 </Grid.Cell>
 
                 <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-                    <div className={`${watchAllFields.wishlistDisplay === "modal" ? '' : 'not-allowed-class'}`}>
+                    {/* <div className={`${watchAllFields.wishlistDisplay === "modal" ? '' : 'not-allowed-class'}`}>
                         <div className={`wishlist-location-style ${watchAllFields.wishlistDisplay === "modal" ? '' : 'disable-block77'}`} >
                             <RangeController
                                 control={control}
@@ -133,7 +133,7 @@ const WishlistUiBasic = ({ myLanguage, control, watchAllFields, setSaveBar, curr
                         id={`crossColor`}
                         label={myLanguage.wishlistUIStyleCrossColor}
                         setSaveBar={setSaveBar}
-                    />
+                    /> */}
 
                     <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
                         <SingleFieldController name='wlTextFontFamily' control={control}  >

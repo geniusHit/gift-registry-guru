@@ -1510,12 +1510,12 @@ export default function Dashboard() {
                                                 </Grid>
                                                 <p>{myLanguage.overValue6}</p>
                                                 <br />
-                                                <Grid>
+                                                {/* <Grid>
                                                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 8, lg: 8, xl: 8 }}><Text variant="headingSm" as="h5"><li>{myLanguage.asMenuN}</li></Text></Grid.Cell>
                                                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>{showcurrentPlan === "" ?
                                                         <p> {myLanguage.loadingText}</p> :
                                                         getGenDataInfo.wlbLocation1 ? <div className='icon-enable-wf-new'><img src={greenTick} alt="CheckIcon" className="greenIcon" loading="lazy" /> {myLanguage.enabled}</div> : <div className='icon-enable-wf-new'><img src={redCross} alt="CheckIcon" className="greenIcon" loading="lazy" />{myLanguage.disabled}</div>}</Grid.Cell>
-                                                </Grid>
+                                                </Grid> */}
                                                 <Grid>
                                                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 8, lg: 8, xl: 8 }}><Text variant="headingSm" as="h5"><li>{myLanguage.asHeaderN}</li></Text></Grid.Cell>
                                                     <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 4, lg: 4, xl: 4 }}>

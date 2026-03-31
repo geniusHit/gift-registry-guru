@@ -147,6 +147,7 @@ routerSql.post("/postmark/bounce-handler", postmarkWebhook);
 routerSql.post("/check-smtp-connection", checkSmtpConnection);
 routerSql.post("/get-smtp-detail", getSmtpDetail);
 routerSql.post("/get-multi-languages", getMultiLanguages);
+routerSql.post("/get-orders", getOrders)
 
 routerSql.post("/edit-registry-data", editRegistryData);
 routerSql.post("/get-public-registry-by-store", getPublicRegistryByStore);

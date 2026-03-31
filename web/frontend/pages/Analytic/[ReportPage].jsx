@@ -92,7 +92,7 @@ const Data = () => {
     navigate({ search: `?${searchParams.toString()}` });
     switch (selectedTabIndex) {
       case 0:
-        navigate('/Analytic/UserReport');
+        navigate('/Analytic/ReportPage');
         break;
       case 1:
         navigate('/Analytic/WishlistItems');
@@ -307,7 +307,6 @@ const Data = () => {
                   {/* <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange} fitted>
                     {tabs[selected].data}
                   </Tabs> */}
-
                   <WishlistUser myLanguage={myLanguage} requestBody={requestBody} selectedValue={selectedValue} selectedOption={selectedOption} options={options} setIsCount={setIsCount} />
                 </div>}
               <div className='wf-analatic-footer'>

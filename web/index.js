@@ -39,22 +39,6 @@ app_SQL.use("/", routerSql);
 
 const app = express();
 
-// app.use(
-//   shopify.config.webhooks.path,
-//   bodyParser.raw({ type: "application/json", limit: '10mb' }),
-//   async (req, res, next) => {
-//     const hmac = req.headers["x-shopify-hmac-sha256"];
-//     const genHash = crypto
-//       .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
-//       .update(req.body, "utf8", "hex")
-//       .digest("base64");
-//     if (genHash !== hmac) {
-//       return res.status(401).send("Couldn't verify incoming Webhook request!");
-//     }
-//     next();
-//   }
-// );
-
 app.get(shopify.config.auth.path, shopify.auth.begin());
 app.get(
   shopify.config.auth.callbackPath,
@@ -140,6 +124,22 @@ app.use("/*", async (req, res, next) => {
         .replace("%VITE_SHOPIFY_API_KEY%", process.env.SHOPIFY_API_KEY || "")
     );
 });
+
+app.use(
+  shopify.config.webhooks.path,
+  bodyParser.raw({ type: "application/json", limit: '10mb' }),
+  async (req, res, next) => {
+    const hmac = req.headers["x-shopify-hmac-sha256"];
+    const genHash = crypto
+      .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
+      .update(req.body, "utf8", "hex")
+      .digest("base64");
+    if (genHash !== hmac) {
+      return res.status(401).send("Couldn't verify incoming Webhook request!");
+    }
+    next();
+  }
+);
 
 app.listen(PORT_GRAPH);
 app_SQL.listen(PORT_SQL);

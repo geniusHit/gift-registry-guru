@@ -791,7 +791,7 @@ const WishlistUiSetting = () => {
 
                                         </Grid.Cell>
 
-                                        <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+                                        {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
 
                                             <ColorPickerController
                                                 control={control}
@@ -801,12 +801,12 @@ const WishlistUiSetting = () => {
                                                 setSaveBar={setSaveBar}
                                             />
 
-                                        </Grid.Cell>
+                                        </Grid.Cell> */}
                                     </Grid>
 
 
                                     <Grid>
-                                        <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+                                        {/* <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
 
                                             <ColorPickerController
                                                 control={control}
@@ -815,7 +815,7 @@ const WishlistUiSetting = () => {
                                                 label={myLanguage.modalBottomDivBg}
                                                 setSaveBar={setSaveBar}
                                             />
-                                        </Grid.Cell>
+                                        </Grid.Cell> */}
 
 
 
@@ -1082,7 +1082,7 @@ const WishlistUiSetting = () => {
                                     </Tabs>
                                 </div>
 
-                                <div className='wf-style-wishbtn wishlist-ui-grid2'>
+                                {/* <div className='wf-style-wishbtn wishlist-ui-grid2'>
                                     <div >
                                         <div className='custom-margin' style={{ display: "flex", gap: "40px" }}>
                                             <div style={{ width: "95%" }}>
@@ -1103,9 +1103,9 @@ const WishlistUiSetting = () => {
                                             </LegacyCard.Section>
                                         </Tabs>
                                     </div>
-                                </div>
+                                </div> */}
 
-                                <div className='wf-style-wishbtn  wishlist-ui-grid1'>
+                                {/* <div className='wf-style-wishbtn  wishlist-ui-grid1'>
                                     <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >
                                         <div className='custom-margin'>
                                             <Text variant="headingMd" as="h2">{myLanguage.customiseShareModalButtonText}</Text>
@@ -1117,7 +1117,7 @@ const WishlistUiSetting = () => {
                                             </LegacyCard.Section>
                                         </Tabs>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className='wf-style-wishbtn  wishlist-ui-grid1'>
                                     <div className={`${currentPlan >= 2 ? "" : "disableEverything under-basic"}`} >

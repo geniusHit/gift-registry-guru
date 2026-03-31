@@ -47,6 +47,8 @@ const OrderedItems = ({ myLanguage: myLanguage, sortOptions: sortOptions, sortCa
                                     { title: "Date" },
                                     { title: "Customer" },
                                     { title: "Products" },
+                                    { title: "Status" },
+                                    { title: "Total Amount" },
                                 ]}
                             >
                                 {orderedItemsTable}

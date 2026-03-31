@@ -46,6 +46,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
     const [sortSelected, setSortSelected] = useState(['date desc']);
     const [allRegistries, setAllRegistries] = useState([])
     const [wishlistItems, setWishlistItems] = useState([])
+    console.log("requestBody = ", requestBody)
 
     useEffect(() => {
         useEffectLite();
@@ -69,6 +70,9 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         await utilityFunction.getPlanFirst();
         await checkGetAllItem(requestBody)
         setLoaderMain(loaderMain);
+
+        const shopApi = await ShopApi.shop();
+        // await orders(shopApi.shop, 956)
     }
 
 
@@ -233,27 +237,79 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         ],
     );
 
+    const orders = async (registry_id) => {
+        console.log("registry_id = ", registry_id)
+        try {
+            const shopApi = await ShopApi.shop();
+            console.log("shopApi = ", shopApi)
+            let requestBody2 = {
+                shopName: shopApi.shopName,
+                registryId: registry_id,
+            };
+            const userData = await fetch(`${serverURL}/get-orders`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestBody2),
+            });
+            let result = await userData.json();
+            console.log("result = ", result)
+            const groupedOrders = result.reduce((acc, item) => {
+                if (!acc[item.order_id]) {
+                    acc[item.order_id] = [];
+                }
+                acc[item.order_id].push(item);
+                return acc;
+            }, {});
+            console.log("groupedOrders = ", groupedOrders)
+            const noOfOrders = Object.keys(groupedOrders).length
+            console.log("noOfOrders = ", noOfOrders)
+            return noOfOrders
+        } catch (error) {
+            console.log("errr ", error);
+        }
+    }
+
     const startIndex = (parseInt(checkCurrentPage) - 1) * parseInt(listingPerPage)
     const endIndex = startIndex + parseInt(listingPerPage)
-    // console.log("startIndex = ", startIndex)
-    // console.log("endIndex = ", endIndex)
     let query = queryValue.trim();
-    const searchedRegistries = queryValue !== "" ? allRegistries.filter((registry) => {
+    const searchedRegistries = (queryValue !== "" && allRegistries.length > 0) ? allRegistries.filter((registry) => {
         if (registry.email.toLowerCase().includes(query) || registry.first_name.toLowerCase().includes(query) || registry.last_name.toLowerCase().includes(query) || registry.wishlist_name.toLowerCase().includes(query) || registry.event_type.toLowerCase().includes(query)) {
             return registry;
         };
     }) : allRegistries;
-    const registriesListTable = searchedRegistries.slice(startIndex, endIndex).map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name, first_name, last_name }, index) => {
-        // console.log("allRegistries = ", allRegistries)
-        // console.log("id = ", id)
-        // console.log("wishlist_id = ", wishlist_id)
-        // console.log("wishlistItems = ", wishlistItems)
+    console.log("searchedRegistries = ", searchedRegistries)
+    const slicedRegistries = searchedRegistries.slice(startIndex, endIndex)
+    console.log("slicedRegistries = ", slicedRegistries)
+    const registryIds = slicedRegistries.map((reg) => {
+        return reg.wishlist_id;
+    })
+    console.log("registryIds = ", registryIds)
+    const rows = (async () => {
+        return await Promise.all(
+            slicedRegistries.map(async (item) => {
+                const noOfOrders = await orders(item.wishlist_id);
+                return { ...item, noOfOrders };
+            })
+        );
+    })()
+    console.log("rows = ", rows)
+    const [noOfOrders , setNoOfOrders] = useState([])
+    rows.then((data) => {
+        console.log("data = ", data);
+        setNoOfOrders(data);
+    });
+    const registriesListTable = slicedRegistries.map(({ created_at, email, event_date, event_type, id, url_type, wishlist_description, wishlist_id, wishlist_name, first_name, last_name }, index) => {
         const totalItems = wishlistItems.filter((item) => item.wishlist_id === wishlist_id)
-        // console.log("totalItems = ", totalItems)
+        console.log("totalItems = ", totalItems)
         let totalPrice = 0
         totalItems.map(({ price }) => totalPrice += parseInt(price))
-        // console.log("totalPrice = ", totalPrice)
-        // console.log("id = ", id)
+        console.log("wishlist_id = ", wishlist_id)
+        let noOfOrders2 = noOfOrders.filter((reg) => reg.wishlist_id === wishlist_id)
+        console.log("noOfOrders2 = ", noOfOrders2)
+        // let noOfOrders = wishlist_id !== undefined ? await orders(wishlist_id) : 0;
+        // console.log("noOfOrders2 = ", noOfOrders)
 
         return <IndexTable.Row id={id} key={`${id}-${index}`} position={id} >
             <IndexTable.Cell>{wishlist_name}</IndexTable.Cell>
@@ -263,10 +319,12 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
             <IndexTable.Cell>{event_date}</IndexTable.Cell>
             {/* <IndexTable.Cell>{created_at}</IndexTable.Cell> */}
             <IndexTable.Cell>{totalItems.length}</IndexTable.Cell>
+            <IndexTable.Cell>{noOfOrders2[0]?.noOfOrders || 0}</IndexTable.Cell>
             <IndexTable.Cell>{totalPrice}</IndexTable.Cell>
             <IndexTable.Cell><Button onClick={() => viewHandler(id, wishlist_id)}><Icon source={ViewIcon} color="base" /></Button></IndexTable.Cell>
         </IndexTable.Row>
     })
+
 
     const selectedUsername = `${myLanguage.reportModalHeading} ${username}`;
     const selectedCartUsername = `${myLanguage.reportModalCartHeading} ${username}`;
@@ -297,13 +355,14 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
         Navigate({ search: `?${searchParams.toString()}` });
     };
 
+    console.log("checkCurrentOptions = ", checkCurrentOptions)
+
     const selectDateHandler = async (value) => {
         if (value === "custom") {
             setActive(!active)
             setCheckCurrentOptions(value)
             setCheckDatePicker(!checkDatePicker)
             searchParams.set("selectedData", `all`)
-            console.log("value = ", value)
             Navigate({ search: `?${searchParams.toString()}` });
         } else {
             setLoaderMain(!loaderMain);
@@ -332,10 +391,6 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
             setLoaderMain(loaderMain);
         }
     };
-
-    const openCalender = (value) => {
-        console.log(value)
-    }
 
     const checkCurrentSelectedValue = (checkOptions) => {
         let label;
@@ -537,17 +592,16 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                         <Box className='wf-listingRecord-inner'>
                             <Text variant="headingLg" as="h2">{myLanguage.quickOverViewDate}</Text>
                             <Grid>
-                                <Grid.Cell>
+                                <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                                     <Select options={selectedOption} onChange={selectDateHandler}
                                         value={checkCurrentOptions}
-                                        onClick={openCalender}
                                     />
                                 </Grid.Cell>
 
-                                <Grid.Cell>
-                                {checkCurrentOptions === "custom" && <Button onClick={() => {
-                                    setActive(!active)
-                                }}>Update</Button>}
+                                <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+                                    {checkCurrentOptions === "custom" && <Button onClick={() => {
+                                        setActive(!active)
+                                    }}>Update</Button>}
                                 </Grid.Cell>
                             </Grid>
                             <Text>{checkCurrentOptions === "custom" && (moment(new Date(selectedDates.start)).format("YYYY-MM-DD") + " To " + moment(new Date(selectedDates.end)).format("YYYY-MM-DD"))}</Text>
@@ -608,6 +662,7 @@ const WishlistUser = ({ myLanguage, requestBody, selectedValue, selectedOption, 
                                         { title: "Event Date" },
                                         // { title: "Date Created" },
                                         { title: "Products" },
+                                        { title: "Orders" },
                                         { title: "Potential Value" },
                                         { title: "Action" },
                                     ]}

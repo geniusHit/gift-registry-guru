@@ -7,7 +7,7 @@ import {
     TextField, Popover, Thumbnail,
     Box
 } from '@shopify/polaris';
-import { useAppBridge } from '@shopify/app-bridge-react';
+import { SaveBar as NewSaveBar, useAppBridge } from '@shopify/app-bridge-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
 import SkeletonPage1 from '../SkeletonPage1';
@@ -64,26 +64,32 @@ const GetWishlistData = () => {
     const [saveBar, setSaveBar] = useState(false);
     const [showPassField, setShowPassField] = useState(false)
     const { control, handleSubmit, setValue } = useForm()
-    const app = useAppBridge();
+    const shopify = useAppBridge()
+    const pageSaveBarId = "current-wishlist-save-bar"
+    const SaveBar2 = ({ savebarid, handlechange, handlediscard }) => {
+        return (
+            <NewSaveBar id={savebarid}>
+                <button variant="primary" onClick={handlechange}>Save</button>
+                <button onClick={handlediscard}>Discard</button>
+            </NewSaveBar>
+        )
+    }
 
-    const handleChangeSave = () => {
-        app.saveBar.show({
-            message: "Unsaved changes",
-            saveAction: {
-                label: "Save",
-                onAction: async () => {
-                    console.log("Saved");
-                    app.saveBar.hide();
-                },
-            },
-            discardAction: {
-                label: "Discard",
-                onAction: async () => {
-                    app.saveBar.hide();
-                },
-            },
-        });
+    const handleChangeSave = async (shopify) => {
+        shopify.saveBar.hide("current-wishlist-save-bar");
+        const result = await trigger();
+        if (result) {
+            // handleSubmit(saveToMetafield)();
+        }
     };
+
+    const handleDiscardSave = (shopify, id) => {
+        shopify.saveBar.hide("current-wishlist-save-bar");
+    };
+
+    function showSaveBar(shopify) {
+        shopify.saveBar.show("current-wishlist-save-bar");
+    }
 
     // console.log("id111111111111111111111111", id)
 
@@ -554,6 +560,7 @@ const GetWishlistData = () => {
         (value) => {
             setRegistryData(prev => ({ ...prev, event_type: value }));
             setSaveBar(true)
+            showSaveBar(shopify, pageSaveBarId)
         },
         [],
     );
@@ -899,7 +906,14 @@ const GetWishlistData = () => {
 
     const hasNext = endIndex < registryItems.length
     const hasPrevious = parseInt(getItemPageNo) > 1
-    const registryItemsTable = registryItems.slice(startIndex, endIndex).map(
+    let query = queryValue.trim();
+    console.log("registryItems = ", registryItems);
+    const searchedRegistryItems = queryValue !== "" ? registryItems.filter((registryItem) => {
+        if (registryItem.title.toLowerCase().includes(query)) {
+            return registryItem;
+        };
+    }) : registryItems;
+    const registryItemsTable = searchedRegistryItems.slice(startIndex, endIndex).map(
         ({ id, variant_id, title, price, image, total_quantity, items_purchased }, index) => {
             return (
                 <IndexTable.Row id={index} key={index} position={index}>
@@ -1304,12 +1318,23 @@ const GetWishlistData = () => {
         </Grid.Cell>
 
         <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
-            <div className='pb-15'>
-                <Text variant="headingLg" as="h3">{myLanguage.quickOverViewDate}</Text>
-            </div>
-            <Select options={selectedWishlistItemOption} onChange={selectDateHandler}
-                value={checkCurrentOptions}
-            />
+            <Grid>
+                <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
+                    <div className='pb-15'>
+                        <Text variant="headingLg" as="h3">{myLanguage.quickOverViewDate}</Text>
+                    </div>
+                    <Select options={selectedWishlistItemOption} onChange={selectDateHandler}
+                        value={checkCurrentOptions}
+                    />
+                </Grid.Cell>
+
+                <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
+                    {checkCurrentOptions === "custom" && <Button onClick={() => {
+                        setActive(!active)
+                    }}>Update</Button>}
+                </Grid.Cell>
+            </Grid>
+            <Text>{checkCurrentOptions === "custom" && (moment(new Date(selectedDates.start)).format("YYYY-MM-DD") + " To " + moment(new Date(selectedDates.end)).format("YYYY-MM-DD"))}</Text>
         </Grid.Cell>
     </div>
 
@@ -1317,6 +1342,7 @@ const GetWishlistData = () => {
         (newValue) => {
             setRegistryData(prev => ({ ...prev, name: newValue }));
             setSaveBar(true);
+            showSaveBar(shopify, pageSaveBarId);
         },
         [],
     );
@@ -1327,6 +1353,8 @@ const GetWishlistData = () => {
         (newValue) => {
             setRegistryData(prev => ({ ...prev, wishlist_description: newValue }));
             setSaveBar(true)
+
+            showSaveBar(shopify, pageSaveBarId)
         },
         []
     );
@@ -1349,6 +1377,8 @@ const GetWishlistData = () => {
         setRegistryData(prev => ({ ...prev, event_date: start.toLocaleDateString("en-CA") }));
         setPopoverActive(false);
         setSaveBar(true)
+
+        showSaveBar(shopify, pageSaveBarId)
     }, []);
 
     // const formattedDate = selectedDate
@@ -1392,6 +1422,7 @@ const GetWishlistData = () => {
                 setShowPassField(false)
             }
             setSaveBar(true);
+            showSaveBar(shopify, pageSaveBarId);
         },
         [],
     );
@@ -1548,6 +1579,7 @@ const GetWishlistData = () => {
         (value) => {
             setRegistryData(prev => ({ ...prev, password: value }));
             setSaveBar(true);
+            showSaveBar(shopify, pageSaveBarId);
         }
     );
 
@@ -1559,7 +1591,6 @@ const GetWishlistData = () => {
         acc[item.order_id].push(item);
         return acc;
     }, {});
-    console.log("groupedOrders = ", groupedOrders)
     let orderKeys = Object.keys(groupedOrders);
     let ordersStartIndex = (parseInt(ordersPageNo) - 1) * parseInt(getItemRecordPerPage);
     let ordersEndIndex = ordersStartIndex + parseInt(getItemRecordPerPage);
@@ -1567,14 +1598,18 @@ const GetWishlistData = () => {
     let hasOrdersPrevious = parseInt(ordersPageNo) > 1;
     const [oiPopoverActive, setOiPopoverActive] = useState(true);
     const toggleOiPopoverActive = useCallback(
-        () => setOiPopoverActive((popoverActive) => !popoverActive),
+        (index) => {
+            setOiPopoverActive((popoverActive) => !popoverActive)
+            setActivePopoverIndex((prev) => (prev === index ? null : index));
+        },
         [],
     );
+    const [activePopoverIndex, setActivePopoverIndex] = useState(null);
     const orderedItemsTable = orderKeys.slice(ordersStartIndex, ordersEndIndex).map(
         (key, index) => {
             let { date, email, image, name, order_id, price, quantity, title, wishlist_id } = groupedOrders[key][0];
             const oiActivator = (
-                <Button onClick={toggleOiPopoverActive} disclosure>
+                <Button onClick={()=>toggleOiPopoverActive(index)} disclosure>
                     <Grid>
                         {groupedOrders[key].slice(0, 3).map(({ image }) => {
                             return (
@@ -1587,7 +1622,11 @@ const GetWishlistData = () => {
                 </Button>
             );
 
+            let totalPrice;
+            console.log("groupedOrders = ", groupedOrders)
+            console.log("groupedOrders[key] = ", groupedOrders[key])
             const allOi = groupedOrders[key].map(({ image, title, quantity, price }) => {
+                totalPrice = price;
                 return (
                     <Box>
                         <Grid>
@@ -1617,11 +1656,13 @@ const GetWishlistData = () => {
                     <IndexTable.Cell>{date.split("T")[0]}</IndexTable.Cell>
                     <IndexTable.Cell><b>{name}</b> <br /> {email}</IndexTable.Cell>
                     <IndexTable.Cell><Popover
-                        active={oiPopoverActive}
+                        active={activePopoverIndex === index}
                         activator={oiActivator}
                         autofocusTarget="first-node"
                         onClose={toggleOiPopoverActive}
                     >{allOi}</Popover></IndexTable.Cell>
+                    <IndexTable.Cell></IndexTable.Cell>
+                    <IndexTable.Cell>{totalPrice}</IndexTable.Cell>
                 </IndexTable.Row>
             )
         },
@@ -1631,6 +1672,10 @@ const GetWishlistData = () => {
         <div dir={wishlistTextDirection} className='wf-dashboard wf-dashboard-report wf-currentWishlistUser'>
             {!isloading ? <SkeletonPage1 /> :
                 <Frame>
+                    <SaveBar2 savebarid={pageSaveBarId} handlechange={() => { handleChangeSave(shopify) }} handlediscard={() => {
+                        handleDiscardSave(shopify)
+                    }} />
+
                     <Modal
                         open={modalActive}
                         onClose={handleModalChange}
@@ -1714,7 +1759,6 @@ const GetWishlistData = () => {
                                     </IndexTable>
                                 </div>
                             </div> <br /><br /> */}
-                            <Button onClick={handleChangeSave}>Trigger Save Bar</Button>
 
                             <div className='wf-style-wishbtn currentWishlistUser'>
                                 <div className='customer-recently-table'>
@@ -1943,10 +1987,10 @@ const GetWishlistData = () => {
                             </Modal.Section>
                         </Modal>
 
-                        <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={registryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} listingAndDate={listingAndDate} />
+                        <WishlistDataTable myLanguage={myLanguage} options={options} recordPerPageFxn={recordPerPageFxn} listingPerPage={listingPerPage} selectedWishlistItemOption={selectedWishlistItemOption} selectDateHandler={selectDateHandler} checkCurrentOptions={checkCurrentOptions} sortOptions={itemSortOptions} sortSelected={sortSelected} queryValue={queryValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryValue={setQueryValue} hanldeClicks={hanldeClicks} handleFiltersClearAll={handleFiltersClearAll} userList={userList} startIndexValue={startIndexValue} totalRecords={totalRecords} wishlistDataTable={wishlistDataTable} handleSortChange={handleSortChange} currentPage={currentPage} handlePagination={handlePagination} isItemLoading={isItemLoading} selectedWishlistItem={selectedWishlistItem} wishlistItemHandler={wishlistItemHandler} selectedItemOption={selectedItemOption} month={month} year={year} setSelectedDates={setSelectedDates} handleMonthChange={handleMonthChange} selectedDates={selectedDates} checkDatePicker={checkDatePicker} handleModalChange={handleModalChange} registryItemsTable={registryItemsTable} totalRegistryItems={searchedRegistryItems.length} hasNext={hasNext} hasPrevious={hasPrevious} listingAndDate={listingAndDate} />
 
                         {/* Items which are ordered */}
-                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} getOrdersPageNo={getOrdersPageNo} handleOrdersPagination={handleOrdersPagination} isCartLoading={isCartLoading} hasOrdersNext={hasOrdersNext} hasOrdersPrevious={hasOrdersPrevious} totalOrderedItems={orderedItems.length} />
+                        <OrderedItems myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} orderedItemsTable={orderedItemsTable} handleSortCartChange={handleSortCartChange} getOrdersPageNo={getOrdersPageNo} handleOrdersPagination={handleOrdersPagination} isCartLoading={isCartLoading} hasOrdersNext={hasOrdersNext} hasOrdersPrevious={hasOrdersPrevious} totalOrderedItems={orderKeys.length} />
 
                         {/* <CartDataTable myLanguage={myLanguage} options={selectOptions} recordPerCartPageFxn={recordPerPageFxn} listingPerCartPage={listingPerPage} selectedCartItemOption={selectedWishlistItemOption} selectDateCartHandler={selectDateHandler} checkCurrentCartOptions={checkCurrentOptions} sortOptions={sortOptions} sortCartSelected={sortCartSelected} queryCartValue={queryCartValue} handleFiltersQueryChange={handleFiltersQueryChange} setQueryCartValue={setQueryCartValue} onHandleCancel={onHandleCancel} handleFiltersClearAll={handleFiltersClearAll} cartData={cartData} startIndexCartValue={startIndexCartValue} totalRecordsCart={totalRecordsCart} cartWishlistTable={cartWishlistTable} handleSortCartChange={handleSortCartChange} currentCartPage={currentCartPage} handleCartPagination={handleCartPagination} isCartLoading={isCartLoading} /> */}
 

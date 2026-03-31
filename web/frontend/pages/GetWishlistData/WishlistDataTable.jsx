@@ -28,18 +28,18 @@ const WishlistDataTable = ({ myLanguage, sortOptions, sortSelected, queryValue, 
                         <div className='customer-recently-table'>
 
                             <IndexFilters
-                                sortOptions={sortOptions}
-                                sortSelected={sortSelected}
+                                // sortOptions={sortOptions}
+                                // sortSelected={sortSelected}
                                 queryValue={queryValue}
                                 queryPlaceholder="Searching in all"
                                 onQueryChange={(value) => { handleFiltersQueryChange(value, "") }}
                                 onQueryClear={() => setQueryValue('')}
                                 onSort={(value) => { handleSortChange(value, "") }}
-                                cancelAction={{
-                                    onAction: onHandleCancel,
-                                    disabled: false,
-                                    loading: false,
-                                }}
+                                // cancelAction={{
+                                //     onAction: onHandleCancel,
+                                //     disabled: false,
+                                //     loading: false,
+                                // }}
                                 tabs={[]}
                                 filters={[]}
                                 onClearAll={() => handleFiltersClearAll("")}

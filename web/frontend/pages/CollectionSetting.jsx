@@ -1164,7 +1164,7 @@ const CollectionSetting = () => {
 
 
 
-                            <div className="wf-dashboard-box wf-style-wishbtn">
+                            {/* <div className="wf-dashboard-box wf-style-wishbtn">
                                 <div className="wf-dashboard-box-inner">
                                     <div className="Polaris-Box wf-collection-IconBtn">
                                         <div className="wf-collection-inner">
@@ -1199,7 +1199,7 @@ const CollectionSetting = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div style={{ marginTop: "40px" }}>
                                 <Footer myLanguage={myLanguage} />

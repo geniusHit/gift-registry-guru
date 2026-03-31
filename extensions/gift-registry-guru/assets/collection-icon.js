@@ -8,8 +8,8 @@ let matchedModalValues = "";
 let GridElee;
 document.addEventListener("DOMContentLoaded", getCurentPlanSql2);
 
-// const serverURL1 = 'http://localhost:5000'; // -------------- local
-const serverURL1 = "https://arizona-reef-davis-attorney.trycloudflare.com"
+const serverURL1 = 'http://localhost:5000'; // -------------- local
+// const serverURL1 = "https://perceived-superb-legislative-normally.trycloudflare.com"
 // const serverURL1 = 'https://wishlist-api.webframez.com'; // -------------- production
 // const serverURL1 = 'https://wishlist-guru-api.webframez.com';  // -------------- stagging
 
