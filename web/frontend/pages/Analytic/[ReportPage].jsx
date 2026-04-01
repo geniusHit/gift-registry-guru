@@ -290,6 +290,7 @@ const Data = () => {
                 //   </div> : <div></div>
               }]}
               backAction={{ onAction: () => history.back() }}>
+                <Button>Create Registry</Button>
               {currentPlan < 2 ? <div className='wf-style-wishbtn wf-reportDiv'>
                 <div className='editBtn disable-app'>
                   <Text variant="headingLg" as="h2">

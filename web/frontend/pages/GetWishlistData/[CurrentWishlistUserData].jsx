@@ -1600,16 +1600,19 @@ const GetWishlistData = () => {
     const toggleOiPopoverActive = useCallback(
         (index) => {
             setOiPopoverActive((popoverActive) => !popoverActive)
-            setActivePopoverIndex((prev) => (prev === index ? null : index));
+            setActivePopoverIndex((prev) => {
+                return prev === null ? index : null;
+            });
         },
         [],
     );
     const [activePopoverIndex, setActivePopoverIndex] = useState(null);
+    console.log("activePopoverIndex = ", activePopoverIndex)
     const orderedItemsTable = orderKeys.slice(ordersStartIndex, ordersEndIndex).map(
         (key, index) => {
             let { date, email, image, name, order_id, price, quantity, title, wishlist_id } = groupedOrders[key][0];
             const oiActivator = (
-                <Button onClick={()=>toggleOiPopoverActive(index)} disclosure>
+                <Button onClick={() => toggleOiPopoverActive(index)} disclosure>
                     <Grid>
                         {groupedOrders[key].slice(0, 3).map(({ image }) => {
                             return (
@@ -1781,13 +1784,13 @@ const GetWishlistData = () => {
                                             <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                                                 <Controller
                                                     control={control}
-                                                    name='description'
+                                                    name='url'
                                                     render={({ field }) => (
-                                                        <TextField
-                                                            label="Description"
-                                                            value={registryData?.wishlist_description}
-                                                            onChange={(value) => { field.onChange(value); handleChangeDescription(value); }}
-                                                            multiline={3}
+                                                        <Select
+                                                            label="URL Type"
+                                                            options={urlTypeOption}
+                                                            onChange={(value) => { field.onChange(value); handleUrlChange(value); }}
+                                                            value={registryData?.url_type}
                                                         />
                                                     )}
                                                 />
@@ -1795,21 +1798,6 @@ const GetWishlistData = () => {
                                         </Grid><br />
 
                                         <Grid>
-                                            <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-                                                <Controller
-                                                    control={control}
-                                                    name='options'
-                                                    render={({ field }) => (
-                                                        <Select
-                                                            label="Event Options"
-                                                            options={eventOptions}
-                                                            onChange={(value) => { field.onChange(value); handleSelectChangeEventOptions(value); }}
-                                                            value={registryData?.event_type}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid.Cell>
-
                                             <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                                                 <Controller
                                                     control={control}
@@ -1837,41 +1825,7 @@ const GetWishlistData = () => {
                                                     )}
                                                 />
                                             </Grid.Cell>
-                                        </Grid><br />
 
-                                        <Grid>
-                                            <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-                                                <Controller
-                                                    control={control}
-                                                    name='url'
-                                                    render={({ field }) => (
-                                                        <Select
-                                                            label="URL Type"
-                                                            options={urlTypeOption}
-                                                            onChange={(value) => { field.onChange(value); handleUrlChange(value); }}
-                                                            value={registryData?.url_type}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid.Cell>
-
-                                            <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-                                                <Controller
-                                                    control={control}
-                                                    name='url'
-                                                    render={({ field }) => (
-                                                        <TextField
-                                                            label="Share Registry"
-                                                            value={copyUrl()}
-                                                            suffix={<div style={{ cursor: "pointer" }} onClick={() => textCopyHandler(copyUrl())}><Icon source={DuplicateIcon} /></div>}
-                                                            autoComplete="off"
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid.Cell>
-                                        </Grid><br />
-
-                                        <Grid>
                                             <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
                                                 {
                                                     showPassField && <Controller
@@ -1888,9 +1842,54 @@ const GetWishlistData = () => {
                                                     />
                                                 }
                                             </Grid.Cell>
+                                        </Grid><br />
+
+                                        <Grid>
+                                            <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+                                                <Controller
+                                                    control={control}
+                                                    name='url'
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            label="Share Registry"
+                                                            value={copyUrl()}
+                                                            suffix={<div style={{ cursor: "pointer" }} onClick={() => textCopyHandler(copyUrl())}><Icon source={DuplicateIcon} /></div>}
+                                                            autoComplete="off"
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid.Cell>
 
                                             <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+                                                <Controller
+                                                    control={control}
+                                                    name='options'
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            label="Event Options"
+                                                            options={eventOptions}
+                                                            onChange={(value) => { field.onChange(value); handleSelectChangeEventOptions(value); }}
+                                                            value={registryData?.event_type}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid.Cell>
+                                        </Grid><br />
 
+                                        <Grid>
+                                            <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+                                                <Controller
+                                                    control={control}
+                                                    name='description'
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            label="Description"
+                                                            value={registryData?.wishlist_description}
+                                                            onChange={(value) => { field.onChange(value); handleChangeDescription(value); }}
+                                                            multiline={3}
+                                                        />
+                                                    )}
+                                                />
                                             </Grid.Cell>
                                         </Grid><br />
 
