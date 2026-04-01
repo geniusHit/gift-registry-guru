@@ -1,6 +1,6 @@
 import { Frame, Page, IndexTable, Button, Text } from '@shopify/polaris';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import WishlistUser from './ReportPage/UserReport';
 import useUtilityFunction from '../../hooks/useUtilityFunction';
 import SkeletonPage1 from '../SkeletonPage1';
@@ -290,7 +290,7 @@ const Data = () => {
                 //   </div> : <div></div>
               }]}
               backAction={{ onAction: () => history.back() }}>
-                <Button>Create Registry</Button>
+                <Link to="/Analytic/ReportPage/CreateRegistry"><Button>Create Registry</Button></Link>
               {currentPlan < 2 ? <div className='wf-style-wishbtn wf-reportDiv'>
                 <div className='editBtn disable-app'>
                   <Text variant="headingLg" as="h2">

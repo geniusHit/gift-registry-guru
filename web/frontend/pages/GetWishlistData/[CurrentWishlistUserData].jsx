@@ -181,7 +181,6 @@ const GetWishlistData = () => {
     });
     let isEmail = useRef('');
 
-
     const handleMonthChange = useCallback(
         (month, year) => {
             setDate({ month, year })

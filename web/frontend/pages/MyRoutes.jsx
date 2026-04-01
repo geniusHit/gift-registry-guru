@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from 'react';
 // import { NavigationMenu } from "@shopify/app-bridge-react";
 import useUtilityFunction from '../hooks/useUtilityFunction';
