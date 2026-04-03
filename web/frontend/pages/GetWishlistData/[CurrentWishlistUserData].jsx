@@ -21,7 +21,7 @@ import Footer from '../Footer';
 import collectionCopyIcon from '../../assets/copy-icon.svg'
 import OrderedItems from './OrderedItems';
 import { Controller, useForm } from 'react-hook-form';
-import SaveBar from '../SaveBar';
+import SaveBar2 from '../SaveBar2';
 
 
 const GetWishlistData = () => {
@@ -63,34 +63,25 @@ const GetWishlistData = () => {
     const [registryData, setRegistryData] = useState([])
     const [saveBar, setSaveBar] = useState(false);
     const [showPassField, setShowPassField] = useState(false)
-    const { control, handleSubmit, setValue } = useForm()
+    const { control, handleSubmit, setValue, trigger, watch } = useForm()
     const shopify = useAppBridge()
-    const pageSaveBarId = "current-wishlist-save-bar"
-    const SaveBar2 = ({ savebarid, handlechange, handlediscard }) => {
-        return (
-            <NewSaveBar id={savebarid}>
-                <button variant="primary" onClick={handlechange}>Save</button>
-                <button onClick={handlediscard}>Discard</button>
-            </NewSaveBar>
-        )
-    }
-
-    const handleChangeSave = async (shopify) => {
-        shopify.saveBar.hide("current-wishlist-save-bar");
+    const pageSaveBarId = "registry-items-save-bar"
+    const handleChangeSaveBar = async (shopify) => {
+        shopify.saveBar.hide(pageSaveBarId);
+        console.log("watch = ", watch())
         const result = await trigger();
         if (result) {
-            // handleSubmit(saveToMetafield)();
+            handleSubmit2();
         }
     };
 
     const handleDiscardSave = (shopify, id) => {
-        shopify.saveBar.hide("current-wishlist-save-bar");
+        shopify.saveBar.hide(pageSaveBarId);
     };
 
     function showSaveBar(shopify) {
-        shopify.saveBar.show("current-wishlist-save-bar");
+        shopify.saveBar.show(pageSaveBarId);
     }
-
     // console.log("id111111111111111111111111", id)
 
     // useEffect(()=>{
@@ -561,7 +552,7 @@ const GetWishlistData = () => {
             setSaveBar(true)
             showSaveBar(shopify, pageSaveBarId)
         },
-        [],
+        [shopify],
     );
 
     const filteredAndSortedDataComponent = useMemo(() => {
@@ -1337,13 +1328,23 @@ const GetWishlistData = () => {
         </Grid.Cell>
     </div>
 
+    // const handleChangeName = useCallback(
+    //     (newValue) => {
+    //         setRegistryData(prev => ({ ...prev, name: newValue }));
+    //         setSaveBar(true);
+    //         showSaveBar(shopify, pageSaveBarId);
+    //     },
+    //     [shopify],
+    // );
     const handleChangeName = useCallback(
-        (newValue) => {
-            setRegistryData(prev => ({ ...prev, name: newValue }));
-            setSaveBar(true);
-            showSaveBar(shopify, pageSaveBarId);
+        (value) => {
+            setRegistryData(prev => ({ ...prev, name: value }));
+
+            if (shopify?.saveBar) {
+                shopify.saveBar.show(pageSaveBarId);
+            }
         },
-        [],
+        [shopify],
     );
 
     console.log("registryData = ", registryData)
@@ -1355,7 +1356,7 @@ const GetWishlistData = () => {
 
             showSaveBar(shopify, pageSaveBarId)
         },
-        []
+        [shopify]
     );
 
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -1378,7 +1379,7 @@ const GetWishlistData = () => {
         setSaveBar(true)
 
         showSaveBar(shopify, pageSaveBarId)
-    }, []);
+    }, [shopify]);
 
     // const formattedDate = selectedDate
     //     ? selectedDate.toISOString().split('T')[0]
@@ -1423,7 +1424,7 @@ const GetWishlistData = () => {
             setSaveBar(true);
             showSaveBar(shopify, pageSaveBarId);
         },
-        [],
+        [shopify],
     );
 
 
@@ -1546,7 +1547,12 @@ const GetWishlistData = () => {
         setValue("password", registryData?.password)
     }, [registryData])
 
-    const handleSubmit2 = async (data) => {
+    const handleSubmit2 = async () => {
+        const data = watch();
+        console.log("data = ", data)
+        if(data?.name === ""){
+
+        }
         const result = await fetch(`${serverURL}/update-registry`, {
             method: "POST",
             headers: {
@@ -1579,7 +1585,8 @@ const GetWishlistData = () => {
             setRegistryData(prev => ({ ...prev, password: value }));
             setSaveBar(true);
             showSaveBar(shopify, pageSaveBarId);
-        }
+        },
+        [shopify],
     );
 
     console.log("orderedItems = ", orderedItems)
@@ -1674,7 +1681,7 @@ const GetWishlistData = () => {
         <div dir={wishlistTextDirection} className='wf-dashboard wf-dashboard-report wf-currentWishlistUser'>
             {!isloading ? <SkeletonPage1 /> :
                 <Frame>
-                    <SaveBar2 savebarid={pageSaveBarId} handlechange={() => { handleChangeSave(shopify) }} handlediscard={() => {
+                    <SaveBar2 savebarid={pageSaveBarId} handlechange={() => { handleChangeSaveBar(shopify) }} handlediscard={() => {
                         handleDiscardSave(shopify)
                     }} />
 
@@ -1765,7 +1772,7 @@ const GetWishlistData = () => {
                             <div className='wf-style-wishbtn currentWishlistUser'>
                                 <div className='customer-recently-table'>
                                     <form onSubmit={handleSubmit(handleSubmit2)}>
-                                        {(saveBar) ? <SaveBar save="Save" /> : ""}
+                                        {/* {(saveBar) ? <SaveBar save="Save" /> : ""} */}
 
                                         <Text variant="headingLg" as="h2">Edit Registry</Text><br />
 
@@ -1774,8 +1781,9 @@ const GetWishlistData = () => {
                                                 <Controller
                                                     control={control}
                                                     name='name'
-                                                    render={({ field }) => (
-                                                        <TextField onChange={(value) => { field.onChange(value); handleChangeName(value); }} label='Name' value={registryData?.name} />
+                                                    rules={{ required: "Name is required" }}
+                                                    render={({ field, fieldState }) => (
+                                                        <TextField onChange={(value) => { field.onChange(value); handleChangeName(value); }} label='Name' value={registryData?.name} error={fieldState.error?.message} />
                                                     )}
                                                 />
                                             </Grid.Cell>
@@ -1830,12 +1838,14 @@ const GetWishlistData = () => {
                                                     showPassField && <Controller
                                                         control={control}
                                                         name='password'
-                                                        render={({ field }) => (
+                                                        rules={{ required: "Password is required" }}
+                                                        render={({ field, fieldState }) => (
                                                             <TextField
                                                                 label="Enter Password"
                                                                 type='password'
                                                                 onChange={(value) => { field.onChange(value); handlePasswordChange(value); }}
                                                                 value={registryData?.password}
+                                                                error={fieldState.error?.message}
                                                             />
                                                         )}
                                                     />
@@ -1880,12 +1890,14 @@ const GetWishlistData = () => {
                                                 <Controller
                                                     control={control}
                                                     name='description'
-                                                    render={({ field }) => (
+                                                    rules={{ required: "Description is required" }}
+                                                    render={({ field, fieldState }) => (
                                                         <TextField
                                                             label="Description"
                                                             value={registryData?.wishlist_description}
                                                             onChange={(value) => { field.onChange(value); handleChangeDescription(value); }}
                                                             multiline={3}
+                                                            error={fieldState.error?.message}
                                                         />
                                                     )}
                                                 />

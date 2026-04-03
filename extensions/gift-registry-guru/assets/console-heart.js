@@ -12479,6 +12479,8 @@ function closeMultiWishlist() {
 
 async function executeMe2(wishName, wishDescrp, wishUrlType, wishUrlPassword = "", wishDate, wishEventType, wishFirstName, wishLastName, wishStreetAddress, wishZipCode, wishCity, wishState, wishCountry, wishPhone, wishTags) {
     let { accessToken, accessEmail } = getAccessToken();
+    console.log("accessToken = ", accessToken)
+    console.log("accessEmail = ", accessEmail)
     let params = (new URL(document.location)).searchParams;
     let sharedId = params.get("id");
     const sharedIdProp = atob(sharedId);

@@ -65,8 +65,6 @@ const Data = () => {
     setShouldRun(true)
   }
 
-
-
   const handleGoToPlan = () => {
     navigate({
       pathname: `/PricingPlan`,
