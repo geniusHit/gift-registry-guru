@@ -2469,6 +2469,15 @@ body {
     max-width: 160px;
 }
 
+.wf-createRegistry .Polaris-Select .Polaris-Select__Content {
+    border: 2px solid #4867A9;
+    outline: none;
+    border-radius: 100px;
+    height: 45px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
 .wf-dashboard-report .Polaris-Select .Polaris-Select__Backdrop {
     border: none;
     background: transparent;

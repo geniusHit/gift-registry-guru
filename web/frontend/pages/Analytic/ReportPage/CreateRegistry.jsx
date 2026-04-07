@@ -12,9 +12,11 @@ import useApi from '../../../hooks/useApi';
 import { Constants } from '../../../../backend/constants/constant';
 import useUtilityFunction from '../../../hooks/useUtilityFunction';
 import Footer from '../../Footer';
+import Swal from 'sweetalert2';
+import loaderGif from "../../loaderGreen.gif";
 
 const CreateRegistry = () => {
-    const { control, handleSubmit, setValue } = useForm({
+    const { control, handleSubmit, setValue, reset } = useForm({
         defaultValues: {
             name: "",
         }
@@ -32,65 +34,43 @@ const CreateRegistry = () => {
     const utilityFunction = useUtilityFunction();
     const [myLanguage, setMyLanguage] = useState({});
     let wfGetDomain = window.location.href;
-    const [registryData, setRegistryData] = useState({
-        name: "",
-        eventType: "",
-        eventData: "",
-        tags: [],
-        description: "",
-        urlType: "",
-        firstName: "",
-        lastName: "",
-        streetAddress: "",
-        state: "",
-        zipCode: "",
-        country: "",
-        city: "",
-        phoneNumber: ""
-    })
+    const [tags, setTags] = useState([])
     const [selectedDate, setSelectedDate] = useState(new Date());
     const submit = (data) => {
-        console.log("data = ", data)
-        createRegistry(data.name, data.description, data.urlType, data.password, data.eventDate, data.eventType, data.firstName, data.lastName, data.streetAddress, data.zipCode, data.city, data.state, data.country, data.phoneNumber, data.tags)
+        console.log("data2 = ", data)
+        createRegistry(data.name, data.description, data.urlType, data.password, data.eventDate, data.eventType, data.firstName, data.lastName, data.streetAddress, data.zipCode, data.city, data.state, data.country, data.phoneNumber, tags)
     };
-    const handleChangeName = (value) => {
-        setRegistryData((prev) => ({ ...prev, name: value }))
-        // showSaveBar()
-    }
     const handleChangeTags = (value) => {
         setTag(value)
         // showSaveBar()
     }
-    const handleChangeDescription = (value) => {
-        setRegistryData((prev) => ({ ...prev, description: value }))
-    }
-    const handleChangePassword = (value) => {
-        setRegistryData((prev) => ({ ...prev, password: value }))
-    }
-    const handleChangeFName = (value) => {
-        setRegistryData((prev) => ({ ...prev, firstName: value }))
-    }
-    const handleChangeLName = (value) => {
-        setRegistryData((prev) => ({ ...prev, lastName: value }))
-    }
-    const handleChangeStreetAddress = (value) => {
-        setRegistryData((prev) => ({ ...prev, streetAddress: value }))
-    }
-    const handleChangeState = (value) => {
-        setRegistryData((prev) => ({ ...prev, state: value }))
-    }
-    const handleChangeZipCode = (value) => {
-        setRegistryData((prev) => ({ ...prev, zipCode: value }))
-    }
-    const handleChangeCountry = (value) => {
-        setRegistryData((prev) => ({ ...prev, country: value }))
-    }
-    const handleChangeCity = (value) => {
-        setRegistryData((prev) => ({ ...prev, city: value }))
-    }
-    const handleChangePhone = (value) => {
-        setRegistryData((prev) => ({ ...prev, phoneNumber: value }))
-    }
+    // const handleChangePassword = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, password: value }))
+    // }
+    // const handleChangeFName = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, firstName: value }))
+    // }
+    // const handleChangeLName = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, lastName: value }))
+    // }
+    // const handleChangeStreetAddress = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, streetAddress: value }))
+    // }
+    // const handleChangeState = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, state: value }))
+    // }
+    // const handleChangeZipCode = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, zipCode: value }))
+    // }
+    // const handleChangeCountry = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, country: value }))
+    // }
+    // const handleChangeCity = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, city: value }))
+    // }
+    // const handleChangePhone = (value) => {
+    //     setRegistryData((prev) => ({ ...prev, phoneNumber: value }))
+    // }
 
     useEffect(() => {
         useEffectLite()
@@ -129,10 +109,10 @@ const CreateRegistry = () => {
         [],
     );
 
-    if (eventOptions.length > 0) {
-        setValue("eventType", eventOptions[0].value)
-        console.log("eventOptions[0] = ", eventOptions[0].value)
-    }
+    // if (eventOptions.length > 0) {
+    //     setValue("eventType", eventOptions[0].value)
+    //     console.log("eventOptions[0] = ", eventOptions[0].value)
+    // }
     // console.log("eventOptions[0].value = ", eventOptions[0].value)
     console.log("eventOptions = ", eventOptions)
 
@@ -159,7 +139,7 @@ const CreateRegistry = () => {
 
     const handleDateChange = useCallback(({ start }) => {
         setSelectedDate(start);
-        setRegistryData(prev => ({ ...prev, eventDate: start.toLocaleDateString("en-CA") }));
+        // setRegistryData(prev => ({ ...prev, eventDate: start.toLocaleDateString("en-CA") }));
         setPopoverActive(false);
         setSaveBar(true)
     }, []);
@@ -169,17 +149,19 @@ const CreateRegistry = () => {
     const addTag = () => {
         console.log("tag = ", tag);
 
-        setRegistryData((prev) => ({ ...prev, tags: [...prev.tags, tag] }));
+        // setRegistryData((prev) => ({ ...prev, tags: [...prev.tags, tag] }));
+        setTags((prev) => ([...prev, tag]))
         setTag("")
     }
 
-    console.log("registryData = ", registryData)
+    // console.log("registryData = ", registryData)
+    console.log("tags = ", tags)
 
     const removeTag = (index) => {
         console.log("index = ", index)
-        let newTags = registryData?.tags.filter((tag, i) => i !== index);
+        let newTags = tags.filter((tag, i) => i !== index);
         console.log("newTags = ", newTags)
-        setRegistryData((prev) => ({ ...prev, tags: newTags }))
+        setTags((prev) => ([ ...prev, newTags ]))
     }
 
     const [showPasswordField, setShowPasswordField] = useState(false)
@@ -190,7 +172,7 @@ const CreateRegistry = () => {
     ]
     const handleSelectChangeUrlOptions = useCallback(
         (value) => {
-            setRegistryData(prev => ({ ...prev, urlType: value }));
+            // setRegistryData(prev => ({ ...prev, urlType: value }));
             setSaveBar(true)
             value === "password-protected" ? setShowPasswordField(true) : setShowPasswordField(false)
         },
@@ -198,6 +180,11 @@ const CreateRegistry = () => {
     );
 
     async function createRegistry(wishName, wishDescrp, wishUrlType, wishUrlPassword = "", wishDate, wishEventType, wishFirstName, wishLastName, wishStreetAddress, wishZipCode, wishCity, wishState, wishCountry, wishPhone, wishTags) {
+        Swal.fire({
+            text: myLanguage.swalWaiting,
+            imageUrl: loaderGif,
+            showConfirmButton: false,
+        });
         const shopApi = await ShopApi.shop();
         console.log("shopApi = ", shopApi)
         let params = (new URL(document.location)).searchParams;
@@ -233,15 +220,29 @@ const CreateRegistry = () => {
             }),
         });
         let result = await userData.json();
-        console.log("result = ", result)
-
-        // if (result.msg === "wishlist created successfully") {
-        //     wgrCreateRegistryForm();
-        //     window.location = `${wfGetDomain}apps/wf-gift-registry/list`;
-        // } else 
-        // if (result.msg === "registry limit crossed") {
-        //     alertContent("Limit crossed for creating the registry");
-        // }
+        Swal.fire({
+            icon: "success",
+            title: "Registry created successfully",
+            // text: myLanguage.swalText,
+            confirmButtonText: myLanguage.swalOk
+        });
+        // setRegistryData({
+        //     name: "",
+        //     eventType: "",
+        //     eventData: "",
+        //     tags: [],
+        //     description: "",
+        //     urlType: "",
+        //     firstName: "",
+        //     lastName: "",
+        //     streetAddress: "",
+        //     state: "",
+        //     zipCode: "",
+        //     country: "",
+        //     city: "",
+        //     phoneNumber: ""
+        // })
+        reset()
     }
 
     function getAccessToken() {
@@ -298,13 +299,13 @@ const CreateRegistry = () => {
     console.log("myLanguage = ", myLanguage)
 
     return (
-        <div className='wf-dashboard wf-dashboard-report wf-userReport ' style={{ padding: "70px" }}>
+        <div className='wf-dashboard wf-dashboard-report wf-userReport wf-createRegistry' style={{ padding: "70px" }}>
             {isloading ? <SkeletonPage1 /> :
                 <Form onSubmit={handleSubmit(submit)}>
                     <FormLayout>
                         <Grid>
                             <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
-                                <Text variant="headingLg">Create Registry</Text>
+                                <Text as='h1' variant="headingLg" tone="interactive">Create Registry</Text>
                             </Grid.Cell>
                         </Grid>
 
@@ -313,8 +314,14 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='name'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeName(value) }} value={registryData?.name} placeholder='Enter registry name' />
+                                    rules={{ required: "Registry name is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.name}
+                                            value={field.value}
+                                            placeholder='Enter registry name'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -325,12 +332,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='eventType'
-                                    render={({ field }) => (
+                                    rules={{ required: "Event type is required" }}
+                                    render={({ field, fieldState }) => (
                                         <Select
                                             options={eventOptions}
-                                            onChange={(value) => { field.onChange(value); handleSelectChangeEventOptions(value); }}
-                                            value={registryData?.eventType}
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.eventType}
+                                            value={field.value}
                                             placeholder='Choose Event'
+                                            error={fieldState.error?.message}
                                         />
                                     )}
                                 />
@@ -340,12 +350,14 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='eventDate'
-                                    render={({ field }) => (
+                                    rules={{ required: "Event date is required" }}
+                                    render={({ field, fieldState }) => (
                                         <Popover
                                             active={popoverActive}
                                             activator={activator}
                                             onClose={togglePopover}
                                             preferredAlignment="left"
+                                            error={fieldState.error?.message}
                                         >
                                             <Popover.Pane fixed>
                                                 <DatePicker
@@ -390,7 +402,7 @@ const CreateRegistry = () => {
                         <Grid>
                             <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
                                 <InlineStack gap="400" wrap>
-                                    {registryData?.tags.map((tag, index) => {
+                                    {tags.map((tag, index) => {
                                         return (
                                             <Tag
                                                 key={index}
@@ -409,8 +421,14 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='description'
-                                    render={({ field }) => (
-                                        <TextField multiline={3} onChange={(value) => { field.onChange(value); handleChangeDescription(value) }} value={registryData?.description} placeholder='Enter registry description' />
+                                    rules={{ required: "Description is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField multiline={3} onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.description}
+                                            value={field.value}
+                                            placeholder='Enter registry description'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -421,12 +439,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='urlType'
-                                    render={({ field }) => (
+                                    rules={{ required: "Url type is required" }}
+                                    render={({ field, fieldState }) => (
                                         <Select
                                             options={urlOptions}
                                             onChange={(value) => { field.onChange(value); handleSelectChangeUrlOptions(value); }}
-                                            value={registryData?.urlType}
+                                            // value={registryData?.urlType}
+                                            value={field.value}
                                             placeholder='Share url type'
+                                            error={fieldState.error?.message}
                                         />
                                     )}
                                 />
@@ -439,8 +460,14 @@ const CreateRegistry = () => {
                                     <Controller
                                         control={control}
                                         name='password'
-                                        render={({ field }) => (
-                                            <TextField type='password' onChange={(value) => { field.onChange(value); handleChangePassword(value) }} value={registryData?.password} placeholder='Enter password' />
+                                        rules={{ required: "Password is required" }}
+                                        render={({ field, fieldState }) => (
+                                            <TextField type='password' onChange={(value) => { field.onChange(value); }}
+                                                // value={registryData?.password}
+                                                value={field.value}
+                                                placeholder='Enter password'
+                                                error={fieldState.error?.message}
+                                            />
                                         )}
                                     />
                                 </Grid.Cell>
@@ -452,8 +479,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='firstName'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeFName(value) }} value={registryData?.firstName} placeholder='Enter First Name' />
+                                    rules={{ required: "First Name is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.firstName} 
+                                            value={field.value}
+                                            placeholder='Enter First Name'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -462,8 +496,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='lastName'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeLName(value) }} value={registryData?.lastName} placeholder='Enter Last Name' />
+                                    rules={{ required: "Last Name is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.lastName}
+                                            value={field.value}
+                                            placeholder='Enter Last Name'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -471,7 +512,7 @@ const CreateRegistry = () => {
 
                         <Grid>
                             <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-                                <Text>Registrant’s Information</Text>
+                                <Text as='b'>Registrant’s Information</Text>
                             </Grid.Cell>
                         </Grid>
 
@@ -480,8 +521,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='streetAddress'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeStreetAddress(value) }} value={registryData?.streetAddress} placeholder='Street Address' />
+                                    rules={{ required: "Street Address is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.streetAddress}
+                                            value={field.value}
+                                            placeholder='Street Address'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -490,8 +538,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='state'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeState(value) }} value={registryData?.state} placeholder='State' />
+                                    rules={{ required: "State is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.state}
+                                            value={field.value}
+                                            placeholder='State'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -502,8 +557,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='zipCode'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeZipCode(value) }} value={registryData?.zipCode} placeholder='Zip Code' />
+                                    rules={{ required: "Zip Code is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.zipCode}
+                                            value={field.value}
+                                            placeholder='Zip Code'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -512,8 +574,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='country'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeCountry(value) }} value={registryData?.country} placeholder='Country' />
+                                    rules={{ required: "Country is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.country}
+                                            value={field.value}
+                                            placeholder='Country'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -524,8 +593,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='city'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangeCity(value) }} value={registryData?.city} placeholder='City' />
+                                    rules={{ required: "City is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.city}
+                                            value={field.value}
+                                            placeholder='City'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -534,8 +610,15 @@ const CreateRegistry = () => {
                                 <Controller
                                     control={control}
                                     name='phoneNumber'
-                                    render={({ field }) => (
-                                        <TextField onChange={(value) => { field.onChange(value); handleChangePhone(value) }} value={registryData?.phoneNumber} placeholder='Phone Number' />
+                                    rules={{ required: "Phone number is required" }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            onChange={(value) => { field.onChange(value); }}
+                                            // value={registryData?.phoneNumber}
+                                            value={field.value}
+                                            placeholder='Phone Number'
+                                            error={fieldState.error?.message}
+                                        />
                                     )}
                                 />
                             </Grid.Cell>
@@ -543,13 +626,13 @@ const CreateRegistry = () => {
 
                         <Grid>
                             <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-                                <Button submit>Create Registry</Button>
+                                <Button submit variant='primary'>Create Registry</Button>
                             </Grid.Cell>
                         </Grid>
                     </FormLayout>
                 </Form>}
 
-            <br/><br/><br/>
+            <br /><br /><br />
             <div className='wf-analatic-footer'>
                 <Footer myLanguage={myLanguage} />
             </div>

@@ -114,6 +114,7 @@ export const createNewWishlist = async (req, res) => {
 
 async function CreateWishlist(req, res, emailOrToken, guestOrUser) {
     try {
+        console.log("req.body = ", req.body)
         const [result2] = await database.query(`SELECT u.id FROM ${user_table} AS u WHERE u.shop_name = ? AND email = ?`,
             [req.body.shopName, emailOrToken]);
         if (result2.length === 0) {
@@ -144,7 +145,6 @@ async function CreateWishlist(req, res, emailOrToken, guestOrUser) {
             const insertQuery = `INSERT INTO ${Wishlist_table} (wishlist_user_id, wishlist_name, wishlist_description, url_type, password, event_type, event_date, first_name, last_name, street_address, zip_code, city, state, country, phone, tags, update_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
             await database.query(insertQuery, [result2[0].id, req.body.wishlistName, req.body.wishlistDescription, req.body.wishlistUrlType, req.body.password, req.body.eventType, req.body.date, req.body.firstName, req.body.lastName, req.body.streetAddress, req.body.zipCode, req.body.city, req.body.state, req.body.country, req.body.phone, req.body.tags]);
             return res.send({ msg: "wishlist created successfully" });
-
         }
     } catch (err) {
         console.error("❌ SQL Error:", err);
